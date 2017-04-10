@@ -15,8 +15,10 @@ We show that equality on theses atoms is a equivalence relation
 (reflexive, transitive and transitive relation).
 
  *)
-
-Require Export List.
+Require Export Coq.Relations.Relations.
+Require Export Coq.Classes.Morphisms.
+Require Export Coq.Setoids.Setoid.
+Require Export Coq.Bool.Bool.
 Set Implicit Arguments.
 
 (** Type for atomic propositions *)
@@ -24,6 +26,7 @@ Parameter var: Set.
 
 (** Decidability of equality on atomic propositions *)
 Axiom Var_eq_dec : forall x y : var, {x = y} + {x <> y}.   
+Hint Resolve Var_eq_dec.
 
 (** Equality on atomic propositions *)
 Definition VarEq (x y: var):= 
@@ -39,7 +42,7 @@ Definition eqVar (x y: var):=
 Lemma eqVar_refl: forall x, eqVar x x.
 Proof.
   intros.
-  unfold eqVar.
+  unfold eqVar. 
   unfold VarEq.
   destruct (Var_eq_dec x x); auto. 
 Qed.

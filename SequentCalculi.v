@@ -6,13 +6,12 @@ Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
 Require Import Coq.Program.Equality.
+Require Export List.
 Export ListNotations.
 Set Implicit Arguments.
 
 Hint Resolve Max.le_max_r.
 Hint Resolve Max.le_max_l.
-
-Import Q.
 
 (** Sistema Diádico para a Lógica Linear Clássica (one-sided) *)
 Reserved Notation " '|--' B ';' L" (at level 80).

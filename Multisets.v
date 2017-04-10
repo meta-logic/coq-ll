@@ -152,17 +152,6 @@ Lemma empty_empty : forall M, (forall x, x # M = 0) -> M = [].
     rewrite <- H in e. contradiction.
   Qed.  
 
-(*  Lemma mult_comp : forall l a,
-    a # l = multiplicity (list_contents eqLExp eq_dec l) a.
-
-  Proof.
-    induction l.
-    auto.
-    intro a0; simpl.
-    destruct (eq_dec a0 a); destruct (eq_dec a a0); simpl;
-    rewrite <- (IHl a0); (reflexivity || absurd (eqLExp a0 a); auto with sets).
-  Qed. *)
-  
   Lemma meq_multeq: forall M N, M =mul= N -> (forall x, x # M = x # N).
   Proof. auto. Qed.  
    
@@ -639,7 +628,7 @@ Lemma union_nil M : M ++ [] =mul= M.
     Proof. change (a :: M) with ([a] ++ M). apply member_union_l. apply singleton_member. Qed. 
  Lemma member_diff_member a M N : a € (M / N) -> a € M.
  Proof. unfold member. rewrite (diff_mult M N). omega. Qed.
-
+ Hint Resolve singleton_member  member_insert_app member_insert_cons.
  Lemma diff_member_ly_rn a M N : a € M -> ~a € N -> a € (M / N).
  Proof. unfold member; intros H H0. rewrite diff_mult. omega. Qed.
 
@@ -1155,13 +1144,24 @@ Ltac perm_simplify := app_normalize; repeat (
   | [ |- _ =mul= _ ] => fail
   end). 
 
-Ltac solve_permutation :=
+Ltac solver_permute :=
   match goal with
   | [ |- _ =mul= _ ] => perm_simplify; fail "perm failed"
   | [ |- _ ] => fail "perm can't solve this system."
   end. 
 
+Ltac solv_P :=
+  try rewrite !union_perm_left';
+  repeat
+  match goal with
+  | |- _ =mul= ?a::?M => change (a :: M) with
+             ([a] ++ M); try rewrite !union_perm_left'
+  | |- ?a::?M =mul= _ => change (a :: M) with
+             ([a] ++ M) ; try rewrite !union_perm_left'              
+ end.
  
+Ltac solve_permutation := 
+  solve [auto | solv_P; unfold meq; intro; rewrite !union_mult; omega | timeout 3 solver_permute ].
      
 Lemma In_union_or : forall x N M, (x € (N ++ M)) <->  x € M \/ x € N.
 Proof.
@@ -1768,5 +1768,13 @@ Proof.
   inversion H.
   inversion H1.
 Qed.
+
+Lemma meq_cons_append : forall l x,
+    (x :: l) =mul= (l ++ x :: nil).
+Proof.
+  intros.
+  solve_permutation.
+Qed.
+
 
 End MultisetList.

@@ -9,8 +9,7 @@ In this file we prove the cases for cut-elimination. Each lemma contains a case 
 (* Require Export Tactics.
 Set Implicit Arguments. *)
 
-Require Import Tactics.
-Import Q.
+Require Import myTactics.
 
 Lemma aux_CUT_ap n1 n2 h B L M1 M2 v:   
   (forall m : nat,
@@ -249,7 +248,7 @@ Lemma aux_CUT_tp n1 n2 w h B L F G M1 M2:
           [ | change (0%nat) with (0+0); 
               refine (sig3_cut _ _ _ Hn1 H4); 
               auto]. resolve_max.
-          solver_permut.
+          solve_permutation.
           destruct Hyp as [t Ht];
           eexists; refine (sig3_par _ Ht); auto;
           resolve_rewrite.
@@ -454,7 +453,7 @@ Lemma aux_CUT_bq n1 n2 w h B L F M1 M2:
   eexists;
   refine (sig3_with _ Ht1 Ht2);
   resolve_rewrite. 
-  rewrite <- app_comm_cons. solver_permut.   
+  rewrite <- app_comm_cons. solve_permutation.   
   * refine (tab_copy_left _ _ _ P _ _ _ Hn1 _); eauto.
   * simpl_cases2;
    refine (tab_quest_left _ _ _ P _ H3 H2 Hn1 _); eauto.

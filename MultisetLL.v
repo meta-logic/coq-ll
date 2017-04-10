@@ -1,7 +1,8 @@
-Require Import Multisets.
+Require Export Multisets.
 Require Import Eqset.
-Require Import Syntax.
+Require Export Syntax.
 Export ListNotations.
+
 Module M.
   Definition A : Set := lexp.
   Definition eqA := eqLExp.  
@@ -9,7 +10,8 @@ Module M.
   Definition eq_dec := LExp_eq_dec.
 End M.
 
-Module Q := MultisetList M.
+Module MultisetLL := MultisetList M.
+Export MultisetLL.
 
 
 

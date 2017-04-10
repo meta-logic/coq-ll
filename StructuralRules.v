@@ -8,7 +8,7 @@ We prove that, for all systems, multiset-equivalent contexts prove the same theo
 Require Export SequentCalculi.
 Require Export Coq.Arith.PeanoNat.
 Set Implicit Arguments.
-Import Q.
+
 (** *** Simple Lemmas *)
 
 Theorem sig2h_nil: forall n B L,

@@ -14,7 +14,9 @@ Require Export Omega.
 Export ListNotations.
 Set Implicit Arguments.
 
-Import Q.
+Hint Resolve Max.le_max_r.
+Hint Resolve Max.le_max_l.
+
 Ltac aux_bases :=
 match goal with
   | [ Hcut : 0%nat = ?n1 + ?n2 |- _ ] => 
@@ -114,21 +116,6 @@ match goal with
     ]
 end.
  
- Ltac solv_P :=
-  try rewrite !union_perm_left';
-  repeat
-  match goal with
-  | |- _ =mul= ?a::?M => change (a :: M) with
-             ([a] ++ M); try rewrite !union_perm_left'
-  | |- ?a::?M =mul= _ => change (a :: M) with
-             ([a] ++ M) ; try rewrite !union_perm_left'              
- end.
- 
-Ltac solver_permut := 
-match goal with
-  | |- _ =mul= _ => solv_P; unfold meq; intro;
-                    rewrite !union_mult; omega         
- end.
 
 Ltac normalizeAll :=
  match goal with
@@ -178,7 +165,7 @@ Ltac resolve_rewrite :=
 repeat
 match goal with
   | [ P : ?M =mul= _ |- _ ] => 
-       rewrite P; auto; try solver_permut; try solve_permutation    
+       rewrite P; auto; try solve_permutation    
 end.
  
 (* Lemma resolve_le_l : forall x y z a, x <= max a y -> y <= z -> x <= max a z.
@@ -646,8 +633,8 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
-     resolve_max. rewrite (union_comm_app M1 _). solve_permutation.
+     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite]. 
+     resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
   eexists;
   refine (sig3_par _ Ht); auto;
@@ -674,7 +661,7 @@ Proof.
   rewrite union_rotate_cons in H.
       refine (HI _ _ _ _ _ _); 
      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
-     resolve_max. rewrite (union_comm_app M1 _). solve_permutation.
+     resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
   eexists;
   refine (sig3_par _ Ht); auto;
@@ -701,7 +688,7 @@ Proof.
   rewrite union_rotate_cons in H.
       refine (HI _ _ _ _ _ _); 
      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
-     resolve_max. rewrite (union_comm_app M1 _). solve_permutation.
+     resolve_max.  solve_permutation.
   destruct Hyp as [t Ht];
   eexists;
   refine (sig3_par _ Ht); auto;
@@ -1979,7 +1966,7 @@ Proof.
     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
        auto; try resolve_rewrite].
       resolve_max.
-       solver_permut.
+       solve_permutation.
   destruct Hyp as [t Ht];
   eexists;
   refine (sig3_tensor _ Ht H2); auto; resolve_rewrite.
@@ -1994,7 +1981,7 @@ Proof.
    resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
   eexists.
-  refine (sig3_tensor _ H1 Ht); auto. rewrite PL, PM1, H. solver_permut.
+  refine (sig3_tensor _ H1 Ht); auto. rewrite PL, PM1, H. solve_permutation.
 Qed.
 Arguments tab_tensor_right [L B M1 M2 M N T n1 n2 n3 n4 F G I J a]. 
 

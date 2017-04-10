@@ -7,10 +7,8 @@ Proof of cut-elimination and the consistency of LL as a corollary.
 *)
 
 Require Export CutCases.
-Require Export Tactics.
+Require Export myTactics.
 Set Implicit Arguments.
-
-Import Q.    
 
 Lemma ap_cut_free B L M1 M2 v :
  0%nat = lexp_weight (v ⁺) ->
@@ -366,7 +364,6 @@ Proof.
          (* Par Commutes *)
          simpl_cases2.
          assert (exists m, m |~> 0 ; B; F0 :: G :: (x ++ M2)) as Hyp. 
-         SearchAbout (_::_::_=mul=_).
          rewrite H1 in H2; 
          rewrite union_rotate_cons in H2.
          refine (H0 _ _ _ _ _ _); 
@@ -782,4 +779,134 @@ Proof.
   rewrite Hm in H1.
   eapply strong_cons; eauto.
   eapply DestructMulFalse; eauto.
+Qed.
+
+Theorem sig2h_then_sig3 : forall n B L, n |-- B ; L -> exists m, m |~> 0 ; B ; L.
+Proof.
+  intros.
+  induction H; try destruct IHsig2h; try destruct IHsig2h1; try destruct IHsig2h2.
+  eexists.
+  eapply sig3_init; eauto.
+  eexists.
+  eapply sig3_one; eauto.
+  eexists.
+  eapply sig3_top; eauto.
+  eexists.
+  eapply sig3_bot; eauto.
+  eexists.
+  eapply sig3_par; eauto.
+  eapply cut_elimination.
+  eapply sig3_tensor; eauto.
+  eexists.
+  eapply sig3_plus1; eauto.
+  eexists.
+  eapply sig3_plus2; eauto.
+  eapply cut_elimination.
+  eapply sig3_with; eauto.    
+  eexists.
+  eapply sig3_copy; eauto.  
+  eexists.
+  eapply sig3_quest; eauto. 
+  eexists.
+  eapply sig3_bang; eauto.   
+Qed.
+
+Theorem sig3_then_sig2h : forall n B L, n |~> 0 ; B ; L -> exists m, m |-- B ; L.
+Proof.
+  intros.
+  revert dependent B.
+  revert dependent L.
+  induction n using strongind; intros.
+  inversion H; subst. 
+  eexists.
+  eapply sig2h_init; eauto.
+  eexists.
+  eapply sig2h_one; eauto.
+  eexists.
+  eapply sig2h_top; eauto.
+  inversion H0; subst.
+  assert (exists m, m |-- B; M) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];
+  eexists.
+  eapply sig2h_bot; eauto.
+  assert (exists m, m |-- B; F :: G :: M) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];  
+  eexists.
+  eapply sig2h_par; eauto.
+  cut_free.
+  assert (exists m, m |-- B; F :: M) as Hyp1 by 
+  solve [eapply H with (m0:=m); auto].
+  assert (exists m, m |-- B; G :: N) as Hyp2 by 
+  solve [eapply H with (m0:=n0); auto].
+  destruct Hyp1 as [t1 Ht1];  
+  destruct Hyp2 as [t2 Ht2]; 
+  eexists.
+  eapply sig2h_tensor; eauto.  
+  assert (exists m, m |-- B; F :: M) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];   
+  eexists.
+  eapply sig2h_plus1; eauto.
+  assert (exists m, m |-- B; G :: M) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];   
+  eexists.
+  eapply sig2h_plus2; eauto.
+  cut_free.
+  assert (exists m, m |-- B; F :: M) as Hyp1 by 
+  solve [eapply H with (m0:=m); auto].
+  assert (exists m, m |-- B; G :: M) as Hyp2 by 
+  solve [eapply H with (m0:=n0); auto].
+  destruct Hyp1 as [t1 Ht1];  
+  destruct Hyp2 as [t2 Ht2]; 
+  eexists.
+  eapply sig2h_with; eauto.  
+  assert (exists m, m |-- B; L0) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];      
+  eexists.
+  eapply sig2h_copy; eauto.  
+  assert (exists m, m |--  F :: B; M) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];  
+  eexists.
+  eapply sig2h_quest; eauto.
+  assert (exists m, m |--  B; [F]) as Hyp by solve [eapply H; eauto].
+  destruct Hyp as [t Ht];   
+  eexists.
+  eapply sig2h_bang; eauto.
+Qed.
+
+Theorem sig3_then_sig2h' : forall B L, (exists n, n |~> 0 ; B ; L) -> exists m, m |-- B ; L.
+Proof.
+  intros.
+  destruct H.
+  eapply sig3_then_sig2h.
+  eauto.
+Qed.
+  
+Lemma exists_com : forall (A:Type) (P:A -> A -> Prop), (exists a b, P a b) <-> exists b a, P a b.
+Proof.
+  split; intros;
+  do 2 destruct H;
+  do 2 eexists; eauto.
+Qed.
+
+(** LL without cut equivalence with cut *)
+Theorem sig2h_then_sig2hc : forall n B L, n |-- B ; L -> exists m, m |-c B ; L.
+Proof.
+  intros.
+  apply sig2h_then_sig3 in H.
+  apply sig2hc_iff_sig2hcc.
+  apply sig3_iff_sig2hcc.
+  apply exists_com.
+  eexists 0%nat.
+  auto.
+Qed.
+
+(** LL with cut equivalence without cut *)
+Theorem sig2hc_then_sig2h : forall n B L, n |-c B ; L -> exists m, m |-- B ; L.
+Proof.
+  intros.
+  apply sig2hc_then_sig2hcc in H.
+  apply sig2hcc_then_sig3 in H.
+  destruct H.
+  apply cut_elimination in H.
+  apply sig3_then_sig2h'. auto.
 Qed.
