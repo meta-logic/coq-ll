@@ -1,3 +1,23 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Triadic System
+This file specifies Andreoli's triadic system. Sequents are of the shape
+<<
+|-F- B ; M ; X
+>>
+
+where
+ - [B] is the classical context
+ - [M] contains only positive formulas
+ - [X] is an "arrow" that can be:
+  - [UP L], where L is a list of formulas (negative phase )
+  - [DW F], where F is a formula (positive phase)
+
+
+ *)
+
+
 Require Export StrongInduction.
 Require Export BDefinitions.
 Require Export Permutation.

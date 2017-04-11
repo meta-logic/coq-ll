@@ -1,3 +1,11 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Multisets
+
+Representation of multisets and some needed results about them.
+ *)
+
 Require Export Permutation.
 Require Export Coq.Relations.Relations.
 Require Export Coq.Classes.Morphisms.

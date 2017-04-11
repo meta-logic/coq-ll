@@ -1,4 +1,5 @@
-(*  Add LoadPath "../../".  *)
+(* Soundness of the Focusing system *)
+
 Require Export TriSystem.
 Require Export SequentCalculi.
 Require Export Permutation.

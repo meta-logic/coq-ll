@@ -1,11 +1,11 @@
-Require Export MultisetLL.
+Require Export LL.MultisetLL.
 Require Export Syntax.
-Require Export StrongInduction.
+Require Export LL.MetaTheory.StrongInduction.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
 Require Import Omega.
-Require Export myTactics.
+Require Export LL.myTactics.
 Require Export List.
 Export ListNotations.
 Require Import Coq.Program.Equality.

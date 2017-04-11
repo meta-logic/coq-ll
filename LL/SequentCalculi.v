@@ -1,3 +1,63 @@
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/brunofx86/LL *)
+
+(** ** Linear Logic Sequent Calculi
+We formalize different sequent calculi for Classical Linear Logic: two
+sided, one sided and dyadic systems. Some systems also make explicit
+the measures (e.g., height of derivation) needed for the
+cut-elimination proof.
+
+All the systems internalize the exchange rule. For instance,
+the typical rule for [⊤] 
+<< 
+--------------- ⊤ 
+|-- Gamma , ⊤ 
+>>
+
+is defined as
+
+[ forall Gamma M, Gamma =mul= {{Top}} U M -> |-- Gamma ]
+
+The considered systems are: 
+
+ - [cls] (notation [D |-- L]): two sided system without cut rule. 
+   Structural rules (weakening and contraction)
+   are explicit in the system (see e.g., [cls_questc]).
+
+ - [sig1] (notation [|-- L]): one sided system without cut
+   rule. Structural rules (weakening and contraction) are explicit in
+   the system.
+
+ - [sig2] (notation [|-- B ; L]): dyadic, one sided system without cut
+   rule. [B] is the classical context and [L] the
+   linear context. There are no structural rules. Those rules are
+   proved to be admissible in the classical context (see e.g., Theorem
+   [height_preserving_weakning_sig2h]).
+
+ - [sig2h] (notation [n |-- B ; L]): similar to [sig2] but the height
+   of the derivation [n] is explicit. This is useful in proofs that
+   require induction on the height of the derivation.
+
+ - [sig2hc] (notation [n '|-c' B ';' L]): dyadic, one sided system
+   with cut rule.
+
+ - [sig2hcc] (notation [n '|-cc' B ';' L]): adds to [sig2hc] the
+   following cut rule (for the classical context)
+
+<<
+|-- B; M, !F   |-- B, F° ; N
+----------------------------- CCUT
+|-- B ; M, N
+>>
+
+  - [sig3] (notation [n => c ; B ; L]) : where we make explicit the
+    number of times the cut rules (CUT or CCUT) were used in the
+    derivation. It makes also explicit the measures used in the proof
+    of cut-elimination: height of the cut and complexity of the cut
+    formula (see [sig3_cut_general]).
+
+ *)
+
+
 Require Export Syntax.
 Require Export MultisetLL.
 Require Export StrongInduction.

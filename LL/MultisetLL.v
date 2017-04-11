@@ -1,3 +1,4 @@
+(* Instance of Multisets for LL formulas *)
 Require Export Multisets.
 Require Import Eqset.
 Require Export Syntax.

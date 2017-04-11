@@ -11,8 +11,6 @@ We assume that equality on such atomic propositions is decidablee
 
 [Axiom Var_eq_dec : forall x y : var, {x = y} + {x <> y}.]
 
-We show that equality on theses atoms is a equivalence relation
-(reflexive, transitive and transitive relation).
 
  *)
 Require Export Coq.Relations.Relations.

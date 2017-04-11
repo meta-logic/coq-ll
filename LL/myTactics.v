@@ -5,7 +5,7 @@
 Some tactics to automatize part of the proofs. 
 *)
 
-Require Export StructuralRules.
+Require Export LL.MetaTheory.StructuralRules.
 Require Export Coq.Init.Logic.
 Require Export Coq.Arith.Wf_nat.
 Require Export Coq.Program.Equality.
