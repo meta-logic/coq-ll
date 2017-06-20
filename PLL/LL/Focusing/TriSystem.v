@@ -48,22 +48,22 @@ Inductive TriSystem: nat -> list lexp -> list lexp -> Arrow -> Prop :=
 | tri_rel : forall B F L n, ReleaseF F = true -> n |-F- B ; L ; UP [F] ->  S n |-F- B ; L ; DW F
 (*where " n '|-F-' B ';' L ';' X " := (SyncPhase n B L X)
 with AsyncPhase : nat -> Multiset -> Multiset -> Arrow -> Prop := *)
-     | tri_top : forall B L M, 0 |-F- B ; L ; UP (Top :: M)
-     | tri_bot : forall B L M n, n |-F- B ; L ; UP M -> S n |-F- B ; L ; UP (Bot :: M)
-     | tri_par : forall B L M F G n, n |-F- B ; L ; UP (F::G::M) -> S n |-F- B ; L ; UP(F $ G :: M)
-     | tri_with : forall B L M F G n m,
-         n |-F- B ; L ; UP (F :: M) -> m |-F- B ; L ; UP (G :: M) -> S (max n m) |-F- B ; L ; UP (F & G :: M)
-     | tri_quest : forall B L M F n, n |-F- B ++ [F] ; L ; UP M -> S n |-F- B ; L ; UP (? F :: M)
-     | tri_store : forall B L M F n, AsynchronousF F = false -> n |-F- B ; L ++ [F] ; UP M -> S n |-F- B ; L ; UP (F::M)
-     | tri_dec1 : forall B L L' F n,
-         IsNegativeAtomF F = false ->
-         L =mul= F :: L' -> n |-F- B ; L' ; DW F -> S n |-F- B ; L ; UP []
-     | tri_dec2 : forall B B' L  F n,
-         IsNegativeAtomF F = false ->
-         B =mul= F :: B' -> n |-F- B ; L ; DW F -> S n |-F- B ; L ; UP [] 
+| tri_top : forall B L M, 0 |-F- B ; L ; UP (Top :: M)
+| tri_bot : forall B L M n, n |-F- B ; L ; UP M -> S n |-F- B ; L ; UP (Bot :: M)
+| tri_par : forall B L M F G n, n |-F- B ; L ; UP (F::G::M) -> S n |-F- B ; L ; UP(F $ G :: M)
+| tri_with : forall B L M F G n m,
+    n |-F- B ; L ; UP (F :: M) -> m |-F- B ; L ; UP (G :: M) -> S (max n m) |-F- B ; L ; UP (F & G :: M)
+| tri_quest : forall B L M F n, n |-F- B ++ [F] ; L ; UP M -> S n |-F- B ; L ; UP (? F :: M)
+| tri_store : forall B L M F n, AsynchronousF F = false -> n |-F- B ; L ++ [F] ; UP M -> S n |-F- B ; L ; UP (F::M)
+| tri_dec1 : forall B L L' F n,
+    IsNegativeAtomF F = false ->
+    L =mul= F :: L' -> n |-F- B ; L' ; DW F -> S n |-F- B ; L ; UP []
+| tri_dec2 : forall B B' L  F n,
+    IsNegativeAtomF F = false ->
+    B =mul= F :: B' -> n |-F- B ; L ; DW F -> S n |-F- B ; L ; UP [] 
 where " n '|-F-' B ';' L ';' X " := (TriSystem n B L X).
 
- 
+
 (* The [B] and [M] contexts can be substituted by equivalent multisets *)
 Theorem TriExchange : forall B B' M M' X n, n |-F-  B ; M ; X -> B =mul= B' -> M =mul= M' -> n |-F- B' ; M' ; X.
 Proof.
@@ -101,12 +101,12 @@ Proof.
       eapply tri_plus1;auto.
     ++ (* Oplus 2*)
       eapply H  with (M':=M') (B':=B')in H4;auto.
-       eapply tri_plus2;auto.
+      eapply tri_plus2;auto.
     ++ (* Bang *)
       apply meq_sym in H1.
-       apply  multiset_meq_empty in H1;subst.
-       eapply H  with (B':=B')in H4;auto.
-       eapply tri_bang;auto.
+      apply  multiset_meq_empty in H1;subst.
+      eapply H  with (B':=B')in H4;auto.
+      eapply tri_bang;auto.
     ++ (* Release *)
       eapply H  with (M':=M') (B':=B')in H5;auto.
       eapply tri_rel;auto.
@@ -138,7 +138,7 @@ Proof.
       rewrite <- H2.
       apply H5.
 Qed.
-      
+
 
 Generalizable All Variables.
 Instance Tri_morph : Proper (meq ==> meq ==> eq ==> iff) (TriSystem n).
@@ -157,10 +157,10 @@ Proof.
 Qed.
 
 Example myExample l' L1' L2' B M :
-    (exists m : nat, m |-F- B; M; UP ((l' :: L1') ++ [⊤] ++ L2')) ->
-    exists m : nat, m |-F- B; M; UP (l' :: L1' ++ [⊤] ++ L2').
-    Proof.
-    intros.
+  (exists m : nat, m |-F- B; M; UP ((l' :: L1') ++ [⊤] ++ L2')) ->
+  exists m : nat, m |-F- B; M; UP (l' :: L1' ++ [⊤] ++ L2').
+Proof.
+  intros.
   assert (l' :: L1' ++ [⊤] ++ L2' = (l' :: L1') ++ [⊤] ++ L2') by auto. 
   rewrite H0.
-  Abort.
+Abort.

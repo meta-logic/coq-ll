@@ -140,7 +140,7 @@ Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; emp
       rewrite meq_cons_app in H2.
       rewrite H2.
       auto.
-       
+      
       apply member_then_eq in H4.
       destruct H4 as [B1  [B2 H2']]. 
       rewrite H2 in H0.
@@ -167,7 +167,7 @@ Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; emp
     ++ (* Bang *)
       apply meq_sym in H2.
       apply MulSingleton in H2;subst.
-     
+      
       apply H in H3;auto.
       destruct H3.
       eexists.
@@ -180,7 +180,7 @@ Qed.
 
 
 
-  
+
 Theorem Completeness : forall B L M n,  n |-- B ; M ++ L ->
                                                   lexpPos M ->
                                                   exists m, m |-F- B ; M ; UP L.
@@ -191,7 +191,7 @@ Theorem Completeness : forall B L M n,  n |-- B ; M ++ L ->
   apply StoreInversionL with (L:=L) in H1;auto.
 Qed.
 
-    
-  
+
+
 
 

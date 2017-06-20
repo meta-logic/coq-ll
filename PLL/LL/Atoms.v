@@ -72,9 +72,9 @@ Hint Resolve eqVar_refl eqVar_symm eqVar_trans.
 
 (** [eqVar] is an equivalence relation *)
 Add Parametric Relation : var eqVar
-  reflexivity proved by eqVar_refl
-  symmetry proved by eqVar_symm
-  transitivity proved by eqVar_trans as eq_var.
+    reflexivity proved by eqVar_refl
+    symmetry proved by eqVar_symm
+    transitivity proved by eqVar_trans as eq_var.
 
 (** Reflexivity *)
 Lemma eqVar_refl': forall x, VarEq x x = true.

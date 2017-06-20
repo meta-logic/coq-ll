@@ -55,7 +55,7 @@ Qed.
 (* Negative Atoms *)
 Inductive IsNegativeAtom : lexp -> Prop :=
   IsNA : forall v, IsNegativeAtom (Perp v).
-  
+
 Hint Constructors IsNegativeAtom.
 
 Definition IsNegativeAtomF (F:lexp) :=
@@ -166,9 +166,9 @@ Proof.
 Qed.
 
 Inductive lexpPos' : list lexp -> Prop :=
-  | l_nil : lexpPos' []
-  | l_sin : forall a, (AsynchronousF a = false) -> lexpPos' [a]
-  | l_cos : forall a l, lexpPos' [a] -> lexpPos' l -> lexpPos' (a::l).
+| l_nil : lexpPos' []
+| l_sin : forall a, (AsynchronousF a = false) -> lexpPos' [a]
+| l_cos : forall a l, lexpPos' [a] -> lexpPos' l -> lexpPos' (a::l).
 
 Hint Resolve l_nil l_sin l_cos.
 
@@ -190,7 +190,7 @@ Lemma lexpPos_lexpPos' M: lexpPos' M <-> lexpPos M.
 Proof.
   split; intros.
   * induction H;
-    try solve [simpl; auto].
+      try solve [simpl; auto].
     apply lexpPosUnion; auto.
   * induction M; intros; auto.
     apply lexpPosUnion_inv in H.
@@ -280,7 +280,7 @@ Fixpoint eqArrow (exp_1 exp_2 : Arrow) :=
   | UP A, UP B =>  A = B
   | _, _ => False
   end.
-  
+
 Lemma eqArrow_refl: forall x, eqArrow x x.
 Proof.
   induction x; simpl; auto.
@@ -288,9 +288,9 @@ Qed.
 
 Lemma eqArrow_symm: forall x y, eqArrow x y -> eqArrow y x.
 Proof. 
-   induction x ; induction y; intros; simpl; auto.
+  induction x ; induction y; intros; simpl; auto.
 Qed.
-    
+
 Lemma eqArrow_trans: forall x y z, eqArrow x y -> eqArrow y z -> eqArrow x z.
 Proof.  
   induction x ; induction y; induction z; intros; simpl in *; auto; subst; auto.
@@ -301,20 +301,20 @@ Qed.
 Hint Resolve eqArrow_refl eqArrow_symm eqArrow_trans.
 
 Add Parametric Relation : Arrow eqArrow
-  reflexivity proved by eqArrow_refl
-  symmetry proved by eqArrow_symm
-  transitivity proved by eqArrow_trans as eq_arrow.
+    reflexivity proved by eqArrow_refl
+    symmetry proved by eqArrow_symm
+    transitivity proved by eqArrow_trans as eq_arrow.
 
 Declare Instance eqArrow_Equivalence : Equivalence eqArrow. 
 
 Lemma Arrow_eq_dec : forall A B: Arrow, {A = B} + {A <> B}.
 Proof.
-	intros A B; decide equality.
-	apply list_eq_dec. 
-	apply LExp_eq_dec.
-	apply LExp_eq_dec.
+  intros A B; decide equality.
+  apply list_eq_dec. 
+  apply LExp_eq_dec.
+  apply LExp_eq_dec.
 Qed. 
- 
+
 Definition Arrow2LL (A: Arrow) : list lexp :=
   match A with
   | UP l => l
@@ -325,44 +325,44 @@ Definition Arrow2LL (A: Arrow) : list lexp :=
 (* We assume a positive bias in the encodings *)
 (* Definition of when a formula can be relased (from a positive phase to a negative phase *)
 Definition ReleaseF (F:lexp ) :=
- match F with
- | Atom _ => false (* due to the bias *)
- | Perp _ => true 
- | Top => true
- | Bot => true
- | Zero => false
- | One => false
- | Tensor _ _ => false
- | Par _ _ => true
- | Plus _ _ => false
- | With _ _ => true
- | Bang _ => false
- | Quest _ => true
- end.
+  match F with
+  | Atom _ => false (* due to the bias *)
+  | Perp _ => true 
+  | Top => true
+  | Bot => true
+  | Zero => false
+  | One => false
+  | Tensor _ _ => false
+  | Par _ _ => true
+  | Plus _ _ => false
+  | With _ _ => true
+  | Bang _ => false
+  | Quest _ => true
+  end.
 
- Inductive Release : lexp-> Prop :=
- | RelNA : forall v, Release (Perp v)
- | RelTop : Release Top
- | RelBot : Release Bot
-  | RelPar : forall F G, Release (Par F G)
+Inductive Release : lexp-> Prop :=
+| RelNA : forall v, Release (Perp v)
+| RelTop : Release Top
+| RelBot : Release Bot
+| RelPar : forall F G, Release (Par F G)
 | RelWith : forall F G, Release (With F G)
-  | RelQuest : forall F, Release (Quest F).
+| RelQuest : forall F, Release (Quest F).
 
- Hint Constructors Release.
- Theorem ReleaseR : forall F:lexp, ReleaseF F = true -> Release F.
- Proof.
-   intros.
-   destruct F;auto;try (inversion H).
- Qed.
- Theorem ReleaseL : forall F:lexp, Release F -> ReleaseF F = true.
- Proof.
-   intros.
-   destruct F;inversion H;reflexivity.
- Qed.
+Hint Constructors Release.
+Theorem ReleaseR : forall F:lexp, ReleaseF F = true -> Release F.
+Proof.
+  intros.
+  destruct F;auto;try (inversion H).
+Qed.
+Theorem ReleaseL : forall F:lexp, Release F -> ReleaseF F = true.
+Proof.
+  intros.
+  destruct F;inversion H;reflexivity.
+Qed.
 
- 
- (* Some definitions for the proof of completeness *)
- Inductive NotAsynchronous : lexp -> Prop :=
+
+(* Some definitions for the proof of completeness *)
+Inductive NotAsynchronous : lexp -> Prop :=
 | NAAtomP :  forall v,  NotAsynchronous (Atom v)
 | NAAtomN :  forall v,  NotAsynchronous (Perp v)
 | NAZero :  NotAsynchronous Zero
@@ -372,7 +372,7 @@ Definition ReleaseF (F:lexp ) :=
 | NABang : forall F,  NotAsynchronous ( ! F ).
 
 Hint Constructors NotAsynchronous.
-                                          
+
 Theorem AsynchronousEquiv : forall F, NotAsynchronous F <-> ~ Asynchronous F.
 Proof.
   intros.
@@ -383,23 +383,23 @@ Proof.
 Qed.
 
 Inductive PosOrPosAtom : lexp -> Prop :=
-  | PPAtom :  forall v,  PosOrPosAtom (Atom v)
-  | PPZero :  PosOrPosAtom Zero
-  | PPOne :  PosOrPosAtom One
-  | PPTensor : forall F G,  PosOrPosAtom ( F ** G)
-  | PPPlus : forall F G,  PosOrPosAtom ( Plus F  G)
-  | PPBang : forall F,  PosOrPosAtom ( ! F ).
-  
+| PPAtom :  forall v,  PosOrPosAtom (Atom v)
+| PPZero :  PosOrPosAtom Zero
+| PPOne :  PosOrPosAtom One
+| PPTensor : forall F G,  PosOrPosAtom ( F ** G)
+| PPPlus : forall F G,  PosOrPosAtom ( Plus F  G)
+| PPBang : forall F,  PosOrPosAtom ( ! F ).
+
 Hint Constructors PosOrPosAtom.
 
 Inductive NotPosOrPosAtom : lexp -> Prop :=
-  | NPPAtom :  forall v,  NotPosOrPosAtom (Perp v)
-  | NPPTop : NotPosOrPosAtom Top
-  | NPPBot : NotPosOrPosAtom Bot
-  | NPPPar : forall F G, NotPosOrPosAtom (Par F G)
-  | NPPWith : forall F G, NotPosOrPosAtom (With F G)
-  | NPPQuest : forall F , NotPosOrPosAtom (Quest F).
-  
+| NPPAtom :  forall v,  NotPosOrPosAtom (Perp v)
+| NPPTop : NotPosOrPosAtom Top
+| NPPBot : NotPosOrPosAtom Bot
+| NPPPar : forall F G, NotPosOrPosAtom (Par F G)
+| NPPWith : forall F G, NotPosOrPosAtom (With F G)
+| NPPQuest : forall F , NotPosOrPosAtom (Quest F).
+
 Hint Constructors NotPosOrPosAtom.
 
 Lemma DecPosOrPosAtom1 : forall F, PosOrPosAtom F -> ~ NotPosOrPosAtom F.
@@ -413,7 +413,7 @@ Proof.
   intros.
   destruct F; [right | left   | left |left|right |right| right|left| right|left|right|left];auto.
 Qed.
-  
+
 Lemma NotPosOrPosAtomRelease : forall F, NotPosOrPosAtom F -> ReleaseF F = true.
 Proof.
   intros.
@@ -438,4 +438,4 @@ Qed.
 
 
 
-                                                            
+

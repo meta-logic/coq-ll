@@ -1,5 +1,7 @@
+(* Add LoadPath "../../". *)
 Require Import Arith.
 Require Import Omega.
+(* Require Import LL.Focusing.TriSystem. *)
 Require Import TriSystem.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -15,13 +17,13 @@ Ltac EquivPosCase H IH m L Hinv :=
   match goal with
     [_ : AsynchronousF _ = false |- _] =>
     inversion H; subst;
-     apply IH  with(m:=L_weight L) in Hinv;auto  using le_plus_r;
-     destruct Hinv;
-     eexists;
-     simpl; eapply tri_store;auto;
-     eassumption
-     end.
-  
+    apply IH  with(m:=L_weight L) in Hinv;auto  using le_plus_r;
+    destruct Hinv;
+    eexists;
+    simpl; eapply tri_store;auto;
+    eassumption
+  end.
+
 Theorem EquivAuxBot : forall B  L L' M  n,  n |-F- B ; M ; UP (L ++ L') -> exists m, m |-F- B ; M ;  UP (L ++ [Bot] ++ L').
 Proof.
   intros.
@@ -87,9 +89,9 @@ Ltac EquivAuxWithPosCases IH H H' L n1 n0 H6 H13 :=
   eapply tri_store;eauto.
 
 Theorem EquivAuxWith : forall B  L L' M  n n' F G ,  n |-F- B ; M ; UP (L ++ [F] ++ L') ->
-                                                               n' |-F- B ; M ; UP (L ++ [G] ++ L') ->
+                                                                    n' |-F- B ; M ; UP (L ++ [G] ++ L') ->
 
-                                                               exists m, m |-F- B ; M ;  UP (L ++ [F & G] ++ L').
+                                                                                    exists m, m |-F- B ; M ;  UP (L ++ [F & G] ++ L').
 Proof.
   intros.
   remember (L_weight L) as w.
@@ -276,15 +278,15 @@ Qed.
 
 
 Ltac EquivAuxSyncPosCases IH F H8 :=
-     match goal with
-       [ H1 : _ |-F- _ ; ?M ++ [?F] ; UP ((?G :: ?L) ++ _) |- _ ] =>
-       inversion H1;subst;
-       assert ( (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
-       eapply TriExchange with (M':= (M ++ [G]) ++ [F]) in H8; auto using le_plus_r, le_plus_l;
-       apply IH  with  (m:=L_weight L) in H8 ;auto;
-       destruct H8;
-       eexists; simpl; eapply tri_store;auto; eassumption
-     end.
+  match goal with
+    [ H1 : _ |-F- _ ; ?M ++ [?F] ; UP ((?G :: ?L) ++ _) |- _ ] =>
+    inversion H1;subst;
+    assert ( (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
+    eapply TriExchange with (M':= (M ++ [G]) ++ [F]) in H8; auto using le_plus_r, le_plus_l;
+    apply IH  with  (m:=L_weight L) in H8 ;auto;
+    destruct H8;
+    eexists; simpl; eapply tri_store;auto; eassumption
+  end.
 
 Theorem EquivAuxSync : forall B  L L' M  n F ,  AsynchronousF F = false -> n |-F- B ; M ++ [F] ; UP (L ++ L') -> exists m, m |-F- B ; M ;  UP (L ++ [F] ++ L').
 Proof.
@@ -306,8 +308,8 @@ Proof.
     destruct l; simpl in Hw; inversion Hw.
   + simpl in Hw. inversion Hw.
   + destruct l;
-    inversion Hw as [Hw'];
-    inversion H; subst; auto; try (EquivAuxSyncPosCases IH F H8).
+      inversion Hw as [Hw'];
+      inversion H; subst; auto; try (EquivAuxSyncPosCases IH F H8).
     ++ (* TOP *)
       simpl.
       eexists.
@@ -321,12 +323,12 @@ Proof.
       inversion H7.
     ++ (* Tensor *) (* !! Tactic Should solve this one *)
       inversion H1;subst.
-       assert ( (M ++ [F]) ++ [l1 ** l2] =mul=  (M ++ [l1 ** l2]) ++ [F]) by solve_permutation.
-       eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8; auto using le_plus_r.
-       apply IH  with  (m:=L_weight L) in H8 ;auto using le_plus_r.
-       destruct H8.
-       eexists; simpl; eapply tri_store;auto; eassumption.
-       
+      assert ( (M ++ [F]) ++ [l1 ** l2] =mul=  (M ++ [l1 ** l2]) ++ [F]) by solve_permutation.
+      eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8; auto using le_plus_r.
+      apply IH  with  (m:=L_weight L) in H8 ;auto using le_plus_r.
+      destruct H8.
+      eexists; simpl; eapply tri_store;auto; eassumption.
+      
     ++ (* PAR *)
       inversion H1;subst.
       apply IH  with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L) in H6;auto.
@@ -484,10 +486,10 @@ Proof.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* tensor *)
       assert( exists m0 : nat, m0 |-F- B; M ++ [l1 ** l2] ; UP (L ++ [⊤] ++ L')).
-       apply IH with (m := L_weight L);auto.
-       omega.
-       destruct H.
-       eexists; simpl;eapply tri_store;auto;eassumption.
+      apply IH with (m := L_weight L);auto.
+      omega.
+      destruct H.
+      eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* Par *)
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: l2  :: L) ++ [⊤] ++ L')).
       apply IH with (m := exp_weight l1 + exp_weight l2 + L_weight L);subst;auto.
@@ -530,7 +532,7 @@ Ltac EquivAuxPosCases Heqw H IH H6 F L L' :=
   apply IH with (m:= L_weight L)in H6 ;auto;
   destruct H6 as [m H6];
   assert( H1:  F::L ++ L' = [F] ++ (L ++ L'));auto;
-rewrite H1 in H6;
+  rewrite H1 in H6;
   eapply EquivAuxSync in H6;auto.
 
 
@@ -573,7 +575,7 @@ Proof.
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxBot in H0;auto.
-    
+      
     ++ (* tensor *)
       inversion Heqw. subst.
       simpl in H.
@@ -691,13 +693,13 @@ Proof.
          eexists. eapply tri_top.
        +++ (* bottom *)
          eapply IH with (L' :=L') in H6;auto.
-           destruct H6.
-           eexists. eapply tri_bot;eauto.
+         destruct H6.
+         eexists. eapply tri_bot;eauto.
        +++ (* par *)
          eapply IH with (L' := F::G::L') in H6;auto.
-           destruct H6.
-           eexists. eapply tri_par;eauto.
-           simpl in Heqw. inversion Heqw. simpl. omega.
+         destruct H6.
+         eexists. eapply tri_par;eauto.
+         simpl in Heqw. inversion Heqw. simpl. omega.
        +++ (* with *)
          eapply IH with (m:= L_weight (F::L)) (L:= F ::L) (L' := F :: L') in H7;auto.
          eapply IH with (m:= L_weight (G::L)) (L := G :: L) (L' := G :: L') in H8;auto.
@@ -746,9 +748,13 @@ Proof.
         
         eapply EquivAuxPar with (L:= l' :: L1');eauto.
         simpl in Heqw. inversion Heqw. auto.  
-        simpl. omega.
+        simpl. omega.   
         assert( L1' ++ [F; G] ++ L2' =mul= [F; G] ++ L1' ++ L2') by auto.  
-        rewrite H1. rewrite <- Heq2. admit.
+        rewrite H1. rewrite <- Heq2.
+        solv_P.
+        apply union_right.
+        change ([F; G]) with ([F] ++ [G]).
+        solve_permutation.
         reflexivity.
         
       +++ (* with *)
@@ -763,10 +769,16 @@ Proof.
         eapply EquivAuxWith with (L := l' :: L1'); eauto.
         simpl in Heqw. inversion Heqw. auto.
         simpl. omega.
-        admit.
-        reflexivity.
+        assert(HC : [l'] ++ L1' ++ [G] ++ L2' =mul= [l'] ++ [G] ++ L1' ++ L2') by solve_permutation.  
+        rewrite HC. clear HC.
+        solv_P.
+        solve_permutation.
+        reflexivity. 
         simpl in Heqw. inversion Heqw. simpl. omega.
-        admit.
+        assert(HC : L1' ++ [F] ++ L2' =mul=  [F] ++ L1' ++ L2') by solve_permutation.  
+        rewrite HC. clear HC.
+        solv_P. 
+        solve_permutation.
         reflexivity.
         
       +++ (* quest *)
@@ -798,7 +810,7 @@ Proof.
         solve_permutation.
         
         reflexivity.
-Admitted.
+Qed.
 
 
 (* Weakening *)
@@ -853,7 +865,7 @@ Qed.
 
 (* Up and Down relation *)
 Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; UP L ->
-                                                                             exists m, m<= S n /\ m |-F- B; M ; UP (L ++ [F]).
+                                                                                exists m, m<= S n /\ m |-F- B; M ; UP (L ++ [F]).
   intros.
   remember (L_weight L) as w.
   generalize dependent L .
@@ -943,9 +955,9 @@ Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> lexpPos N
     rewrite app_nil_r.
     eauto.
   + inversion H;subst; try(
-                        inversion H0;
-                        simpl in H1;
-                        intuition).
+                           inversion H0;
+                           simpl in H1;
+                           intuition).
     apply H3 in H7.
     destruct H7. 
     eexists.

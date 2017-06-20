@@ -5,7 +5,7 @@ https://github.com/brunofx86/LL *)
 
 Most of the proofs in this library require the strong induction
 principle. This file defines such principle.
-*)
+ *)
 
 Section StrongIndPrinciple.
 
