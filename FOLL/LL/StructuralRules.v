@@ -5,6 +5,7 @@ https://github.com/brunofx86/LL *)
 In this file we prove several invertibility lemmas for the different sequent calculi. 
 *)
 
+(*Add LoadPath "../". *)
 Require Export SequentCalculi.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -730,7 +731,14 @@ Module SRule (DT : Eqset_dec_pol).
         generalize (H5 x);intro.
         eapply IH with (m:=Exp_weight (Subst FX x) + L_weight L);auto.
         rewrite <- subs_weight_weak with (x:=x). auto.
-        admit.
-        
-  Admitted.
+        apply ax_subs_prop in H1.
+        destruct H1 as [n H1].
+        destruct H1 as [H1 H1'].
+        exists (S n). split.
+        omega.
+        eapply trih_fx.
+        intro x.
+        generalize (H1' x); intro Hx.
+        auto.
+  Qed.
 End SRule.

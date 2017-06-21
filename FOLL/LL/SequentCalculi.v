@@ -64,7 +64,7 @@ The considered systems are:
  *)
 
 
-
+(*Add LoadPath "../". *)
 Require Export StrongInduction.
 Require Export Permutation.
 Require Export SyntaxLL.
@@ -178,16 +178,46 @@ Module SqSystems (DT : Eqset_dec_pol).
   Hint Constructors TriSystemh.
   
   Theorem AdequacyTri1 : forall n B M X, n |-F- B ; M ; X -> |-F- B ; M ; X.
-    induction n using strongind;intros.
+    induction n using strongind;intros. 
     + inversion H;subst;eauto.
-    + inversion H0;subst;eauto.
+      (* inversion H0;subst;eauto. solves everything but it takes almost 1 min *)
+    + inversion H0;subst.
+      eapply tri_tensor;eauto.
+      eapply tri_plus1;eauto.
+      eapply tri_plus2;eauto.
+      eapply tri_bang;eauto.
+      eapply tri_rel;eauto.
+      eapply tri_bot;eauto.
+      eapply tri_par;eauto.
+      eapply tri_with;eauto.
+      eapply tri_quest;eauto.
+      eapply tri_store;eauto.
+      eapply tri_dec1;eauto.
+      eapply tri_dec2;eauto.
+      eapply tri_ex;eauto.
+      eapply tri_fx;eauto.
   Qed.
 
   
-  Axiom ax_subs_prop: forall B L M FX, (forall x : Term, exists n : nat, n |-F- B; L; UP (Subst FX x :: M)) -> exists n, forall x, n |-F- B; L; UP (Subst FX x :: M) . Theorem AdequacyTri2 : forall B M X, |-F- B ; M ; X ->  exists n, n |-F- B ; M ; X.
+  Axiom ax_subs_prop: forall B L M FX (P:nat -> Prop), (forall x : Term, exists n : nat, (P n) /\ n |-F- B; L; UP (Subst FX x :: M)) -> exists n, (P n) /\ forall x, n |-F- B; L; UP (Subst FX x :: M) .
+
+  Theorem ax_subs_prop' : forall B L M FX , (forall x : Term, exists n : nat, n |-F- B; L; UP (Subst FX x :: M)) -> exists n, forall x, n |-F- B; L; UP (Subst FX x :: M) .
+    intros.
+    assert(Hs: forall x : Term, exists n : nat, ((fun _ => True) n) /\ n |-F- B; L; UP (Subst FX x :: M)).
+    intro x.
+    generalize (H x) ; intro Hx.
+    destruct Hx.
+    eexists;eauto.
+    apply ax_subs_prop in Hs.
+    destruct Hs as [n [Hs Hs']].
+    eexists. intro x.
+    apply Hs'.
+  Qed.
+
+  Theorem AdequacyTri2 : forall B M X, |-F- B ; M ; X ->  exists n, n |-F- B ; M ; X.
     intros.
     induction H;try( destruct IHTriSystem);try( destruct IHTriSystem1); try( destruct IHTriSystem2); eauto.
-    apply ax_subs_prop in H0.
+    apply ax_subs_prop' in H0.
     destruct H0.
     exists (S x).
     apply trih_fx.
