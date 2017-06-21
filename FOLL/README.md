@@ -75,5 +75,5 @@ The proof of the cut-elimination theorem.
 Proof of soundness of the focused system
 
 
-###LL/Focusing/Completeness
+### LL/Completeness
 Proof of Completeness for the focused system

@@ -100,12 +100,12 @@ Definitions for the triadic system (e.g., polarity of formulas)
 ### LL/Focusing/Soundness
 Proof of soundness of the focused system
 
-###LL/Focusing/InvCopy , InvTensor, InvPlus
+### LL/Focusing/InvCopy , InvTensor, InvPlus
 Invertibility lemmas (positive connectives)
 
-###LL/Focusing/StructuralRulesTriSystem
+### LL/Focusing/StructuralRulesTriSystem
 Invertibility lemmas (negative connectives)
 
-###LL/Focusing/Completeness
+### LL/Focusing/Completeness
 Proof of Completeness
 

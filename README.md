@@ -16,5 +16,5 @@ The project was tested in Coq 8.6. No extra library is needed for compilation.
 There are two main directories
 
  - PLL : Formalizing propositional linear logic. 
- - FOLL : Formalizing first order linear logic. In this case, some axioms needs to be added in order to define Linear Logic's quantifiers as meta-level (Coq) quantifiers
+ - FOLL : Formalizing first order linear logic. In this case, some axioms need to be added in order to define Linear Logic's quantifiers as meta-level (Coq) quantifiers
 
