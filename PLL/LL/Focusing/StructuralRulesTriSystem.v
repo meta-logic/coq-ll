@@ -1,7 +1,14 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Structural Rules (Focused System)
+This files proves some permutation lemmas for the negative connectives. 
+*)
+
+
 (* Add LoadPath "../../". *)
 Require Import Arith.
 Require Import Omega.
-(* Require Import LL.Focusing.TriSystem. *)
 Require Import TriSystem.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -321,7 +328,7 @@ Proof.
       eexists.
       simpl. eapply tri_bot ;auto;eassumption.
       inversion H7.
-    ++ (* Tensor *) (* !! Tactic Should solve this one *)
+    ++ (* Tensor *) 
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [l1 ** l2] =mul=  (M ++ [l1 ** l2]) ++ [F]) by solve_permutation.
       eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8; auto using le_plus_r.
@@ -961,7 +968,6 @@ Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> lexpPos N
     apply H3 in H7.
     destruct H7. 
     eexists.
-    (* !! before: eapply TriExchange;eauto. *)
     assert( M ++ a :: N =mul=  (M ++ [a]) ++ N) by solve_permutation.
     rewrite H5.
     eassumption.

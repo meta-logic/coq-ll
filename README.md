@@ -1,7 +1,7 @@
 
 # Propositional and First Order Linear Logic in Coq
 
-We formalize in Coq different sequent calculi for propositional and first order linear logic (LL) and we prove them to be equivalent. We also prove some meta-theorems, including cut-elimination and the completeness of the focused system. 
+We formalize in Coq different sequent calculi for propositional and first order linear logic (LL) and we prove them to be equivalent. We also prove some meta-theorems, including cut-elimination and the completeness of the focused system. The focused system can be then used for proving adequacy between LL and (logical / computational) systems encoded in LL. See for instance the example in ./FOLL/Examples/LJLL.v
 
 This package is free software; you can redistribute it and/or modify it under the terms of GNU Lesser General Public License (see the COPYING file). 
 
@@ -16,5 +16,18 @@ The project was tested in Coq 8.6. No extra library is needed for compilation.
 There are two main directories
 
  - PLL : Formalizing propositional linear logic. 
- - FOLL : Formalizing first order linear logic. In this case, some axioms need to be added in order to define Linear Logic's quantifiers as meta-level (Coq) quantifiers
+ - FOLL : Formalizing first order linear logic. 
+
+ In both directories, the source files can be compiles with
+
+```
+make
+```
+
+and HTML documentation can be generated with 
+
+```
+make html
+```
+
 

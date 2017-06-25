@@ -1,3 +1,13 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Focusing: Basic Definitions
+In this file we define the polarity of the formulas and some results
+about them. These definitions are needed for the specification of the
+focused system.
+ *)
+
+
 Require Export LL.MultisetLL.
 Require Export Syntax.
 Require Export LL.MetaTheory.StrongInduction.
@@ -13,7 +23,7 @@ Require Import Coq.Program.Equality.
 
 Set Implicit Arguments.
 
-(* Asynchronous formulas *)
+(** Asynchronous formulas *)
 
 Definition AsynchronousF (F :lexp) :=
   match F with
@@ -52,7 +62,7 @@ Proof.
   destruct F;inversion H;reflexivity.
 Qed.
 
-(* Negative Atoms *)
+(** Negative Atoms *)
 Inductive IsNegativeAtom : lexp -> Prop :=
   IsNA : forall v, IsNegativeAtom (Perp v).
 
@@ -64,7 +74,7 @@ Definition IsNegativeAtomF (F:lexp) :=
   | _ => false
   end.
 
-(* Complexity for list of formulas *)
+(** Complexity for list of formulas *)
 Fixpoint exp_weight (P:lexp) : nat :=
   match P with
   | Atom X => 1
@@ -129,7 +139,7 @@ Proof.
 Qed.
 
 
-(* Lists of positive formulas *)
+(** Lists of positive formulas *)
 Fixpoint lexpPos (l: list lexp) : Prop :=
   match l with
   | nil => True
@@ -267,7 +277,8 @@ Proof.
 Qed.
 
 
-(* Arrows *)
+(** Arrows: Arrow [UP]  is used to denote the negative
+phase. Arrow [DW]  is used to mark the positive phase *)
 
 Inductive Arrow : Set :=
 | UP : list lexp -> Arrow
@@ -323,7 +334,7 @@ Definition Arrow2LL (A: Arrow) : list lexp :=
 
 
 (* We assume a positive bias in the encodings *)
-(* Definition of when a formula can be relased (from a positive phase to a negative phase *)
+(** Definition of when a formula can be relased (from a positive phase to a negative phase *)
 Definition ReleaseF (F:lexp ) :=
   match F with
   | Atom _ => false (* due to the bias *)
@@ -361,7 +372,7 @@ Proof.
 Qed.
 
 
-(* Some definitions for the proof of completeness *)
+(** Some definitions for the proof of completeness *)
 Inductive NotAsynchronous : lexp -> Prop :=
 | NAAtomP :  forall v,  NotAsynchronous (Atom v)
 | NAAtomN :  forall v,  NotAsynchronous (Perp v)

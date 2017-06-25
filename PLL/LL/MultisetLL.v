@@ -1,4 +1,11 @@
-(* Instance of Multisets for LL formulas *)
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+
+(** Instance of Multisets for LL formulas *)
+
+
+
 Require Export Multisets.
 Require Import Eqset.
 Require Export Syntax.

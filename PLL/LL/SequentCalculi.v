@@ -73,7 +73,7 @@ Set Implicit Arguments.
 Hint Resolve Max.le_max_r.
 Hint Resolve Max.le_max_l.
 
-(** Sistema Diádico para a Lógica Linear Clássica (one-sided) *)
+(** Dyadic system  (one-sided) *)
 Reserved Notation " '|--' B ';' L" (at level 80).
 Inductive sig2: list lexp -> list lexp -> Prop :=
 
@@ -151,7 +151,7 @@ Proof.
 Qed.
 
 
-(** Sistema Diádico para a Lógica Linear Clássica (one-sided) com Altura *)
+(** Dyadic system with explicit heights of derivations *)
 Reserved Notation " n '|--' B ';' L" (at level 80).
 Inductive sig2h: nat -> list lexp -> list lexp -> Prop :=
 
@@ -242,7 +242,7 @@ Proof.
   refine (sig2h_der_compat (symmetry PB) (symmetry PL) H).
 Qed.
 
-(** Sistema Diádico para a Lógica Linear Clássica (one-sided) com Altura e Cut *)
+(** Dyadic system + Cut rule *)
 Reserved Notation "n '|-c' B ';' L" (at level 80).
 Inductive sig2hc: nat -> list lexp -> list lexp -> Prop :=
 
@@ -341,7 +341,7 @@ Proof.
   refine (sig2hc_der_compat (symmetry PB) (symmetry PL) H).
 Qed.
 
-(** Sistema Diádico para a Lógica Linear Clássica (one-sided) com Altura, Cut e CCut *)
+(** Dyadic system + Cut  + Cut! rules *)
 Reserved Notation " n '|-cc' B ';' L" (at level 80).
 Inductive sig2hcc: nat -> list lexp -> list lexp -> Prop :=
 

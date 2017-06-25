@@ -108,10 +108,7 @@ VFILES:=LL/Atoms.v\
   LL/MetaTheory/CutCases.v\
   LL/MetaTheory/CutElimination.v\
   LL/Eqset.v\
-  LL/Focusing/InvCopy.v\
-  LL/Focusing/InvPlus.v\
-  LL/Focusing/InvTensor.v\
-  LL/Focusing/MSet.v\
+  LL/Focusing/InvLemmas.v\
   LL/MultisetLL.v\
   LL/Multisets.v\
   LL/SequentCalculi.v\

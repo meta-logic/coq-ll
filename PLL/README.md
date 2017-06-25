@@ -44,7 +44,7 @@ var
 This file defines the syntax of linear logic and its notation.  
 
 ### LL/Multisets
-Representation of multisets and some needed results.
+Representation of (polymorphic) multisets and some needed results.
 
 ### LL/MultisetLL
 Instance of Multisets for LL formulas.
@@ -108,4 +108,7 @@ Invertibility lemmas (negative connectives)
 
 ### LL/Focusing/Completeness
 Proof of Completeness
+
+### example/
+A simple example using the triadic and the dyadic systems. 
 

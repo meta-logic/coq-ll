@@ -1,12 +1,19 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Completeness of the focused system
+
+The following theorems heavily rely on the invertibility lemmas proved in InvLemmas.v
+ *)
+
+
+
 (* Add LoadPath "../../".   *)
 Require Export SequentCalculi.
 Require Export TriSystem.
 Require Export StructuralRules.
 Require Import StructuralRulesTriSystem.
-Require Export MSet.
-Require Export InvTensor.
-Require Export InvCopy.
-Require Export InvPlus.
+Require Export InvLemmas.
 Require Export Permutation.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -180,7 +187,7 @@ Qed.
 
 
 
-
+(** The main result: If there is a proof in the dyadic system, then there is a focused proof.  *)
 Theorem Completeness : forall B L M n,  n |-- B ; M ++ L ->
                                                   lexpPos M ->
                                                   exists m, m |-F- B ; M ; UP L.

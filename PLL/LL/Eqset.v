@@ -1,3 +1,16 @@
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+
+(** ** Decidable Sets
+
+The type for atomic propositions must be decidable. We use in the Syntax Module, as a parameter, an Eqset_dec as defined below. 
+
+*)
+
+
+
+
 Require Export Coq.Classes.Morphisms.
 Require Export Coq.Setoids.Setoid.
 Require Export Coq.Relations.Relations.

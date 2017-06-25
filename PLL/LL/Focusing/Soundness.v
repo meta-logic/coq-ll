@@ -1,4 +1,9 @@
-(* Soundness of the Focusing system *)
+(* This file is part of the Linear Logic formalization in Coq:
+https://github.com/brunofx86/LL *)
+
+(** ** Soundness of the Focusing system
+*)
+
 
 Require Export TriSystem.
 Require Export SequentCalculi.

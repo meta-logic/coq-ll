@@ -747,6 +747,7 @@ Proof.
       eexists; eauto.  
 Qed.
 
+(** Consistency as a corollary of cut-elimination *)
 Theorem weak_consistency : forall n c, ~ sig3 n c [] [0].
 Proof.
   intros.
@@ -781,6 +782,7 @@ Proof.
   eapply DestructMulFalse; eauto.
 Qed.
 
+(** Equality of the systems with/without the cut-rule *)
 Theorem sig2h_then_sig3 : forall n B L, n |-- B ; L -> exists m, m |~> 0 ; B ; L.
 Proof.
   intros.
@@ -888,7 +890,6 @@ Proof.
     do 2 eexists; eauto.
 Qed.
 
-(** LL without cut equivalence with cut *)
 Theorem sig2h_then_sig2hc : forall n B L, n |-- B ; L -> exists m, m |-c B ; L.
 Proof.
   intros.
@@ -900,7 +901,6 @@ Proof.
   auto.
 Qed.
 
-(** LL with cut equivalence without cut *)
 Theorem sig2hc_then_sig2h : forall n B L, n |-c B ; L -> exists m, m |-- B ; L.
 Proof.
   intros.

@@ -9,7 +9,7 @@ Require Export SequentCalculi.
 Require Export Coq.Arith.PeanoNat.
 Set Implicit Arguments.
 
-(** *** Simple Lemmas *)
+(** Simplification Lemmas *)
 
 Theorem sig2h_nil: forall n B L,
     n |-- B; L ->  n |-- B; L ++ [].
@@ -59,8 +59,7 @@ Qed.
 Hint Resolve sig2h_nil sig2hc_nil sig2hcc_nil sig3_nil 
      sig2h_cnil sig2hc_cnil sig2hcc_cnil sig3_cnil.
 
-(** *** Exchange Rule
- *)
+(** Exchange Rule *)
 Theorem sig2h_exchange: forall n B1 B2 L1 L2, B1 =mul= B2 -> L1 =mul= L2 -> 
                                               n |-- B1; L1 ->  n |-- B2; L2.
 Proof.
@@ -104,8 +103,7 @@ Hint Resolve sig2h_exchange
 
 
 
-(** *** Weakening
- *)
+(** Weakening *)
 
 Theorem height_preserving_weakning_sig2h: forall n B D L, 
     n |-- B; L -> n |-- B ++ D; L.
@@ -416,9 +414,7 @@ Qed.
 
 (* End height_preserving. *)
 
-(*******************************************************************)
-(*                   IDEMPOTENCE: CLASSIC SET                      *)
-(*******************************************************************)
+(** Idempotence of the Classical Context *)
 
 Lemma ClassicalSet : forall n B L F, n |-- F :: B ; L -> n |-- F :: F :: B ; L .
 Proof.
