@@ -199,27 +199,26 @@ Module SqSystems (DT : Eqset_dec_pol).
   Qed.
 
   (**
-     Since there are no free variables in our encoding, we cannot
-     prove directly the usual substitution lemma: if there is a proof
-     with a fresh variable x, then there is a proof, of the same
-     height, for a given term t. This axiom (and the similar ones for
-     the other systems) are introduced to cope with the following
-     cases:
+Since there are no free variables in our encoding, we cannot prove
+directly the usual substitution lemma: if there is a proof with a
+fresh variable x, then there is a proof, of the same height for any
+term t. The following axiom (and the similar ones for the other
+systems) are introduced to cope with proofs of the form:
 
 <<
 H: forall x:Term, exists n:nat, |- Gamma, Subst FX x
 ----------------------------------------------------
-exists n:nat, |- Gamma, F{ FX}
+G: exists n:nat, |- Gamma, F{ FX}
 >>
 
-The hypothesis [H] is the result of our encoding of the LL universal
-quantifier as the (dependent type) constructor [forall] in Coq. In the
-usual sequent calculi presentation, that hypothesis is stronger:
-#<i>for any fresh variable x, there is a proof of height n</i>#. Then,
-it suffices to generalize H with a fresh variable, and then, from
-alpha conversion, we can use exactly the same fresh variable to
-conclude the goal.
-
+The hypothesis [H] results in inductive proofs where the principal
+formula is (the LL universal quantifier} [F{ FX}]. Note that we cannot
+conclude the goal [G] from [H] since our hypothesis is weaker than the
+similar one in pencil/paper proofs. More precisely, in a paper proof,
+we can generalize [H] with a fresh variable [x]. Then, there exists
+[n] s.t.  [n |- Gamma, Subst Fx x]. By using the substitution lemma,
+for any [y], it must be the case [n |- Gamma, Subst Fx y] and we can
+easily conclude the goal [G].
    *)
   Axiom ax_subs_prop: forall B L M FX (P:nat -> Prop), (forall x : Term, exists n : nat, (P n) /\ n |-F- B; L; UP (Subst FX x :: M)) -> exists n, (P n) /\ forall x, n |-F- B; L; UP (Subst FX x :: M) .
 
