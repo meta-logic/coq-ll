@@ -6,7 +6,7 @@ This module is an adaptation of the standard library of Multisets in Coq #<a hre
 and the implementation of multisets in  CoLoR (http://color.inria.fr/) 
 
 
-*)
+ *)
 Require Export Permutation.
 Require Export Coq.Relations.Relations.
 Require Export Coq.Classes.Morphisms.
@@ -1048,7 +1048,7 @@ Module Type MultisetList (EQ : Eqset_dec).
       transitivity proved by meq_trans as eq_ms.
 
   
-  (** Compatibilidade de Multiset com Permutation *)
+  (** Compatibility of Multiset and Permutation *)
   (* Lemma meq_nil : [] =mul= [].
 Proof. solve_meq. Qed.
    *)
@@ -1317,7 +1317,7 @@ Proof. solve_meq. Qed.
   Qed.
   
   
-  (** Propriedades sobre diff *)
+  (** Properties about diff *)
 
   Lemma nil_rem: forall M, [] / M = [].
   Proof. induction M; intros; auto. Qed.

@@ -2,7 +2,7 @@
 https://github.com/brunofx86/LL *)
 
 (** ** Structural Rules 
-In this file we prove several invertibility lemmas for the different sequent calculi. 
+In this file we prove several invertibility lemmas for the focused system. 
 *)
 
 (*Add LoadPath "../". *)

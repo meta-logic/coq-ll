@@ -3,7 +3,7 @@ https://github.com/brunofx86/LL *)
 
 (** ** LJ into LL 
 We specify the system LJ for intuitionistic propositional logic. We encode that system as a Linear Logic theory and we prove the adequacy of that encoding. For that, we use the techniques described here #<a href="http://www.sciencedirect.com/science/article/pii/S0304397512010894">[Miller and Pimentel 13]# and the formalization of the focused system for Linear Logic. 
-*)
+ *)
 
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -431,7 +431,7 @@ Section InversionTerm.
     rewrite AtomNeg in H.
     LexpSubst.
     LexpSubst.
-   
+    
     eapply InvDjTerm;eauto.
   Qed.
   
@@ -833,9 +833,9 @@ Proof with InvTac.
       apply multisetEncode in H1.
       rewrite H1. 
       eapply tri_dec2 with 
-        (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)... 
+      (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)... 
       solve_permutation. 
-     eapply tri_ex with (t:= encodeTerm G). 
+      eapply tri_ex with (t:= encodeTerm G). 
       eapply tri_ex with (t:= encodeTerm G') ...
       eapply tri_tensor with (N:= [encodeFL (PL.conj G G')])
                                (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList (L'));eauto;conv ...
@@ -1028,7 +1028,7 @@ Proof with InvTac.
   apply AtomsTheoryFalse in H3.
   contradiction.
   inversion H0;subst ...  
-   (* cannot be a release .. then H2 is inconsistent*)
+  (* cannot be a release .. then H2 is inconsistent*)
 Qed.
 
 Lemma LeftRightAtom :  forall F t, encodeFR F = (A1 rg t) ⁺ -> encodeFL F = (A1 lf t) ⁺.
@@ -1647,12 +1647,12 @@ Proof with InvTac.
   split;auto.
   split;auto.
   assert(HM:encodeFR F :: encodeFL G :: encodeList L' =mul=  
-         (encodeFR F :: encodeList L') ++ [encodeFL G] ).
+            (encodeFR F :: encodeList L') ++ [encodeFL G] ).
   solve_permutation.       
   rewrite HM; assumption.
 
   assert(HM:encodeFR F :: encodeFL G' :: encodeList L' =mul=  
-  (encodeFR F :: encodeList L') ++ [encodeFL G'] ). (* !! solve_per should work here *)
+            (encodeFR F :: encodeList L') ++ [encodeFL G'] ). (* !! solve_per should work here *)
   solve_permutation.
   rewrite HM; assumption.
   
@@ -1842,7 +1842,7 @@ Proof with InvTac.
   split;auto. 
 
   assert(HS:  encodeFR G' :: encodeFL G :: encodeList L =mul= 
-            (encodeList L ++ [encodeFL G]) ++ [encodeFR G']). 
+              (encodeList L ++ [encodeFL G]) ++ [encodeFR G']). 
   solve_permutation.          
   rewrite HS ...
 
@@ -1884,22 +1884,22 @@ Proof with InvTac.
            F0 =  CRIGHT \/ F0 =  CLEFT \/ 
            F0 =  DRIGHT1 \/ F0 =  DRIGHT2 \/ 
            F0 =  DLEFT \/ F0 =  IRIGHT \/ F0 =  ILEFT).
-           unfold Theory in H3.
-           assert (In F0 [BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]).
-           apply In_to_in.
-           rewrite H3; auto.
-           destruct H1; eauto.
-           destruct H1; eauto.
-           destruct H1; eauto.
-           destruct H1; eauto.
-           destruct H1. do 4 right. left. eauto.
-           destruct H1. do 5 right. left. eauto.
-           destruct H1. do 6 right. left. eauto.
-           destruct H1. do 7 right. left. eauto.
-           destruct H1. do 8 right. eauto.
-           inversion H1. 
-           
-  (* !! by multiset resoning and the definition of Theory*)
+       unfold Theory in H3.
+       assert (In F0 [BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]).
+       apply In_to_in.
+       rewrite H3; auto.
+       destruct H1; eauto.
+       destruct H1; eauto.
+       destruct H1; eauto.
+       destruct H1; eauto.
+       destruct H1. do 4 right. left. eauto.
+       destruct H1. do 5 right. left. eauto.
+       destruct H1. do 6 right. left. eauto.
+       destruct H1. do 7 right. left. eauto.
+       destruct H1. do 8 right. eauto.
+       inversion H1. 
+       
+       (* !! by multiset resoning and the definition of Theory*)
        destruct H1  as [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 |HF1]]]]]]]];subst.
        +++ (* case BLeft *)
          apply AdequacyTri1 in H4.
@@ -2017,14 +2017,14 @@ Proof with InvTac.
          destruct H4; subst.
          destruct H4; subst.
          apply H with (m:=n1) in H4; 
-         [|repeat apply Nat.le_le_succ_r; auto].
+           [|repeat apply Nat.le_le_succ_r; auto].
          destruct H4 as [n1' H4].
          assert(HS : encodeFR F :: encodeFL G2 :: encodeList L' =
                      encodeFR F :: encodeList (G2 :: L')) by reflexivity.
          rewrite HS  in H5;clear HS.
 
          apply H with (m:=n2) in H5; 
-         [|repeat apply Nat.le_le_succ_r; auto]. 
+           [|repeat apply Nat.le_le_succ_r; auto]. 
          
          destruct H5 as [n2' H5].
          

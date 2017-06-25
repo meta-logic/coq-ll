@@ -1,3 +1,4 @@
+Add LoadPath "../../".
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -9,10 +10,9 @@ Require Import Coq.Logic.FunctionalExtensionality.
 
 
 Require Export Permutation.
-Require Export SequentCalculi.
-Require Export StructuralRules.
-Require Export Multisets.
-Require Export StrongInduction.
+Require Export LL.SequentCalculi.
+Require Export LL.StructuralRules.
+Require Export LL.Multisets.
 
 
 

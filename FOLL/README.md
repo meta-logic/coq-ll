@@ -77,3 +77,6 @@ Proof of soundness of the focused system
 
 ### LL/Completeness
 Proof of Completeness for the focused system
+
+### LL/Examples/LJLL
+The proof of adequacy of the encoding of LJ into LL

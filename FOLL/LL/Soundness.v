@@ -38,7 +38,7 @@ Module FFSoundness (DT : Eqset_dec_pol).
       rewrite H0.
       eapply sig2_copy with (F:=  A3°);auto.
 
-    (** INDUCTIVE CASES *)
+    (* INDUCTIVE CASES *)
     + inversion H1;subst.
       ++ (* tensor *)
         apply H in H3;auto.

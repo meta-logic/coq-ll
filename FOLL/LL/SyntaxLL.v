@@ -6,7 +6,8 @@ https://github.com/brunofx86/LL *)
 Formulas in LL are build from the following syntax
 
 <<
-F:= A | A ^ | ⊤ | ⊥ | 0 | 1 | F ** F | F $ F | F ⊕ F | F & F | ! F | ? F | E{ FX} | F{ FX}
+F:= A | A ^ | ⊤ | ⊥ | 0 | 1 | F ** F | F $ F | F ⊕ F | F & F | ! F | ? F 
+    | E{ FX} | F{ FX}
 >>
 
 where 
@@ -769,7 +770,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   Qed.
 
   (**************************************)
-  (** BASIC DEFINITIONS FOR FOCUSING *)
+  (** Basic Definition for Focusing *)
   (*************************************)
   Section Polarities. 
     (* Asynchronous formulas *)

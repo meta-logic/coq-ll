@@ -73,7 +73,7 @@ OPT?=
 COQDEP?="$(COQBIN)coqdep" -c
 COQFLAGS?=-q $(OPT) $(COQLIBS) $(OTHERFLAGS) $(COQ_XML)
 COQCHKFLAGS?=-silent -o
-COQDOCFLAGS?=-interpolate -utf8
+COQDOCFLAGS?=-interpolate -utf8 -g
 COQC?=$(TIMER) "$(COQBIN)coqc"
 GALLINA?="$(COQBIN)gallina"
 COQDOC?="$(COQBIN)coqdoc"
@@ -113,7 +113,8 @@ VFILES:=LL/Eqset.v\
   LL/Cut_Elim.v\
   LL/Soundness.v\
   LL/StructuralRules.v\
-  LL/myTactics.v
+  LL/myTactics.v\
+  LL/Examples/LJLL.v
 
 ifneq ($(filter-out archclean clean cleanall printenv,$(MAKECMDGOALS)),)
 -include $(addsuffix .d,$(VFILES))

@@ -180,7 +180,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   Theorem AdequacyTri1 : forall n B M X, n |-F- B ; M ; X -> |-F- B ; M ; X.
     induction n using strongind;intros. 
     + inversion H;subst;eauto.
-      (* inversion H0;subst;eauto. solves everything but it takes almost 1 min *)
+    (* inversion H0;subst;eauto. solves everything but it takes almost 1 min *)
     + inversion H0;subst.
       eapply tri_tensor;eauto.
       eapply tri_plus1;eauto.
@@ -198,7 +198,29 @@ Module SqSystems (DT : Eqset_dec_pol).
       eapply tri_fx;eauto.
   Qed.
 
-  
+  (**
+     Since there are no free variables in our encoding, we cannot
+     prove directly the usual substitution lemma: if there is a proof
+     with a fresh variable x, then there is a proof, of the same
+     height, for a given term t. This axiom (and the similar ones for
+     the other systems) are introduced to cope with the following
+     cases:
+
+<<
+H: forall x:Term, exists n:nat, |- Gamma, Subst FX x
+----------------------------------------------------
+exists n:nat, |- Gamma, F{ FX}
+>>
+
+The hypothesis [H] is the result of our encoding of the LL universal
+quantifier as the (dependent type) constructor [forall] in Coq. In the
+usual sequent calculi presentation, that hypothesis is stronger:
+#<i>for any fresh variable x, there is a proof of height n</i>#. Then,
+it suffices to generalize H with a fresh variable, and then, from
+alpha conversion, we can use exactly the same fresh variable to
+conclude the goal.
+
+   *)
   Axiom ax_subs_prop: forall B L M FX (P:nat -> Prop), (forall x : Term, exists n : nat, (P n) /\ n |-F- B; L; UP (Subst FX x :: M)) -> exists n, (P n) /\ forall x, n |-F- B; L; UP (Subst FX x :: M) .
 
   Theorem ax_subs_prop' : forall B L M FX , (forall x : Term, exists n : nat, n |-F- B; L; UP (Subst FX x :: M)) -> exists n, forall x, n |-F- B; L; UP (Subst FX x :: M) .
@@ -690,7 +712,7 @@ Module SqSystems (DT : Eqset_dec_pol).
                         try apply NotPAForall;
                         try(assert(HPosNeg: IsNegativeAtom F) by  (constructor;auto);
                             intro HisPos; apply PositiveNegative in HPosNeg;auto)
-                            
+                           
         end);
     try(match goal with [H : ~ Asynchronous ?F |- _] => assert(Asynchronous F) by auto;contradiction
         end);
@@ -710,7 +732,7 @@ Module SqSystems (DT : Eqset_dec_pol).
     contradiction_multiset.
   Qed.
 
-  (** Automatization of focused proofs. This tactic solves most of the cases for checking polarities of atoms and also determining when a formula is positive or negativa *)
+  (** Automatization of focused proofs. This tactic solves most of the cases for checking polarities of atoms and also determining when a formula is positive or negative *)
   Ltac InvTac :=
     try(LexpSubst);
     try(LexpSubst);
@@ -760,8 +782,8 @@ Module SqSystems (DT : Eqset_dec_pol).
         end).
   
   (* Dyadic system with inductive measures *)
-Reserved Notation "n '|-c' B ';' L" (at level 80).
-Inductive sig2hc: nat -> list Lexp -> list Lexp -> Prop :=
+  Reserved Notation "n '|-c' B ';' L" (at level 80).
+  Inductive sig2hc: nat -> list Lexp -> list Lexp -> Prop :=
 
   | sig2hc_init : forall B L A, L =mul= (A ⁺) :: [A ⁻] -> 0 |-c B ; L
   | sig2hc_one : forall B L, L =mul= [1] -> 0 |-c B ; L 
@@ -769,106 +791,106 @@ Inductive sig2hc: nat -> list Lexp -> list Lexp -> Prop :=
   | sig2hc_bot : forall B L M n, L =mul= Bot :: M -> n |-c B ; M -> S n |-c B ; L
   | sig2hc_par : forall B L M F G n, L =mul= (F $ G) :: M -> n |-c B ; F :: G :: M -> S n |-c B ; L 
   | sig2hc_cut : forall B L M N F m n, 
-                                L =mul= (M ++ N)  ->
-                           m|-c B ; F :: M ->
-                           n|-c B ; F° :: N -> S (max n m)|-c B ; L
+      L =mul= (M ++ N)  ->
+      m|-c B ; F :: M ->
+               n|-c B ; F° :: N -> S (max n m)|-c B ; L
   | sig2hc_tensor : forall B L M N F G n m, 
-                                L =mul= (F ** G) :: (M ++ N)  ->
-                           m |-c B ; F :: M ->
-                           n |-c B ; G :: N -> S (max n m) |-c B ; L
+      L =mul= (F ** G) :: (M ++ N)  ->
+      m |-c B ; F :: M ->
+                n |-c B ; G :: N -> S (max n m) |-c B ; L
   | sig2hc_plus1: forall B L M F G n, L =mul= (F ⊕ G) :: M -> n |-c B ; F :: M -> S n |-c B ; L 
   | sig2hc_plus2: forall B L M F G n, L =mul= (F ⊕ G) :: M -> n |-c B ; G :: M -> S n |-c B ; L 
   | sig2hc_with: forall B L M F G n m, 
-                                L =mul= (F & G) :: M ->
-                           m |-c B ; F :: M ->
-                           n |-c B ; G :: M -> S (max n m) |-c B ; L
-                           
+      L =mul= (F & G) :: M ->
+      m |-c B ; F :: M ->
+                n |-c B ; G :: M -> S (max n m) |-c B ; L
+                                                          
   | sig2hc_copy: forall B D L M F n, 
-     D =mul= F :: B -> L =mul= F :: M ->
+      D =mul= F :: B -> L =mul= F :: M ->
       n |-c D ; L -> 
-      S n|-c D ; M 
+                S n|-c D ; M 
 
   | sig2hc_quest : forall B L M F n, L =mul= (? F) :: M  ->
-      n |-c F :: B ; M -> 
-      S n |-c B ; L
-                         
+                                     n |-c F :: B ; M -> 
+                                                    S n |-c B ; L
+                                                                  
   | sig2hc_bang : forall B F L n, L =mul= [! F] ->
-      n |-c  B ; [F] ->
-      S n |-c  B ; L
-      
+                                  n |-c  B ; [F] ->
+                                             S n |-c  B ; L
+                                                            
   | sig2hc_ex  : forall B L n FX M t,
-    L =mul= E{FX} ::  M -> n |-c B ; (Subst FX t) :: M -> S n |-c  B ; L
+      L =mul= E{FX} ::  M -> n |-c B ; (Subst FX t) :: M -> S n |-c  B ; L
   | sig2hc_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-c B ; [Subst FX x] ++  M) -> S n |-c B ; L
-        
-where "n |-c B ; L" := (sig2hc n B L).
+                                                                                                                       
+  where "n |-c B ; L" := (sig2hc n B L).
 
-Lemma sig2hc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-c B1 ; L1 -> n |-c B2 ; L2.
-Proof.
-  intros n B1 B2 L1 L2 PB PL H.
-  revert L1 L2 PL B1 B2 PB H;
-  induction n using strongind; intros.
- - inversion H; subst. 
-   +
-   refine (sig2hc_init _ (transitivity (symmetry PL) H0)). 
-   +
-   refine (sig2hc_one _ (transitivity (symmetry PL) H0)).
-   +
-   refine (sig2hc_top _ (transitivity (symmetry PL) H0)).
- - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
-   try rewrite PB in H3; try rewrite PB in H2.
-   +
-   refine (sig2hc_bot H2 _); auto.
-   apply H with (L1:= M) (B1:=B1); auto.
-   +
-   refine (sig2hc_par H2 _); auto.
-   apply H with (L1:= F :: G :: M) (B1:=B1); auto.
-   +
-   refine (sig2hc_cut H2 _ _).
-   eapply H with (L1:= F :: M) (B1:=B1); auto.
-   eapply H with (L1:= F° :: N) (B1:=B1); auto.
-   +
-   refine (sig2hc_tensor H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: N) (B1:=B1); auto.
-   +
-   refine (sig2hc_plus1 H2 _).
-   apply H with (L1:= F :: M) (B1:=B1); auto. 
-   +
-   refine (sig2hc_plus2 H2 _).
-   apply H with (L1:= G :: M) (B1:=B1); auto. 
-   +
-   refine (sig2hc_with H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: M) (B1:=B1); auto.
-   + 
-   refine (sig2hc_copy H2 H3 _).   
-   apply H with (L1:= L) (B1:=B1); auto. 
-   +
-   refine (sig2hc_quest H2 _).
-   apply H with (L1:= M) (B1:= F :: B1); auto. 
-   +
-   refine (sig2hc_bang H2 _).
-   apply H with (L1:= [F]) (B1:=B1); auto. 
-   + (* exists *)
-     eapply sig2hc_ex;eauto.
-   + (* forall *)
-     eapply sig2hc_fx;eauto.   
-Qed.
+  Lemma sig2hc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-c B1 ; L1 -> n |-c B2 ; L2.
+  Proof.
+    intros n B1 B2 L1 L2 PB PL H.
+    revert L1 L2 PL B1 B2 PB H;
+      induction n using strongind; intros.
+    - inversion H; subst. 
+      +
+        refine (sig2hc_init _ (transitivity (symmetry PL) H0)). 
+      +
+        refine (sig2hc_one _ (transitivity (symmetry PL) H0)).
+      +
+        refine (sig2hc_top _ (transitivity (symmetry PL) H0)).
+    - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
+        try rewrite PB in H3; try rewrite PB in H2.
+      +
+        refine (sig2hc_bot H2 _); auto.
+        apply H with (L1:= M) (B1:=B1); auto.
+      +
+        refine (sig2hc_par H2 _); auto.
+        apply H with (L1:= F :: G :: M) (B1:=B1); auto.
+      +
+        refine (sig2hc_cut H2 _ _).
+        eapply H with (L1:= F :: M) (B1:=B1); auto.
+        eapply H with (L1:= F° :: N) (B1:=B1); auto.
+      +
+        refine (sig2hc_tensor H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: N) (B1:=B1); auto.
+      +
+        refine (sig2hc_plus1 H2 _).
+        apply H with (L1:= F :: M) (B1:=B1); auto. 
+      +
+        refine (sig2hc_plus2 H2 _).
+        apply H with (L1:= G :: M) (B1:=B1); auto. 
+      +
+        refine (sig2hc_with H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: M) (B1:=B1); auto.
+      + 
+        refine (sig2hc_copy H2 H3 _).   
+        apply H with (L1:= L) (B1:=B1); auto. 
+      +
+        refine (sig2hc_quest H2 _).
+        apply H with (L1:= M) (B1:= F :: B1); auto. 
+      +
+        refine (sig2hc_bang H2 _).
+        apply H with (L1:= [F]) (B1:=B1); auto. 
+      + (* exists *)
+        eapply sig2hc_ex;eauto.
+      + (* forall *)
+        eapply sig2hc_fx;eauto.   
+  Qed.
 
-Generalizable All Variables.
-Instance sig2hc_der_morphism :
- Proper (meq ==> meq ==> iff) (sig2hc n).
-Proof.
- unfold Proper; unfold respectful. 
- intros n B1 B2 PB L1 L2 PL.
- split; intro H.
- refine (sig2hc_der_compat PB PL H).
- refine (sig2hc_der_compat (symmetry PB) (symmetry PL) H).
-Qed.
+  Generalizable All Variables.
+  Instance sig2hc_der_morphism :
+    Proper (meq ==> meq ==> iff) (sig2hc n).
+  Proof.
+    unfold Proper; unfold respectful. 
+    intros n B1 B2 PB L1 L2 PL.
+    split; intro H.
+    refine (sig2hc_der_compat PB PL H).
+    refine (sig2hc_der_compat (symmetry PB) (symmetry PL) H).
+  Qed.
   
-(** System with rules Cut and Cut! *)
-Reserved Notation " n '|-cc' B ';' L" (at level 80).
-Inductive sig2hcc: nat -> list Lexp -> list Lexp -> Prop :=
+  (** System with rules Cut and Cut! *)
+  Reserved Notation " n '|-cc' B ';' L" (at level 80).
+  Inductive sig2hcc: nat -> list Lexp -> list Lexp -> Prop :=
 
   | sig2hcc_init : forall B L A, L =mul= (A ⁺) :: [A ⁻] -> 0 |-cc B ; L
   | sig2hcc_one : forall B L, L =mul= [1] -> 0 |-cc B ; L 
@@ -876,115 +898,115 @@ Inductive sig2hcc: nat -> list Lexp -> list Lexp -> Prop :=
   | sig2hcc_bot : forall B L M n, L =mul= Bot :: M -> n |-cc B ; M -> S n |-cc B ; L
   | sig2hcc_par : forall B L M F G n, L =mul= (F $ G) :: M -> n |-cc B ; F :: G :: M -> S n |-cc B ; L 
   | sig2hcc_cut : forall B L M N F m n, 
-                                L =mul= (M ++ N)  ->
-                           m|-cc B ; F :: M ->
-                           n|-cc B ; F° :: N -> S (max n m)|-cc B ; L
+      L =mul= (M ++ N)  ->
+      m|-cc B ; F :: M ->
+                n|-cc B ; F° :: N -> S (max n m)|-cc B ; L
   | sig2hcc_ccut : forall B L M N F m n, 
-                           L =mul= (M ++ N) ->
-                           m|-cc B ; (! F) :: M ->
-                           n|-cc F° :: B ; N -> S (max n m)|-cc B ; L 
+      L =mul= (M ++ N) ->
+      m|-cc B ; (! F) :: M ->
+                n|-cc F° :: B ; N -> S (max n m)|-cc B ; L 
   | sig2hcc_tensor : forall B L M N F G n m, 
-                                L =mul= (F ** G) :: (M ++ N)  ->
-                           m |-cc B ; F :: M ->
-                           n |-cc B ; G :: N -> S (max n m) |-cc B ; L
+      L =mul= (F ** G) :: (M ++ N)  ->
+      m |-cc B ; F :: M ->
+                 n |-cc B ; G :: N -> S (max n m) |-cc B ; L
   | sig2hcc_plus1: forall B L M F G n, L =mul= (F ⊕ G) :: M -> n |-cc B ; F :: M -> S n |-cc B ; L 
   | sig2hcc_plus2: forall B L M F G n, L =mul= (F ⊕ G) :: M -> n |-cc B ; G :: M -> S n |-cc B ; L 
   | sig2hcc_with: forall B L M F G n m, 
-                                L =mul= (F & G) :: M ->
-                           m |-cc B ; F :: M ->
-                           n |-cc B ; G :: M -> S (max n m) |-cc B ; L
-                           
+      L =mul= (F & G) :: M ->
+      m |-cc B ; F :: M ->
+                 n |-cc B ; G :: M -> S (max n m) |-cc B ; L
+                                                             
   | sig2hcc_copy: forall B D L M F n, 
-     D =mul= F :: B -> L =mul= F :: M ->
+      D =mul= F :: B -> L =mul= F :: M ->
       n |-cc D ; L -> 
-      S n|-cc D ; M 
+                 S n|-cc D ; M 
 
   | sig2hcc_quest : forall B L M F n, L =mul= (? F) :: M  ->
-      n |-cc F :: B ; M -> 
-      S n |-cc B ; L
-                         
+                                      n |-cc F :: B ; M -> 
+                                                      S n |-cc B ; L
+                                                                     
   | sig2hcc_bang : forall B F L n, L =mul= [! F] ->
-      n |-cc  B ; [F] ->
-      S n |-cc  B ; L
-      
-   | sig2hcc_ex  : forall B L n FX M t,
-    L =mul= E{FX} ::  M -> n |-cc B ; (Subst FX t) :: M -> S n |-cc  B ; L
+                                   n |-cc  B ; [F] ->
+                                               S n |-cc  B ; L
+                                                               
+  | sig2hcc_ex  : forall B L n FX M t,
+      L =mul= E{FX} ::  M -> n |-cc B ; (Subst FX t) :: M -> S n |-cc  B ; L
   | sig2hcc_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-cc B ; [Subst FX x] ++  M) -> S n |-cc B ; L
-             
-where "n |-cc B ; L" := (sig2hcc n B L).
+                                                                                                                          
+  where "n |-cc B ; L" := (sig2hcc n B L).
 
-Lemma sig2hcc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-cc B1 ; L1 -> n |-cc B2 ; L2.
-Proof.
-  intros n B1 B2 L1 L2 PB PL H.
-  revert L1 L2 PL B1 B2 PB H;
-  induction n using strongind; intros.
-  - inversion H; subst. 
-   +
-   refine (sig2hcc_init _ (transitivity (symmetry PL) H0)). 
-   +
-   refine (sig2hcc_one _ (transitivity (symmetry PL) H0)).
-   +
-   refine (sig2hcc_top _ (transitivity (symmetry PL) H0)).
- - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
-   try rewrite PB in H3; try rewrite PB in H2.
-   +
-   refine (sig2hcc_bot H2 _); auto.
-   apply H with (L1:= M) (B1:=B1); auto.
-   +
-   refine (sig2hcc_par H2 _); auto.
-   apply H with (L1:= F :: G :: M) (B1:=B1); auto.
-   +
-   refine (sig2hcc_cut H2 _ _).
-   eapply H with (L1:= F :: M) (B1:=B1); auto.
-   eapply H with (L1:= F° :: N) (B1:=B1); auto.
-   +
-   refine (sig2hcc_ccut H2 _ _).
-   eapply H with (L1:= (! F) :: M) (B1:=B1); auto.
-   eapply H with (L1:=N) (B1:= F° :: B1); auto.
-   + 
-   refine (sig2hcc_tensor H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: N) (B1:=B1); auto.
-   +
-   refine (sig2hcc_plus1 H2 _).
-   apply H with (L1:= F :: M) (B1:=B1); auto. 
-   +
-   refine (sig2hcc_plus2 H2 _).
-   apply H with (L1:= G :: M) (B1:=B1); auto. 
-   +
-   refine (sig2hcc_with H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: M) (B1:=B1); auto.
-   + 
-   refine (sig2hcc_copy H2 H3 _).   
-   apply H with (L1:= L) (B1:=B1); auto. 
-   +
-   refine (sig2hcc_quest H2 _).
-   apply H with (L1:= M) (B1:= F :: B1); auto. 
-   +
-   refine (sig2hcc_bang H2 _).
-   apply H with (L1:= [F]) (B1:=B1); auto.
-   + (* exists *)
-     eapply sig2hcc_ex;eauto.
-   + (* forall *)
-     eapply sig2hcc_fx;eauto.    
- Qed. 
- 
-Generalizable All Variables.
-Instance sig2hcc_der_morphism :
- Proper (meq ==> meq ==> iff) (sig2hcc n).
-Proof.
- unfold Proper; unfold respectful. 
- intros n B1 B2 PB L1 L2 PL.
- split; intro H.
- refine (sig2hcc_der_compat PB PL H).
- refine (sig2hcc_der_compat (symmetry PB) (symmetry PL) H).
-Qed.
+  Lemma sig2hcc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-cc B1 ; L1 -> n |-cc B2 ; L2.
+  Proof.
+    intros n B1 B2 L1 L2 PB PL H.
+    revert L1 L2 PL B1 B2 PB H;
+      induction n using strongind; intros.
+    - inversion H; subst. 
+      +
+        refine (sig2hcc_init _ (transitivity (symmetry PL) H0)). 
+      +
+        refine (sig2hcc_one _ (transitivity (symmetry PL) H0)).
+      +
+        refine (sig2hcc_top _ (transitivity (symmetry PL) H0)).
+    - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
+        try rewrite PB in H3; try rewrite PB in H2.
+      +
+        refine (sig2hcc_bot H2 _); auto.
+        apply H with (L1:= M) (B1:=B1); auto.
+      +
+        refine (sig2hcc_par H2 _); auto.
+        apply H with (L1:= F :: G :: M) (B1:=B1); auto.
+      +
+        refine (sig2hcc_cut H2 _ _).
+        eapply H with (L1:= F :: M) (B1:=B1); auto.
+        eapply H with (L1:= F° :: N) (B1:=B1); auto.
+      +
+        refine (sig2hcc_ccut H2 _ _).
+        eapply H with (L1:= (! F) :: M) (B1:=B1); auto.
+        eapply H with (L1:=N) (B1:= F° :: B1); auto.
+      + 
+        refine (sig2hcc_tensor H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: N) (B1:=B1); auto.
+      +
+        refine (sig2hcc_plus1 H2 _).
+        apply H with (L1:= F :: M) (B1:=B1); auto. 
+      +
+        refine (sig2hcc_plus2 H2 _).
+        apply H with (L1:= G :: M) (B1:=B1); auto. 
+      +
+        refine (sig2hcc_with H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: M) (B1:=B1); auto.
+      + 
+        refine (sig2hcc_copy H2 H3 _).   
+        apply H with (L1:= L) (B1:=B1); auto. 
+      +
+        refine (sig2hcc_quest H2 _).
+        apply H with (L1:= M) (B1:= F :: B1); auto. 
+      +
+        refine (sig2hcc_bang H2 _).
+        apply H with (L1:= [F]) (B1:=B1); auto.
+      + (* exists *)
+        eapply sig2hcc_ex;eauto.
+      + (* forall *)
+        eapply sig2hcc_fx;eauto.    
+  Qed. 
+  
+  Generalizable All Variables.
+  Instance sig2hcc_der_morphism :
+    Proper (meq ==> meq ==> iff) (sig2hcc n).
+  Proof.
+    unfold Proper; unfold respectful. 
+    intros n B1 B2 PB L1 L2 PL.
+    split; intro H.
+    refine (sig2hcc_der_compat PB PL H).
+    refine (sig2hcc_der_compat (symmetry PB) (symmetry PL) H).
+  Qed.
 
-(** System with all the inductive measures needed for the proof of cut-elimination *)
- Reserved Notation " n '|~>' m ';' B ';' L" (at level 80).
+  (** System with all the inductive measures needed for the proof of cut-elimination *)
+  Reserved Notation " n '|~>' m ';' B ';' L" (at level 80).
 
-Inductive sig3: nat -> nat -> list Lexp -> list Lexp -> Prop := 
+  Inductive sig3: nat -> nat -> list Lexp -> list Lexp -> Prop := 
   | sig3_init : forall (B L: list Lexp) A, L =mul= (A ⁺) :: [A ⁻] -> 0 |~> 0 ; B ; L
   | sig3_one : forall (B L: list Lexp), L =mul= [1] -> 0 |~> 0 ; B ; L
   | sig3_top : forall (B L M: list Lexp), L =mul= Top :: M -> 0 |~> 0 ; B ; L
@@ -994,214 +1016,214 @@ Inductive sig3: nat -> nat -> list Lexp -> list Lexp -> Prop :=
   | sig3_plus1: forall (B L M: list Lexp) F G n c, L =mul= (F ⊕ G) :: M -> n |~> c ; B ; F :: M -> S n |~> c ; B ; L
   | sig3_plus2: forall (B L M: list Lexp) F G n c, L =mul= (F ⊕ G) :: M -> n |~> c ; B ; G :: M -> S n |~> c ; B ; L
   | sig3_with: forall (B L M: list Lexp) F G n m c1 c2, L =mul= (F & G) :: M -> m |~> c1 ; B ; F :: M ->
-  n |~> c2 ; B ; G :: M -> S (max n m) |~> c1 + c2; B ; L
+                                                                                               n |~> c2 ; B ; G :: M -> S (max n m) |~> c1 + c2; B ; L
   | sig3_copy: forall (B L M D: list Lexp) F n c, D =mul= F :: B -> L =mul= F :: M -> n |~> c; D ; L -> S n |~> c ; D ; M
   | sig3_quest : forall (B L M: list Lexp) F n c, L =mul= (? F) :: M  -> n |~> c; F :: B ; M -> S n |~> c; B ; L
   | sig3_bang : forall (B L: list Lexp) F n c, L =mul= [! F] -> n |~>  c; B ; [F] -> S n |~> c ; B ; L 
- 
+                                                                                                       
   | sig3_ex  : forall (B L: list Lexp) n c FX M t,
-    L =mul= E{FX} ::  M -> n |~> c; B ; (Subst FX t) :: M -> S n |~> c; B ; L
+      L =mul= E{FX} ::  M -> n |~> c; B ; (Subst FX t) :: M -> S n |~> c; B ; L
   | sig3_fx  : forall (B L: list Lexp) n c FX M,  L =mul= (F{FX}) :: M -> (forall x, n |~> c; B ; (Subst FX x) ::  M) -> S n |~> c; B ; L
-      
+                                                                                                                                          
 
   | sig3_CUT : forall (B L: list Lexp) n c w h, sig3_cut_general w h n c B L -> S n |~> S c ; B ; L 
 
-    with
-    sig3_cut_general : nat -> nat -> nat -> nat -> list Lexp -> list Lexp -> Prop :=
-      | sig3_cut : forall (B L M N: list Lexp) F m n c1 c2 w h, 
-              w = Lexp_weight F ->
-              h = m + n ->
-              L =mul= (M ++ N) -> 
-              m |~> c1 ; B ; F :: M -> 
-              n |~> c2 ; B ; F° :: N -> 
-            sig3_cut_general w h (max n m) (c1 + c2) B L
-       | sig3_ccut : forall (B L M N: list Lexp) F m n c1 c2 w h, 
-              w = Lexp_weight (! F) ->
-              h = m + n ->
-              L =mul= (M ++ N) -> 
-              m |~> c1 ; B ; (! F) :: M -> 
-              n |~> c2 ; F° :: B ; N -> 
-sig3_cut_general w h (max n m) (c1 + c2) B L
-where "n |~> m ; B ; L" := (sig3 n m B L).
+  with
+  sig3_cut_general : nat -> nat -> nat -> nat -> list Lexp -> list Lexp -> Prop :=
+  | sig3_cut : forall (B L M N: list Lexp) F m n c1 c2 w h, 
+      w = Lexp_weight F ->
+      h = m + n ->
+      L =mul= (M ++ N) -> 
+      m |~> c1 ; B ; F :: M -> 
+                     n |~> c2 ; B ; F° :: N -> 
+                                    sig3_cut_general w h (max n m) (c1 + c2) B L
+  | sig3_ccut : forall (B L M N: list Lexp) F m n c1 c2 w h, 
+      w = Lexp_weight (! F) ->
+      h = m + n ->
+      L =mul= (M ++ N) -> 
+      m |~> c1 ; B ; (! F) :: M -> 
+                     n |~> c2 ; F° :: B ; N -> 
+                                          sig3_cut_general w h (max n m) (c1 + c2) B L
+  where "n |~> m ; B ; L" := (sig3 n m B L).
 
-Notation " n '~>' m ';' w ';' h ';' B ';' L"
-        := (sig3_cut_general w h n m B L) (at level 80).
+  Notation " n '~>' m ';' w ';' h ';' B ';' L"
+    := (sig3_cut_general w h n m B L) (at level 80).
 
 
-Lemma sig3_der_compat : forall n c (B1 B2 L1 L2: list Lexp), 
-  B1 =mul= B2 -> L1 =mul= L2 -> n |~> c ; B1 ; L1 -> n |~> c ; B2 ; L2.
-Proof.
-  intros n c B1 B2 L1 L2 PB PL H.
-  revert dependent L1;
- revert dependent L2;
- revert dependent B1;
- revert dependent B2;
- revert dependent c; 
- induction n using strongind; intros.
- - inversion H; subst.
- refine (sig3_init _ (transitivity (symmetry PL) H0)). 
- refine (sig3_one _ (transitivity (symmetry PL) H0)).
- refine (sig3_top _ (transitivity (symmetry PL) H0)).
+  Lemma sig3_der_compat : forall n c (B1 B2 L1 L2: list Lexp), 
+      B1 =mul= B2 -> L1 =mul= L2 -> n |~> c ; B1 ; L1 -> n |~> c ; B2 ; L2.
+  Proof.
+    intros n c B1 B2 L1 L2 PB PL H.
+    revert dependent L1;
+      revert dependent L2;
+      revert dependent B1;
+      revert dependent B2;
+      revert dependent c; 
+      induction n using strongind; intros.
+    - inversion H; subst.
+      refine (sig3_init _ (transitivity (symmetry PL) H0)). 
+      refine (sig3_one _ (transitivity (symmetry PL) H0)).
+      refine (sig3_top _ (transitivity (symmetry PL) H0)).
 
- - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
-   try rewrite PB in H3; try rewrite PB in H2.
-   +  
-   refine (sig3_bot H2 _); auto.
-   apply H with (L1:= M) (B1:=B1); auto.
-   +
-   refine (sig3_par H2 _); auto.
-   apply H with (L1:= F :: G :: M) (B1:=B1); auto.
-   +
-   refine (sig3_tensor H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: N) (B1:=B1); auto.
-   +
-   refine (sig3_plus1 H2 _). 
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   +
-   refine (sig3_plus2 H2 _).
-   apply H with (L1:= G :: M) (B1:=B1); auto.
-   +
-   refine (sig3_with H2 _ _).
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= G :: M) (B1:=B1); auto.
-   + 
-   refine (sig3_copy H2 H3 _).
-   apply H with (L1:= L) (B1:=B1); auto.    
-   +
-   refine (sig3_quest H2 _).
-   apply H with (L1:= M) (B1:= F :: B1); auto. 
-   +
-   refine (sig3_bang H2 _).
-   apply H with (L1:= [F]) (B1:=B1); auto. 
+    - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
+        try rewrite PB in H3; try rewrite PB in H2.
+      +  
+        refine (sig3_bot H2 _); auto.
+        apply H with (L1:= M) (B1:=B1); auto.
+      +
+        refine (sig3_par H2 _); auto.
+        apply H with (L1:= F :: G :: M) (B1:=B1); auto.
+      +
+        refine (sig3_tensor H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: N) (B1:=B1); auto.
+      +
+        refine (sig3_plus1 H2 _). 
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+      +
+        refine (sig3_plus2 H2 _).
+        apply H with (L1:= G :: M) (B1:=B1); auto.
+      +
+        refine (sig3_with H2 _ _).
+        apply H with (L1:= F :: M) (B1:=B1); auto.
+        apply H with (L1:= G :: M) (B1:=B1); auto.
+      + 
+        refine (sig3_copy H2 H3 _).
+        apply H with (L1:= L) (B1:=B1); auto.    
+      +
+        refine (sig3_quest H2 _).
+        apply H with (L1:= M) (B1:= F :: B1); auto. 
+      +
+        refine (sig3_bang H2 _).
+        apply H with (L1:= [F]) (B1:=B1); auto. 
       + (* exists *)
-     eapply sig3_ex;eauto.
-   + (* forall *)
-     eapply sig3_fx;eauto.
-    + 
-    inversion H2; subst.
-    ++
-   eapply sig3_CUT.
-   eapply sig3_cut with (F:=F); [ auto | auto | | |].
-   rewrite <- PL. exact H4.
-   apply H with (L1:= F :: M) (B1:=B1); auto.
-   apply H with (L1:= F° :: N) (B1:=B1); auto.
-    ++
-    eapply sig3_CUT.
-    eapply sig3_ccut with (F:=F) (M:=M) (N:=N) ; [ auto | auto | | | ].
-     rewrite <- PL. exact H4.
-    eapply H with (L1:= (! F) :: M) (B1:=B1); auto.
-   apply H with (L1:= N) (B1:= F° :: B1); auto.
-Qed.
+        eapply sig3_ex;eauto.
+      + (* forall *)
+        eapply sig3_fx;eauto.
+      + 
+        inversion H2; subst.
+        ++
+          eapply sig3_CUT.
+          eapply sig3_cut with (F:=F); [ auto | auto | | |].
+          rewrite <- PL. exact H4.
+          apply H with (L1:= F :: M) (B1:=B1); auto.
+          apply H with (L1:= F° :: N) (B1:=B1); auto.
+        ++
+          eapply sig3_CUT.
+          eapply sig3_ccut with (F:=F) (M:=M) (N:=N) ; [ auto | auto | | | ].
+          rewrite <- PL. exact H4.
+          eapply H with (L1:= (! F) :: M) (B1:=B1); auto.
+          apply H with (L1:= N) (B1:= F° :: B1); auto.
+  Qed.
 
-Generalizable All Variables.
-Instance sig3_der_morphism :
- Proper (meq ==> meq ==> iff) (sig3 n c).
-Proof.
- unfold Proper; unfold respectful. 
- intros n c B1 B2 PB L1 L2 PL.
- split; intro H.
- refine (sig3_der_compat PB PL H).
- refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
-Qed.
+  Generalizable All Variables.
+  Instance sig3_der_morphism :
+    Proper (meq ==> meq ==> iff) (sig3 n c).
+  Proof.
+    unfold Proper; unfold respectful. 
+    intros n c B1 B2 PB L1 L2 PL.
+    split; intro H.
+    refine (sig3_der_compat PB PL H).
+    refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
+  Qed.
 
-Hint Constructors sig2h.
-Hint Constructors sig2hc.
-Hint Constructors sig2hcc.
-Hint Constructors sig3.
+  Hint Constructors sig2h.
+  Hint Constructors sig2hc.
+  Hint Constructors sig2hcc.
+  Hint Constructors sig3.
 
-Theorem sig2hc_then_sig2hcc: forall n B L, sig2hc n B L -> sig2hcc n B L.
-Proof.
-  intros.
-  induction H.
-  eapply sig2hcc_init; eassumption.
-  eapply sig2hcc_one; eassumption.
-  eapply sig2hcc_top; eassumption.
-  eapply sig2hcc_bot; eassumption.
-  eapply sig2hcc_par; eassumption.
-  eapply sig2hcc_cut; eassumption.
-  eapply sig2hcc_tensor; eassumption.
-  eapply sig2hcc_plus1; eassumption.
-  eapply sig2hcc_plus2; eassumption.
-  eapply sig2hcc_with; eassumption.
-  eapply sig2hcc_copy; eassumption.
-  eapply sig2hcc_quest; eassumption.
-  eapply sig2hcc_bang; eassumption.  
-  eapply sig2hcc_ex; eassumption.  
-  eapply sig2hcc_fx; eassumption.     
-Qed. 
+  Theorem sig2hc_then_sig2hcc: forall n B L, sig2hc n B L -> sig2hcc n B L.
+  Proof.
+    intros.
+    induction H.
+    eapply sig2hcc_init; eassumption.
+    eapply sig2hcc_one; eassumption.
+    eapply sig2hcc_top; eassumption.
+    eapply sig2hcc_bot; eassumption.
+    eapply sig2hcc_par; eassumption.
+    eapply sig2hcc_cut; eassumption.
+    eapply sig2hcc_tensor; eassumption.
+    eapply sig2hcc_plus1; eassumption.
+    eapply sig2hcc_plus2; eassumption.
+    eapply sig2hcc_with; eassumption.
+    eapply sig2hcc_copy; eassumption.
+    eapply sig2hcc_quest; eassumption.
+    eapply sig2hcc_bang; eassumption.  
+    eapply sig2hcc_ex; eassumption.  
+    eapply sig2hcc_fx; eassumption.     
+  Qed. 
 
-Axiom fx_swap_sig2h : forall M B FX,
-  (forall x : Term, exists m : nat, m |-- B; [Subst FX x] ++ M) -> 
-    (exists m : nat, forall x : Term, m |-- B; [Subst FX x] ++ M).
-    
-Axiom fx_swap_sig2hc : forall M B FX,
-  (forall x : Term, exists m : nat, m |-c B; [Subst FX x] ++ M) -> 
-    (exists m : nat, forall x : Term, m |-c B; [Subst FX x] ++ M).
+  Axiom fx_swap_sig2h : forall M B FX,
+      (forall x : Term, exists m : nat, m |-- B; [Subst FX x] ++ M) -> 
+      (exists m : nat, forall x : Term, m |-- B; [Subst FX x] ++ M).
+  
+  Axiom fx_swap_sig2hc : forall M B FX,
+      (forall x : Term, exists m : nat, m |-c B; [Subst FX x] ++ M) -> 
+      (exists m : nat, forall x : Term, m |-c B; [Subst FX x] ++ M).
 
-Axiom fx_swap_sig2hcc : forall M B FX,
-  (forall x : Term, exists m : nat, m |-cc B; [Subst FX x] ++ M) -> 
-    (exists m : nat, forall x : Term, m |-cc B; [Subst FX x] ++ M).
+  Axiom fx_swap_sig2hcc : forall M B FX,
+      (forall x : Term, exists m : nat, m |-cc B; [Subst FX x] ++ M) -> 
+      (exists m : nat, forall x : Term, m |-cc B; [Subst FX x] ++ M).
 
-Axiom fx_swap_sig3h : forall c M B FX,
-  (forall x : Term, exists m : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
-    (exists m : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
+  Axiom fx_swap_sig3h : forall c M B FX,
+      (forall x : Term, exists m : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
+      (exists m : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
 
-Axiom fx_swap_sig3c : forall m M B FX,
-  (forall x : Term, exists c : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
-    (exists c : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
-                
-Theorem sig2hcc_then_sig2hc: forall n B L, sig2hcc n B L -> exists m, sig2hc m B L.
-Proof.
-  intros.
-  induction H; try destruct IHsig2hcc; try destruct IHsig2hcc1; try destruct IHsig2hcc2.
+  Axiom fx_swap_sig3c : forall m M B FX,
+      (forall x : Term, exists c : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
+      (exists c : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
+  
+  Theorem sig2hcc_then_sig2hc: forall n B L, sig2hcc n B L -> exists m, sig2hc m B L.
+  Proof.
+    intros.
+    induction H; try destruct IHsig2hcc; try destruct IHsig2hcc1; try destruct IHsig2hcc2.
 
-  eexists; eapply sig2hc_init; eassumption.
-  eexists; eapply sig2hc_one; eassumption.
-  eexists; eapply sig2hc_top; eassumption.
-  eexists; eapply sig2hc_bot; eassumption.
-  eexists; eapply sig2hc_par; eassumption.
-  eexists; eapply sig2hc_cut; eassumption.
-  eexists; eapply sig2hc_cut with (F:=!F) (M:=M) (N:=N) (m:=x); auto.
-  eapply sig2hc_quest with (F:=F°); eauto.
-  eexists; eapply sig2hc_tensor; eassumption.
-  eexists; eapply sig2hc_plus1; eassumption.
-  eexists; eapply sig2hc_plus2; eassumption.
-  eexists; eapply sig2hc_with; eassumption.
-  eexists; eapply sig2hc_copy; eassumption.
-  eexists; eapply sig2hc_quest; eassumption.
-  eexists; eapply sig2hc_bang; eassumption.  
-  eexists; eapply sig2hc_ex; eassumption.  
-  apply fx_swap_sig2hc in H1.  
-  destruct H1.
-  eexists.
-  eapply sig2hc_fx; eauto. 
-Qed. 
+    eexists; eapply sig2hc_init; eassumption.
+    eexists; eapply sig2hc_one; eassumption.
+    eexists; eapply sig2hc_top; eassumption.
+    eexists; eapply sig2hc_bot; eassumption.
+    eexists; eapply sig2hc_par; eassumption.
+    eexists; eapply sig2hc_cut; eassumption.
+    eexists; eapply sig2hc_cut with (F:=!F) (M:=M) (N:=N) (m:=x); auto.
+    eapply sig2hc_quest with (F:=F°); eauto.
+    eexists; eapply sig2hc_tensor; eassumption.
+    eexists; eapply sig2hc_plus1; eassumption.
+    eexists; eapply sig2hc_plus2; eassumption.
+    eexists; eapply sig2hc_with; eassumption.
+    eexists; eapply sig2hc_copy; eassumption.
+    eexists; eapply sig2hc_quest; eassumption.
+    eexists; eapply sig2hc_bang; eassumption.  
+    eexists; eapply sig2hc_ex; eassumption.  
+    apply fx_swap_sig2hc in H1.  
+    destruct H1.
+    eexists.
+    eapply sig2hc_fx; eauto. 
+  Qed. 
 
-Theorem sig2hc_iff_sig2hcc: forall B L, (exists n, sig2hc n B L) <-> exists m, sig2hcc m B L.
-Proof.
-  split; intros.
-  *
-  destruct H.
-  eexists.
-  apply sig2hc_then_sig2hcc; eauto.
-  *
-  destruct H.
-  eapply sig2hcc_then_sig2hc; eauto.
-Qed.
+  Theorem sig2hc_iff_sig2hcc: forall B L, (exists n, sig2hc n B L) <-> exists m, sig2hcc m B L.
+  Proof.
+    split; intros.
+    *
+      destruct H.
+      eexists.
+      apply sig2hc_then_sig2hcc; eauto.
+    *
+      destruct H.
+      eapply sig2hcc_then_sig2hc; eauto.
+  Qed.
 
-Theorem sig2hcc_then_sig3 :  forall B L n, 
-    n |-cc B ; L -> exists c, n |~> c ; B ; L.
-Proof.
-   intros.
-   revert dependent B;
-   revert dependent L.
-   induction n using strongind; intros L B Hyp.
-   **
+  Theorem sig2hcc_then_sig3 :  forall B L n, 
+      n |-cc B ; L -> exists c, n |~> c ; B ; L.
+  Proof.
+    intros.
+    revert dependent B;
+      revert dependent L.
+    induction n using strongind; intros L B Hyp.
+    **
       inversion Hyp; subst; eexists.
-        eapply sig3_init; eassumption.
-        eapply sig3_one; eassumption.
-        eapply sig3_top; eassumption.
+      eapply sig3_init; eassumption.
+      eapply sig3_one; eassumption.
+      eapply sig3_top; eassumption.
     **
       inversion Hyp; subst.
       ***
@@ -1273,105 +1295,105 @@ Proof.
         refine (sig3_ex H1 H0).
       ***
         assert (forall x, exists c : nat, n |~> c ; B; [Subst FX x] ++ M)
-        as Hn by solve [intro; eapply H; auto].
+          as Hn by solve [intro; eapply H; auto].
         apply fx_swap_sig3c in Hn.
         destruct Hn.
         eexists.
         refine (sig3_fx H1 H0).
-Qed.        
-   
+  Qed.        
+  
 
-Theorem sig3_then_sig2hcc :  forall B L n c, 
-    n |~> c ; B ; L  -> n |-cc B ; L.
-Proof.
+  Theorem sig3_then_sig2hcc :  forall B L n c, 
+      n |~> c ; B ; L  -> n |-cc B ; L.
+  Proof.
     intros.
     revert dependent B;
-    revert dependent L;
-    revert dependent c.
+      revert dependent L;
+      revert dependent c.
     induction n using strongind; intros c L B Hyp.
     **
       inversion Hyp; subst.
-        eapply sig2hcc_init; eassumption.
-        eapply sig2hcc_one; eassumption.
-        eapply sig2hcc_top; eassumption.
+      eapply sig2hcc_init; eassumption.
+      eapply sig2hcc_one; eassumption.
+      eapply sig2hcc_top; eassumption.
     **
       inversion Hyp; subst. 
       ***
         assert (n |-cc B; M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_bot H1 _); auto.
       ***
         assert (n |-cc B; F :: G :: M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_par H1 _); auto.
       ***
         assert (m |-cc B; F :: M) as Hc1 by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         assert (n0 |-cc B; G :: N) as Hc2 by
-        solve [eapply H; auto; eassumption].        
+              solve [eapply H; auto; eassumption].        
         refine (sig2hcc_tensor H1 Hc1 Hc2).
       ***                  
         assert (n |-cc B; F :: M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_plus1 H1 Hc).
       ***                  
         assert (n |-cc B; G :: M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_plus2 H1 Hc).                        
       ***
         assert (m |-cc B; F :: M) as Hc1 by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         assert (n0 |-cc B; G :: M) as Hc2 by
-        solve [eapply H; auto; eassumption].       
+              solve [eapply H; auto; eassumption].       
         refine (sig2hcc_with H1 Hc1 Hc2).
       ***
         assert (n |-cc B; L0) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_copy H1 H2 Hc).
       ***
         assert (n |-cc F :: B; M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_quest H1 Hc).               
       ***
         assert (n |-cc B; [F]) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_bang H1 Hc).
       ***
         assert (n |-cc B; Subst FX t :: M) as Hc by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_ex H1 Hc).
       ***
         assert (forall x, n |-cc B; [Subst FX x] ++ M)
-        as Hc by solve [intro; eapply H; eauto].
+          as Hc by solve [intro; eapply H; eauto].
         refine (sig2hcc_fx H1 Hc).
-       ***
+      ***
         inversion H1; subst. 
         assert (m |-cc B; F :: M) as Hc1 by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         assert (n0 |-cc B; F° :: N) as Hc2 by
-        solve [eapply H; auto; eassumption]. 
+              solve [eapply H; auto; eassumption]. 
         refine (sig2hcc_cut H3 Hc1 Hc2).
 
         assert (m |-cc B; (! F) :: M) as Hc1 by
-        solve [eapply H; auto; eassumption].
+              solve [eapply H; auto; eassumption].
         assert (n0 |-cc F° :: B; N) as Hc2 by
-        solve [eapply H; auto; eassumption].        
+              solve [eapply H; auto; eassumption].        
         refine (sig2hcc_ccut _ Hc1 Hc2); auto.
-Qed.        
+  Qed.        
 
-Theorem sig3_iff_sig2hcc :  forall B L, 
-    (exists n c, n |~> c ; B ; L) <-> exists m, m |-cc B ; L.
-Proof.
+  Theorem sig3_iff_sig2hcc :  forall B L, 
+      (exists n c, n |~> c ; B ; L) <-> exists m, m |-cc B ; L.
+  Proof.
     split; intros.
     *
-    do 2 destruct H.
-    eexists.
-    eapply sig3_then_sig2hcc; eauto.
+      do 2 destruct H.
+      eexists.
+      eapply sig3_then_sig2hcc; eauto.
     *
-    destruct H.
-    eexists.
-    eapply sig2hcc_then_sig3; eauto.
-Qed.
+      destruct H.
+      eexists.
+      eapply sig2hcc_then_sig3; eauto.
+  Qed.
 
   
   

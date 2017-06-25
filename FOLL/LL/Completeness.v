@@ -19,6 +19,9 @@ Require Import Coq.Program.Equality.
 
 Set Implicit Arguments.
 
+(* *** Invertibility lemmas
+This module proves that the application of positive rules can be exchanged
+*)
 Module InvLemmas (DT : Eqset_dec_pol).
   Module Export SR := SRule DT.
 
@@ -37,7 +40,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
 
   
   (* =============================================== *)
-  (* INVERTIBILITY OF COPY *)
+  (** Invertibility of Copy *)
   (* =============================================== *)   
   Module InvCopy.
     
@@ -269,7 +272,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
   End InvCopy.
 
   (* =============================================== *)
-  (* INVERTIBILITY OF EXISTS *)
+  (** Invertibility of Exists *)
   (* =============================================== *)   
   Module InvExists.
     Definition RUp (n:nat) := forall B L M FX t, 
@@ -581,7 +584,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
   End InvExists.
 
   (* =============================================== *)
-  (* INVERTIBILITY OF OPLUS *)
+  (** Invertibility of OPlus *)
   (* =============================================== *)   
   Module InvOPlus.
     
@@ -945,7 +948,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
   End InvOPlus.
 
   (* =============================================== *)
-  (* INVERTIBILITY OF TENSOR *)
+  (** Invertibility of Tensor *)
   (* =============================================== *)   
   Module InvTensor.
     
@@ -1473,7 +1476,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
 
 
   (* =============================================== *)
-  (* PROOF OF COMPLETENESS *)
+  (** Completeness Theorem *)
   (* =============================================== *)
   Module Completeness.
     
