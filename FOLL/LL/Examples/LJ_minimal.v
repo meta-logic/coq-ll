@@ -27,8 +27,8 @@ Module PL.
 
   (* !SD!: SYNTAX *)
   Inductive LForm :Set :=
-  | bot (* false *)
   | atom : nat -> LForm (* atomic propositions are named with a natural number *)
+  | bot : LForm (* false *)
   | conj : LForm -> LForm -> LForm (* conjunction *)
   .
 
@@ -87,7 +87,7 @@ Module PL.
 
 
   (* !SD!: Exchange *)
-  (* This Theorem is needed in one o the cases for Completeness. *)
+  (* This Theorem is needed in one of the cases for Completeness. *)
   (* This theorem also looks difficult to generalize to arbitrary systems *)
   Theorem Exch : forall L L' F n, L =mul= L' -> L ; n |-P-F -> L' ;n  |-P-F.
     intros.
@@ -115,8 +115,6 @@ Module PL.
       eapply cL;auto.
   Qed.
 
-  Definition meqPL := meq.
-
   (* !SI! *)
   (* Some Multiset stuff that we may later improve *)
   Lemma Contradiction_mset : forall a L,  meq []  (a :: L) -> False.
@@ -128,6 +126,8 @@ Module PL.
     symmetry in H.
     contradiction_multiset.
   Qed.
+  
+  Definition meqPL := meq.
   
 End PL.
 
