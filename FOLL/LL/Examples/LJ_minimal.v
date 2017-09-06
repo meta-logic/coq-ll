@@ -825,10 +825,49 @@ Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
 Qed.
 
 
+Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.meqPL L (F:: L') /\ F = PL.atom a.
+Proof with magic. 
+  intros.
+  inversion H;subst ... 
+  (* first the exists *)
+  unfold INIT in H0.
+  LexpSubst. clear H0.
+  unfold Subst in H3; simpl in H3.
+  (* now the tensor *)
+  inversion H3;subst ...
+  change (fun T : Type => tensor (tensor (perp (a1 rg (fc1 pr (t T)))) (perp (a1 lf (fc1 pr (t T))))) top)
+  with (Tensor (Tensor (Perp (A1 rg (FC1 pr t))) (Perp (A1 lf (FC1 pr t)))) Top) in H0.
+  LexpSubst.
+  (* Now the tensor in H2 *)
+  inversion H2;subst ...
+  (* H5 and H9 must finish *)
+  apply InvI1 in H5 ...
+  apply InvI1 in H9 ...
+  rewrite H4 in H1.
+  apply EncSidesCorrect' in H1.
+  destruct H1 as [HF HL].
+  rewrite AtomNeg in *.
+  generalize (LeftRightAtom F (FC1 pr t) );intro HLRA.
+  apply HLRA in HF.
+  rewrite <- HF in HL.
+  rewrite union_comm in HL.
+  apply encodeListIN in HL.
+  rewrite <- AtomNeg in HF.
+  apply InvEncTermAtAt in HF.
+  destruct HF as [a HF];subst.
+  apply PL.MSFormulas.In_to_in in HL.
+  apply PL.MSFormulas.member_then_meq in HL.
+  destruct HL.
+  eexists;eexists. split;eauto.
+Qed.
+
+
+
+
 (* !SD! *)
 (* This lemma shows what happen when we focus on the rule INIT. This looks "easy" to generate due to focusing *)
 Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.meqPL L (F:: L') /\ F = PL.atom a.
-Proof with InvTac.
+Proof with InvTac. 
   intros.
   inversion H;subst ... 
   (* first the exists *)
@@ -1021,6 +1060,20 @@ Qed.
 
 (* !SD! *)
 (* From the previous lemmas, this one should be easy to generate (some automation is needed).  *)
+
+Lemma Theory_formulas: forall F B, Theory =mul= F :: B ->
+                                   F = BLEFT \/ F = INIT \/ 
+                                   F =  CRIGHT \/ F =  CLEFT.
+  intros.
+  unfold Theory in H.
+       assert (In F [BLEFT; INIT; CRIGHT; CLEFT]).
+       apply In_to_in.
+       rewrite H; auto.
+       repeat (try ( destruct H0; eauto)).
+Qed.
+    
+       
+       
 Theorem Completeness : forall L F, ( encodeSequent L F ) -> exists n, L |-P- n ; F.
 Proof with InvTac.
   intros.
@@ -1032,7 +1085,8 @@ Proof with InvTac.
   induction n using strongind;intros.
   + (* Base: inconsistent*)
     inversion H.
-  + unfold Theory in H.
+  + (* Inductive case *)
+    unfold Theory in H.
     inversion H0;subst.
     ++ (* The formula was taken from the context M *)
       (* This is inconsistent by Lemma encodePositive *)
@@ -1040,28 +1094,18 @@ Proof with InvTac.
       inversion HPos;subst.
       assert(encodeFR F = F0 \/ In F0 (encodeList L)). 
       eapply DestructMSet'; eauto.
-      (*!! from H3 *)
       destruct H1;subst.
       contradiction.
       assert(IsPositiveAtom F0) by( eapply PositiveIn;eauto).
       contradiction.
       
-    ++ assert(
-           F0 = BLEFT \/ F0 = INIT \/ 
-           F0 =  CRIGHT \/ F0 =  CLEFT ).
-       unfold Theory in H3.
-       assert (In F0 [BLEFT; INIT; CRIGHT; CLEFT]).
-       apply In_to_in.
-       rewrite H3; auto.
-       destruct H1; eauto.
-       destruct H1; eauto.
-       destruct H1; eauto.
-       destruct H1; eauto.
-       destruct H1.
+    ++ (* the formula was taken from the Theory *)
+      generalize(Theory_formulas F0 B' H3); intro HCase .
+
 
        
-       destruct H1  as [HF1 | [HF1 |  [HF1 | HF1]]];subst.
-       +++ (* case BLeft *)
+       destruct HCase  as [HCase | [HCase |  [HCase | HCase]]];subst.
+      +++ (* case BLeft *)
          apply AdequacyTri1 in H4.
          apply InvBLEFT in H4.
          destruct H4.
