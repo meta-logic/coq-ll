@@ -426,6 +426,10 @@ Lemma EncSidesCorrect : forall F L M t ,
   apply notInMul; auto.
 Qed.
 
+
+
+                                                                                               
+
 (* !SI! *)
 Lemma EncSidesCorrect' : forall F L M t t', 
     encodeFR F :: encodeList L =mul= M ++ [((A1 lf t) ⁻)°] ++ [((A1 rg t') ⁻)°] ->
@@ -435,6 +439,20 @@ Lemma EncSidesCorrect' : forall F L M t t',
   apply EncSidesCorrect in H.
   auto.
 Qed.
+
+Lemma EncSidesCorrect'' : forall F L M t t', 
+    encodeFR F :: encodeList L =mul=  ([((A1 rg t) ⁻)°] ++ [((A1 lf t') ⁻)°]) ++ M ->
+    encodeFR F = ((A1 rg t) ⁻)° /\ encodeList L =mul= M ++ [((A1 lf t') ⁻)°].
+  intros.
+  MReplaceIn (([((A1 rg t) ⁻)°] ++ [((A1 lf t') ⁻)°]) ++ M) (M ++ [((A1 lf t') ⁻)°] ++ [((A1 rg t) ⁻)°]) H.
+  apply EncSidesCorrect';auto.
+Qed.
+
+
+
+
+
+                                                                                               
 
 
 (* !SI! *)
@@ -825,85 +843,72 @@ Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
 Qed.
 
 
+Lemma inv_ex_aux B M FX :  |-F- B; M ;  DW (E{ FX }) ->  exists t, |-F- B; M ;  DW (Subst FX t) .
+Proof with magic.
+  intros.
+  inversion H ...
+  exists t ...
+Qed.
+
+Ltac inv_ex H :=
+    apply inv_ex_aux in H;  destruct H as [t  H]; unfold Subst in H; simpl in H.
+
+Lemma inv_tensor_aux B M F G : |-F- B; M ; DW (F ** G) ->
+                                           exists M1 M2,  M =mul= M1 ++ M2 /\
+                                                          |-F- B ; M1 ; DW (F ) /\
+                                                                        |-F- B ; M2 ; DW (G ) .
+                                                                        
+Proof with magic.
+  intros.
+  inversion H ...
+  eexists;eauto.
+Qed.
+
+Ltac inv_tensor H :=
+  let M1 := fresh "M1" in
+  let M2 := fresh "M2" in
+  let HM1M2 := fresh "HM1M2" in
+  let HF := fresh "HF" in
+  let HG := fresh "HG" in
+  apply inv_tensor_aux in H;  destruct H as [M1 [M2 [HM1M2 [HF HG]]]].
+
+
 Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.meqPL L (F:: L') /\ F = PL.atom a.
 Proof with magic. 
   intros.
-  inversion H;subst ... 
+  unfold INIT in H.
   (* first the exists *)
-  unfold INIT in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H3; simpl in H3.
+  inv_ex H.
   (* now the tensor *)
-  inversion H3;subst ...
-  change (fun T : Type => tensor (tensor (perp (a1 rg (fc1 pr (t T)))) (perp (a1 lf (fc1 pr (t T))))) top)
-  with (Tensor (Tensor (Perp (A1 rg (FC1 pr t))) (Perp (A1 lf (FC1 pr t)))) Top) in H0.
-  LexpSubst.
-  (* Now the tensor in H2 *)
-  inversion H2;subst ...
-  (* H5 and H9 must finish *)
-  apply InvI1 in H5 ...
-  apply InvI1 in H9 ...
-  rewrite H4 in H1.
-  apply EncSidesCorrect' in H1.
-  destruct H1 as [HF HL].
+  inv_tensor H.
+
+  (* now the tensor in HF *)
+  inv_tensor HF.
+  (* HF0 and HG0 must finish *)
+  apply InvI1 in HF0 ...
+  apply InvI1 in HG0 ...
+
+  (* Deducing facts *)
+  rewrite HM1M0 in HM1M2;clear HM1M0.
+  apply EncSidesCorrect'' in HM1M2.
+  destruct HM1M2 as [HM1 HM2].
   rewrite AtomNeg in *.
-  generalize (LeftRightAtom F (FC1 pr t) );intro HLRA.
-  apply HLRA in HF.
-  rewrite <- HF in HL.
-  rewrite union_comm in HL.
-  apply encodeListIN in HL.
-  rewrite <- AtomNeg in HF.
-  apply InvEncTermAtAt in HF.
-  destruct HF as [a HF];subst.
-  apply PL.MSFormulas.In_to_in in HL.
-  apply PL.MSFormulas.member_then_meq in HL.
-  destruct HL.
-  eexists;eexists. split;eauto.
+  assert(Hat: exists atom, F = PL.atom atom) by 
+      (unfold encodeFR in HM1 ;LexpSubst;
+       LexpSubst;
+       apply InvEncTermAt in H0;auto).
+  destruct Hat as [a Hat];subst.
+  generalize( LeftRightAtom (PL.atom a) ( (fun T : Type => fc1 pr (t T))) HM1); intros HL.
+  rewrite <- HL in HM2.
+  rewrite union_comm in HM2.
+  apply  encodeListIN in HM2.
+  rewrite  PL.MSFormulas.In_to_in in HM2.
+  apply PL.MSFormulas.member_then_meq in HM2.
+  destruct HM2.
+  eexists;eexists;split ...
+  apply H.
 Qed.
-
-
-
-
-(* !SD! *)
-(* This lemma shows what happen when we focus on the rule INIT. This looks "easy" to generate due to focusing *)
-Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.meqPL L (F:: L') /\ F = PL.atom a.
-Proof with InvTac. 
-  intros.
-  inversion H;subst ... 
-  (* first the exists *)
-  unfold INIT in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H3; simpl in H3.
-  (* now the tensor *)
-  inversion H3;subst ...
-  change (fun T : Type => tensor (tensor (perp (a1 rg (fc1 pr (t T)))) (perp (a1 lf (fc1 pr (t T))))) top)
-  with (Tensor (Tensor (Perp (A1 rg (FC1 pr t))) (Perp (A1 lf (FC1 pr t)))) Top) in H0.
-  LexpSubst.
-  (* Now the tensor in H2 *)
-  inversion H2;subst ...
-  (* H5 and H9 must finish *)
-  apply InvI1 in H5 ...
-  apply InvI1 in H9 ...
-  subst.
-  rewrite H4 in H1.
-  apply EncSidesCorrect' in H1.
-  destruct H1 as [HF HL].
-  rewrite AtomNeg in *.
-  generalize (LeftRightAtom F (FC1 pr t) );intro HLRA.
-  apply HLRA in HF.
-  rewrite <- HF in HL.
-  rewrite union_comm in HL.
-  apply encodeListIN in HL.
-  rewrite <- AtomNeg in HF.
-  apply InvEncTermAtAt in HF.
-  destruct HF as [a HF];subst.
-  apply PL.MSFormulas.In_to_in in HL.
-  apply PL.MSFormulas.member_then_meq in HL.
-  destruct HL.
-  eexists;eexists. split;eauto.
-Qed.
-
-
+  
 (* !SD! *)
 (* Inversion of Bottom Left *)
 (* Same as the previous one *)
