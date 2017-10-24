@@ -869,7 +869,7 @@ Ltac inv_tensor H :=
   let M2 := fresh "M2" in
   let HM1M2 := fresh "HM1M2" in
   let HF := fresh "HF" in
-  let HG := fresh "HG" in
+  let HG := fresh "HG" in encodeFR F :: encodeList L =mul=
   apply inv_tensor_aux in H;  destruct H as [M1 [M2 [HM1M2 [HF HG]]]].
 
 
@@ -881,7 +881,7 @@ Proof with magic.
   inv_ex H.
   (* now the tensor *)
   inv_tensor H.
-
+ 
   (* now the tensor in HF *)
   inv_tensor HF.
   (* HF0 and HG0 must finish *)

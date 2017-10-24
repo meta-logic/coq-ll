@@ -5,7 +5,7 @@ In this file we prove several invertibility lemmas for the focused system.
  *)
 
 
-Add LoadPath "../" .
+(*Add LoadPath "../" . *)
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
@@ -13,9 +13,9 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
-Require Export LL.SequentCalculi.
-Require Import LL.Eqset.
-Require Import LL.AuxResults.
+Require Export SequentCalculi.
+Require Import Eqset.
+Require Import AuxResults.
 Set Implicit Arguments.
 
 
@@ -52,38 +52,37 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent B .
     generalize dependent M .
     generalize dependent w .
-    induction w as [| w' IH] using strongind ; intros M B L' L H Hw  ;  destruct L as [|l].
-    + simpl in *.
-      eapply tri_bot;auto.
+    induction w as [| w' IH] using strongind ; intros M B L' L H Hw  ;  destruct L as [|l] ...
+    
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
-    + simpl in Hw. inversion Hw.
-    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in * ;inversion Hw';inversion H;subst;LexpContr;auto;
+    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw'; inversion H;InvTac;subst;
         try(
-            match goal with
-            | [H7 : |-F- _ ; _ ++ [?F]  ; UP(?L ++ ?L') |- _] => (* cases store *)
-              apply IH  with(m:=L_weight L) in H7;auto  using le_plus_r;
-              simpl; apply tri_store;auto
-            | [H4 : |-F- _; _; UP (?L ++ ?L') |- |-F- _ ; _ ; UP(?l :: ?L ++ ⊥ :: ?L')] =>
-              let solve_tac1 := (apply IH  with(m:=L_weight L) in H4; [ simpl;constructor;auto | omega | auto])
-              in
-              match l with
-              | ⊥ => solve_tac1 (* bot *)
-              | ? _ => solve_tac1 (* quest *)
-              end
-            end).
+            match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
+                            let solve_tac1 := (apply tri_store;InvTac; apply IH with (m:= L_weight  L);InvTac;try omega ) in
+                            match l with
+                            | Perp _ => solve_tac1
+                            | Atom _ => solve_tac1
+                            | 1   => solve_tac1
+                            | 0   => solve_tac1
+                            | _ ** _ => solve_tac1
+                            | _ ⊕ _ => solve_tac1
+                            | ! _  => solve_tac1
+                            | E{ _ }   => solve_tac1
+                            | Bot => apply tri_bot;apply IH with (m:= L_weight  L);InvTac;try(omega)
+                            | ? _ => apply tri_quest;apply IH with (m:= L_weight  L);InvTac;try(omega)
+                            end
+            end ) .
       ++ (* par *)
-        LexpSubst.
-        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6;auto;simpl;auto. omega.
+        inversion H...
+        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6;auto;simpl ...  omega.
       ++(* with *)
-        LexpSubst.
-        apply IH with (L:= F :: L) (m:= (Exp_weight  F) + L_weight  L) in H7;autounfold;auto.
-        apply IH with (L:= G :: L) (m:= (Exp_weight  G) + L_weight  L) in H8;autounfold;auto.
-        omega. omega.
+        inversion H...
+        apply IH with (L:= F :: L) (m:= (Exp_weight  F) + L_weight  L) in H7;autounfold;try(omega) ...
+        apply IH with (L:= G :: L) (m:= (Exp_weight  G) + L_weight  L) in H8;autounfold;try(omega) ...
       ++ (* forall *)
-        LexpSubst.
-        simpl; eapply tri_fx;auto; intro x. eapply IH with (L:=Subst FX x  :: L);eauto.
-        simpl.
+        inversion H...
+        simpl; eapply tri_fx;auto; intro x. eapply IH with (L:=Subst FX x  :: L) ...
         rewrite <- subs_weight_weak with (x:=x).  omega.
   Qed.
   
@@ -99,69 +98,58 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent L' . 
     generalize dependent B .
     generalize dependent M . 
-    generalize dependent w . 
+    generalize dependent w .  
     induction w as [| w' IH] using strongind  ; intros  M B L' L H H' Hw  ;  destruct L as [|l] ... 
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.  
-    +     caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw' ;
-
-            try(
-                match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
-                                let solve_tac1 := (inversion H;InvTac;inversion H';InvTac;subst; apply tri_store;InvTac; apply IH with (m:= L_weight  L);InvTac;try omega ) in
-                                match l with
-                                | 1   => solve_tac1
-                                | 0   => solve_tac1
-                                | _ ** _ => solve_tac1
-                                | _ ⊕ _ => solve_tac1
-                                | ! _  => solve_tac1
-                                | E{ _ }   => solve_tac1
-                                end
-                end ) .
-          
-          
-          ++ (*atom1 *)
-            inversion H;InvTac;subst; apply tri_store;InvTac;  apply IH with (m:= L_weight  L) ...
-          ++ (* atom2 *)
-            inversion H;InvTac;subst; apply tri_store;InvTac; apply IH with (m:= L_weight  L) ...
-          ++ (* bot *)
-            inversion H;InvTac;inversion H';InvTac;subst; apply tri_bot ... apply IH with (m:= L_weight  L) ...
-          ++ (* par *)
-            inversion H;InvTac;inversion H';InvTac;subst; apply tri_par ...
-            eapply IH with (L:= F0 :: G0 :: L) (m:= Exp_weight(F0) + Exp_weight(G0) +  L_weight L) ...
-            omega. 
-          ++ (* with *)
-            inversion H ...
-            inversion H' ...
-            apply tri_with .
-            eapply IH with (L:= F0 :: L) (m:= Exp_weight(F0) + L_weight L) ...
-            autounfold ; omega.
-            eapply IH with (L:= G0 :: L) (m:= Exp_weight(G0) + L_weight L) ...
-            autounfold ; omega.
-          ++  (* quest *)
-            inversion H ...
-            inversion H';subst ...
-            apply tri_quest.
-            eapply IH with   (m:= L_weight L) ...
-            omega.
-          ++ (* forall  *)
-            inversion H ...
-            inversion H' ...
-            apply tri_with .
-
-            
-                          assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F & G] ++ L')) as Hp.
-                          intro.
-                          generalize(H4 x);intros;
-                            generalize(H5 x);intros.
-                          eapply IH with (m:=  Exp_weight  (Subst FX x) + L_weight  L ) ;eauto. 
-                          rewrite <- subs_weight_weak with (x:=x).  omega.
-                          apply tri_fx;auto.
+    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw' ;inversion H;InvTac;subst;
+        try(
+            match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
+                            let solve_tac1 := (inversion H';InvTac;subst; apply tri_store;InvTac; apply IH with (m:= L_weight  L);InvTac;try omega ) in
+                            match l with
+                            | 1   => solve_tac1
+                            | 0   => solve_tac1
+                            | _ ** _ => solve_tac1
+                            | _ ⊕ _ => solve_tac1
+                            | ! _  => solve_tac1
+                            | E{ _ }   => solve_tac1
+                            | Atom _ => apply tri_store;InvTac;  apply IH with (m:= L_weight  L) ; InvTac
+                            | Perp _ => apply tri_store;InvTac;  apply IH with (m:= L_weight  L) ; InvTac
+                            | Bot => inversion H';InvTac;subst; apply tri_bot; apply IH with (m:= L_weight  L);auto
+                            end end ) .
+      ++ (* par *)
+        inversion H;InvTac;inversion H';InvTac;subst; apply tri_par ...
+        eapply IH with (L:= F0 :: G0 :: L) (m:= Exp_weight(F0) + Exp_weight(G0) +  L_weight L) ...
+        omega. 
+      ++ (* with *)
+        inversion H ...
+        inversion H' ...
+        apply tri_with .
+        eapply IH with (L:= F0 :: L) (m:= Exp_weight(F0) + L_weight L) ...
+        autounfold ; omega.
+        eapply IH with (L:= G0 :: L) (m:= Exp_weight(G0) + L_weight L) ...
+        autounfold ; omega.
+      ++  (* quest *)
+        inversion H ...
+        inversion H';subst ...
+        apply tri_quest.
+        eapply IH with   (m:= L_weight L) ...
+        omega.
+      ++ (* forall  *)
+        inversion H ...
+        inversion H' ...
+        assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F & G] ++ L')) as Hp.
+        intro. 
+        generalize(H4 x);intros; generalize(H7 x);intros.
+        eapply IH with (m:=  Exp_weight  (Subst FX x) + L_weight  L ) ...
+        rewrite <- subs_weight_weak with (x:=x).  omega ...
+        apply tri_fx ...
   Qed.
 
 
 
   Theorem EquivAuxPar : forall B  L L' M F G  n,  n |-F- B ; M ; UP (L ++ [F ; G] ++ L') -> |-F- B ; M ;  UP (L ++ [F $ G] ++ L').
-  Proof.
+  Proof with InvTac .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
@@ -171,31 +159,37 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent n .
     generalize dependent w .
     
-    induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l].
+    induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l] ...
     + simpl. simpl in H.
       eapply tri_par;auto.
       eapply AdequacyTri1;eauto.
-
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
     + simpl in Hw. inversion Hw.
-    +caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';inversion H;subst;LexpContr;auto;
-       try(apply IH  with (m:=  L_weight L) in H8;try(omega);auto);
-       try(apply IH  with (m:=  L_weight L) in H7;try(omega);auto);
-       try(apply IH  with (m:=  L_weight L) in H6;try(omega);auto);
-       try(apply IH  with (m:=  L_weight L) in H5;auto);
-       try(apply IH  with (m:=  L_weight L) in H9;try(omega);auto).
-     ++ (* par *)
-       LexpSubst.
-       apply IH  with (L:= F0 ::G0 :: L) (m:=  Exp_weight F0 + Exp_weight G0 + L_weight L) in H7;auto.
-       simpl. omega.
-     ++ (* with *)
-       LexpSubst.
-       apply IH  with (L:= F0 :: L) (m:=  Exp_weight F0 + L_weight L) in H8;autounfold;try(omega);auto.
-       apply IH  with (L:= G0 :: L) (m:=  Exp_weight G0 + L_weight L) in H9;autounfold;try(omega);auto.
-       
-     ++ (* forall *)
-       LexpSubst.
+    +
+
+      caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw' ;inversion H;InvTac;subst;
+        try(
+            match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
+                            let solve_tac1 := apply tri_store;InvTac; eapply IH  with (m:=  L_weight L) ;eauto;try omega in
+                            match l with
+                            | 1   => solve_tac1
+                            | 0   => solve_tac1
+                            | _ ** _ => solve_tac1
+                            | _ ⊕ _ => solve_tac1
+                            | ! _  => solve_tac1
+                            | E{ _ }   => solve_tac1
+                            | Atom _ => solve_tac1
+                            | Perp _ => solve_tac1
+                            | Bot => apply tri_bot ; eapply IH  with (m:=  L_weight L);eauto
+                            | Par _ _ => apply tri_par ;
+                                         eapply IH  with (L:= F0 :: G0 :: L) (m:= Exp_weight F0 + Exp_weight G0 +  L_weight L);eauto;simpl;omega
+                            | ? _ => apply tri_quest; eapply IH  with (m:=  L_weight L);eauto; omega
+                            end end ) .
+      ++ (* with *)
+        apply IH  with (L:= F0 :: L) (m:=  Exp_weight F0 + L_weight L) in H8;autounfold;try(omega);auto.
+        apply IH  with (L:= G0 :: L) (m:=  Exp_weight G0 + L_weight L) in H9;autounfold;try(omega);auto.
+      ++ (* forall *)
        assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F $ G] ++ L')) as Hp.
        intro.
        generalize(H5 x);intros.
@@ -207,22 +201,20 @@ Module SRule (DT : Eqset_dec_pol).
 
   Hint Resolve AsyncEqNeg.
   Theorem EquivAuxSync : forall B  L L' M  F ,  ~ Asynchronous F ->  |-F- B ; M ++ [F] ; UP (L ++ L') -> |-F- B ; M ;  UP (L ++ [F] ++ L').
-  Proof.
+  Proof with InvTac .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
     generalize dependent L' .
     generalize dependent B .
     generalize dependent M .
-    generalize dependent w .
+    generalize dependent w .  
     
-    induction w as [| w' IH] using strongind; intros   M   B  L'  L  H1 Hw; destruct L as [|l].
-    + simpl. simpl in H1.
-      eapply tri_store;auto.
+    induction w as [| w' IH] using strongind; intros   M   B  L'  L  H1 Hw; destruct L as [|l] ...
     + simpl in Hw. (* Hw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
-    + simpl in Hw. inversion Hw.
-    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';inversion H1;subst;LexpContr;auto;
+    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';inversion H1;subst;InvTac;
+        
         try(
             match goal with
               [ H : |-F- _; (_ ++ [?F]) ++ [?G]; UP (?L ++ ?L') |- |-F- _ ; _ ; UP ( ?G :: ?L  ++ ?F :: ?L')] =>
@@ -234,17 +226,13 @@ Module SRule (DT : Eqset_dec_pol).
         apply tri_bot.
         apply IH    with (m:=  L_weight L);auto.
       ++ (* PAR *)
-        LexpSubst.
         apply IH  with (L:= F0 :: G :: L) (m:= Exp_weight F0 + Exp_weight G +  L_weight L) in H7;try(simpl; omega);auto.
       ++ (* WITH *)
-        LexpSubst.
         apply IH  with (L:= F0 :: L) (m:= Exp_weight F0 + L_weight L) in H8;try(autounfold;simpl; omega);auto.
         apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in H9;try(autounfold;simpl; omega);auto.
       ++ (* quest *)
-        LexpSubst.
         apply IH  with  (m:= L_weight L) in H6;try(simpl; omega);auto.
-      ++
-        LexpSubst.
+      ++ (* forall *)
         assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F] ++ L')) as Hp.
         intro.
         generalize(H5 x);intros.
@@ -255,7 +243,7 @@ Module SRule (DT : Eqset_dec_pol).
 
 
   Theorem EquivAuxQuest : forall B  L L' M  n F,  n |-F- B ++ [F] ; M ; UP (L ++ L') ->  |-F- B ; M ;  UP (L ++ [? F] ++ L').
-  Proof.
+  Proof with InvTac .
     intros.
     remember (L_weight L) as w.
     generalize dependent L .
@@ -265,14 +253,14 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent n .
     generalize dependent w .
     
-    induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l].
+    induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l] ...
     + simpl. simpl in H.
       eapply tri_quest;auto.
       eapply AdequacyTri1;eauto.
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
     + simpl in Hw. inversion Hw.
-    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';inversion H;subst;LexpContr;auto;
+    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';inversion H;subst;InvTac;
         try(
             match goal with
               [ Hx : _ |-F- _ ++ [?F]; _ ++ [_]; UP (?L ++ ?L') |- _] =>
@@ -282,23 +270,17 @@ Module SRule (DT : Eqset_dec_pol).
         apply tri_bot.
         apply IH  with (m:=  L_weight L) in H5;auto using le_plus_r.
       ++ (* par *)
-        LexpSubst.
         apply IH  with (L:=F0 :: G :: L)  (m:=  Exp_weight F0 + Exp_weight G + L_weight L) in H7;auto using le_plus_r.
         simpl. omega.
       ++ (* with *)
-        LexpSubst.
         apply IH  with (L:=F0 :: L)  (m:=  Exp_weight F0 + L_weight L) in H8;auto;try(autounfold;simpl;omega).
         apply IH  with (L:=G :: L)  (m:=  Exp_weight G + L_weight L) in H9;auto;try(autounfold;simpl;omega).
       ++ (* quest *)
-        LexpSubst.
         apply tri_quest.
-        
         eapply IH  with   (m:=  L_weight L);auto;try(autounfold;simpl;omega).
-        assert((B ++ [F]) ++ [F0] =mul= (B ++ [F0]) ++ [F]) by solve_permutation.
-        rewrite H2 in H6.
-        eassumption.
+        MReplace ( (B ++ [F0]) ++ [F]) ((B ++ [F]) ++ [F0]) ...
+        eauto.
       ++ (* FORALL *)
-        LexpSubst.
         assert(forall x, |-F- B ; M; UP (((Subst FX x) ::L) ++ [? F] ++ L')) as Hp.
         intro.
         generalize(H5 x);intros.
@@ -309,7 +291,7 @@ Module SRule (DT : Eqset_dec_pol).
 
 
   Theorem EquivAuxTop : forall B  L L' M ,  |-F- B ; M ;  UP (L ++ [Top] ++ L').
-  Proof.
+  Proof with InvTac .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
@@ -318,18 +300,16 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent M .
     generalize dependent w .
     
-    induction w as [| w' IH] using strongind;  intros M B L' L Hw  ;  destruct L as [|l];simpl;auto.
+    induction w as [| w' IH] using strongind;  intros M B L' L Hw  ;  destruct L as [|l] ...
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
-    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw';
+    + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw'; InvTac;
         try(apply tri_store;try(autoLexp);auto  ; apply IH  with (m:=  L_weight L);try(omega);auto).
-      ++
-
-        (* bot *)
+      ++ (* bot *)
         apply tri_bot.
         apply IH  with (m:=  L_weight L);try(omega);auto.
       ++ (*  PAR *)
-        apply tri_par.
+        apply tri_par. 
         eapply IH  with  (L:= F :: G :: L) (m:= Exp_weight F + Exp_weight G + L_weight L);
           auto; try(rewrite H2);simpl;autounfold;try(omega).
       ++ (* with *)
@@ -343,17 +323,14 @@ Module SRule (DT : Eqset_dec_pol).
         apply IH  with (m:=  L_weight L);try(omega);auto.
       ++ (* forall *)
         apply tri_fx.
-        
         intro.
         apply IH with (L:= Subst FX x :: L) (m:= exp_weight  (FX unit tt) + L_weight L);simpl; try( rewrite Hw');auto.
         rewrite H0;auto.
         rewrite <- subs_weight_weak with (x:=x). auto.
-        
   Qed.
 
-
-
   Theorem EquivAuxForAll : forall B  L L' M   FX, (forall x,  |-F- B ; M ; UP (L ++ [Subst FX x]++ L')) ->  |-F- B ; M ;  UP (L ++ [F{FX}] ++ L').
+  Proof with InvTac .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
@@ -362,13 +339,10 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent M .
     generalize dependent w .
     
-    induction w as [| w' IH] using strongind ; intros M B L' L H Hw ;  destruct L as [|l].
-    + simpl in*.
-      eapply tri_fx;auto.
+    induction w as [| w' IH] using strongind ; intros M B L' L H Hw ;  destruct L as [|l] ...
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
-    +  simpl in Hw. inversion Hw.
-    + caseLexp l ; inversion Hw as [Hw']; simpl in *;auto;
+    + caseLexp l ; inversion Hw as [Hw']; simpl in *;InvTac;
         try(
             assert(Hp: forall x,  |-F- B; M ++ [l]; UP (L ++ [Subst FX x] ++ L'))
             by (
@@ -377,8 +351,7 @@ Module SRule (DT : Eqset_dec_pol).
             simpl in Hw';inversion Hw';try(omega);auto).
       ++ (* bot *)
         assert(Hp: forall x,  |-F- B; M; UP (L ++ [Subst FX x] ++ L')).
-        intro; generalize (H x); intro Hp'; inversion Hp'; subst; LexpContr;auto.
-        assert(Asynchronous Bot) by auto;contradiction.
+        intro; generalize (H x); intro Hp'; inversion Hp'; subst ...
         apply IH  with (m:= L_weight  L) in Hp; try(apply tri_bot);try(omega);auto.
         subst;simpl in Hw';inversion Hw';auto.
       ++ (* par *)
@@ -402,15 +375,12 @@ Module SRule (DT : Eqset_dec_pol).
         apply IH  with (L:= F :: L) (m:= Exp_weight F + L_weight L) in Hp1;try(omega); subst;autounfold;simpl;try(omega); auto.
         apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in Hp2;try(omega); subst;autounfold;simpl;try(omega); auto.
       ++  (* quest *)
-        
         assert(Hp: forall x,  |-F- B ++ [F]; M; UP (L ++ [Subst FX x] ++ L')) .
         intro; generalize (H x); intro Hp'; inversion Hp'; subst;LexpContr;intuition.
         subst;LexpSubst;auto.
         apply IH  with (m:= L_weight  L) in Hp. apply tri_quest;auto.
         subst;inversion Hw';omega.
         auto.
-
-        
       ++ (* forall *)
         subst.
         assert(Hp: forall x x', |-F- B; M; UP ((Subst FX0 x') :: L ++ [Subst FX x] ++ L')).
@@ -418,19 +388,16 @@ Module SRule (DT : Eqset_dec_pol).
         assert(Asynchronous (F{ FX0})) by auto;contradiction.
         LexpSubst;auto.
         apply tri_fx;intro.
-        
-        
         apply IH with (L:= Subst FX0 x :: L) (m:= Exp_weight  (Subst FX0  x) + L_weight  L).
         simpl in Hw';inversion Hw'. autounfold.
         rewrite <- subs_weight_weak with (x:=x). auto.
         intro. simpl.
         apply Hp;auto.
         simpl. auto.
-        
   Qed.
 
   Theorem EquivUpArrow : forall B L L' M n, n |-F- B ; M ; UP L -> L =mul= L' ->|-F- B ; M ;  UP L'.
-  Proof.
+  Proof with InvTac .
     intros.
     remember (L_weight L) as w.
     generalize dependent n .
@@ -439,10 +406,10 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent B .
     generalize dependent M .
     generalize dependent w .
-    
-    induction w as [| w' IH] using strongind;  intros ;  destruct L as [|l].
-    +assert (L'= []) by( apply emp_mult;auto).
-     subst.
+     
+    induction w as [| w' IH] using strongind;  intros ;  destruct L as [|l] ...
+    + assert (L'= []) by( apply emp_mult;auto) ...
+      subst.
      eapply AdequacyTri1;eauto.
     + inversion Heqw.
       generalize(exp_weight0  l);intros.
@@ -450,16 +417,13 @@ Module SRule (DT : Eqset_dec_pol).
     + assert (L'= []) by( apply emp_mult;auto).
       subst.
       eapply AdequacyTri1;eauto.
-    +
-      destruct L' as [_| l'].
-      (* H0 is inconsisten *)
+    + destruct L'. (* as [_| l']. *)
+      (* H0 is inconsisten *) 
       apply DestructMulFalse in H0. contradiction.
-      
-
       apply DestructMSet2 in H0 as Heq.
-      
       destruct Heq as [Heq | Heq].
-      ++ destruct Heq;subst.
+      ++ (* case 1 *)
+        destruct Heq;subst.
          inversion H;subst;try(simpl in Heqw; inversion Heqw; subst;simpl;try(omega)).
          +++  (* top *)
            eapply tri_top.
@@ -468,67 +432,61 @@ Module SRule (DT : Eqset_dec_pol).
          +++ (* par *)
            eapply IH with (L' := F::G::L') in H6;auto.
            simpl. autounfold. omega.
-
          +++ (* with *)
            eapply IH with (m:= L_weight (F::L)) (L:= F ::L) (L' := F :: L') in H7;auto.
            eapply IH with (m:= L_weight (G::L)) (L := G :: L) (L' := G :: L') in H8;auto.
            simpl. autounfold. omega.
            simpl. autounfold. omega.
          +++  (* quest *)
-           eapply IH with (m:= L_weight L) (L' :=L') in H6;auto.
+           eapply IH with (m:= L_weight L) (L' :=L') in H6;auto. 
            omega.
          +++  (* store *)
            eapply IH with (m:= L_weight L) (L' :=L') in H8;auto.
-           generalize(exp_weight0  l');intro.
+           generalize(exp_weight0  a);intro.
            omega.
          +++ (* forall *)
            eapply tri_fx;auto.
-           intro.
+           intro. 
            generalize (H6 x);intro.
            eapply IH with (m:= Exp_weight (Subst FX x) + L_weight L) (L' := Subst FX x :: L') in H1;auto.
            simpl. rewrite <- subs_weight_weak with (x:=x). auto.
-      ++
+      ++ (* case 2 *)
         destruct Heq as [L1 [L2 [L1' [L2' Heq]]]].
-        
         destruct Heq as [Heq [Heq1 Heq2]];subst.
-        
         inversion H;subst.
         +++ (* top *)
-          eapply EquivAuxTop with (L:= l' :: L1').
+          eapply EquivAuxTop with (L:= a :: L1').
         +++ (* bottom *)
-          eapply IH with (m:= L_weight(L1 ++ l' :: L2))(L:=L1 ++ l' :: L2) (L' := [l'] ++ L1' ++ L2') in H5 .
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 .
           simpl in H5. 
           eapply AdequacyTri2 in H5. destruct H5.
           
-          apply EquivAuxBot with (L:= l' :: L1');simpl.
-          apply AdequacyTri1 in H1.
-          auto.
-          
-          simpl in Heqw. inversion Heqw. auto.
+          apply EquivAuxBot with (L:= a :: L1') ...
+          apply AdequacyTri1 in H1 ...
+
+          simpl in Heqw. inversion Heqw. auto ...
           solve_permutation.
           reflexivity.
         +++ (* par *)
-          eapply IH with (m:= L_weight(F :: G :: L1 ++ l' :: L2))
-                           (L:=F :: G :: L1 ++ l' :: L2)
-                           (L' := [l'] ++ L1' ++ [F ; G] ++ L2') in H5 .
+          eapply IH with (m:= L_weight(F :: G :: L1 ++ a :: L2))
+                           (L:=F :: G :: L1 ++ a :: L2)
+                           (L' := [a] ++ L1' ++ [F ; G] ++ L2') in H5 .
           eapply AdequacyTri2 in H5. destruct H5.
           
-          
-          eapply EquivAuxPar with (L:= l' :: L1');eauto.
+          eapply EquivAuxPar with (L:= a :: L1');eauto.
           simpl in Heqw. inversion Heqw. auto.
-          simpl. rewrite Nat.add_assoc. auto.
+          simpl. rewrite Nat.add_assoc. auto ...
           solve_permutation.
           reflexivity.
-          
         +++ (* with *)
-          eapply IH with (m:= L_weight(F :: L1 ++ l' :: L2))
-                           (L:=F :: L1 ++ l' :: L2)
-                           (L' := [l'] ++ L1' ++ [F ] ++ L2') in H6 .
-          eapply IH with (m:= L_weight(G :: L1 ++ l' :: L2))
-                           (L:=G :: L1 ++ l' :: L2)
-                           (L' := [l'] ++ L1' ++ [G ] ++ L2') in H7 .
+          eapply IH with (m:= L_weight(F :: L1 ++ a :: L2))
+                           (L:=F :: L1 ++ a :: L2)
+                           (L' := [a] ++ L1' ++ [F ] ++ L2') in H6 .
+          eapply IH with (m:= L_weight(G :: L1 ++ a :: L2))
+                           (L:=G :: L1 ++ a :: L2)
+                           (L' := [a] ++ L1' ++ [G ] ++ L2') in H7 .
           
-          apply EquivAuxWith with (L := l' :: L1'); simpl;auto.
+          apply EquivAuxWith with (L := a :: L1'); simpl;auto.
           simpl in Heqw. inversion Heqw. auto.
           simpl. rewrite plus_assoc_reverse. apply le_plus_r.
 
@@ -540,9 +498,9 @@ Module SRule (DT : Eqset_dec_pol).
           reflexivity.
           
         +++ (* quest *)
-          eapply IH with (m:= L_weight(L1 ++ l' :: L2))(L:=L1 ++ l' :: L2) (L' := [l'] ++ L1' ++ L2') in H5 .
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 .
           eapply AdequacyTri2 in H5. destruct H5.
-          eapply EquivAuxQuest with (L := l' :: L1');eauto.
+          eapply EquivAuxQuest with (L := a :: L1');eauto.
           
           simpl in Heqw. inversion Heqw. auto.
           simpl. omega.
@@ -550,9 +508,9 @@ Module SRule (DT : Eqset_dec_pol).
           reflexivity.
 
         +++ (* copy *)
-          eapply IH with (m:= L_weight(L1 ++ l' :: L2))(L:=L1 ++ l' :: L2) (L' := [l'] ++ L1' ++ L2') in H7 .
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H7 .
 
-          eapply EquivAuxSync with (L:=l' :: L1');eauto.
+          eapply EquivAuxSync with (L:=a :: L1');eauto.
 
           simpl in Heqw. rewrite L_weightApp in Heqw. simpl in Heqw.
           rewrite L_weightApp.
@@ -570,9 +528,9 @@ Module SRule (DT : Eqset_dec_pol).
           reflexivity.
         +++ (* forall *)
           
-          assert(forall x, |-F- B; M; UP ((l' :: L1' ) ++ [Subst FX x] ++ L2')).
+          assert(forall x, |-F- B; M; UP ((a :: L1' ) ++ [Subst FX x] ++ L2')).
           intro x.
-          eapply IH with (m:= L_weight(Subst FX x :: L1 ++ l' :: L2)) (L:=Subst FX x :: L1 ++ l' :: L2)  ;auto.
+          eapply IH with (m:= L_weight(Subst FX x :: L1 ++ a :: L2)) (L:=Subst FX x :: L1 ++ a :: L2)  ;auto.
           inversion Heqw.
           simpl.
           rewrite <- subs_weight_weak with (x:=x). auto.
@@ -650,12 +608,11 @@ Module SRule (DT : Eqset_dec_pol).
          eapply trih_fx; auto.
 
   Qed.
-  
-
+   
   (* Up and Down relation *)
   Lemma UpExtension: forall B M L F n, LexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; UP L ->
                                                                                   exists m, m<= S n /\ m |-F- B; M ; UP (L ++ [F]).
-
+  Proof with InvTac .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
@@ -664,7 +621,7 @@ Module SRule (DT : Eqset_dec_pol).
     generalize dependent n .
     generalize dependent w .
 
-    induction w as [| w' IH] using strongind .  intros n  M HPos  B L HD Hw.
+    induction w as [| w' IH] using strongind .  intros n  M HPos  B L HD Hw ...
     + (* w = 0 *)
       destruct L. (* L must be empty. The second case is trivial *)
       exists ((S n)).
@@ -677,24 +634,23 @@ Module SRule (DT : Eqset_dec_pol).
 
       simpl in Hw.
       apply AsyncEqNeg;auto.
-      
+       
       apply exp_weight0LF in Hw;contradiction.
 
-    + intros.
+    + intros. 
       destruct L. (* L cannot be empty *)
-      inversion Heqw.
-      inversion H0;auto;subst;inversion Heqw;subst.
+      inversion Heqw ...
+      inversion H0;auto;subst;inversion Heqw;subst ...
       ++ (* top *)
-        exists 0%nat;split;auto.
-        eapply trih_top.
+        exists 0%nat;split ...
       ++ (* bot *)
         apply IH with (m:= L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl. eapply trih_bot;auto.
+        exists (S n');split;auto. omega.
       ++  (* PAR *)
         apply IH with (m:= Exp_weight  F0 + Exp_weight  G + L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl. eapply trih_par;auto.
+        exists (S n');split;auto. omega. simpl ...
         simpl. omega.
       ++ (* with *)
         apply IH with (m:= Exp_weight  F0 + L_weight  L) in H6;auto.
@@ -703,7 +659,7 @@ Module SRule (DT : Eqset_dec_pol).
         destruct H7 as [m'  [IHn' IHd']].
         simpl.
         
-        exists (S (Init.Nat.max n' m'));split;auto. simpl.
+        exists (S (Init.Nat.max n' m'));split ...
         apply le_n_S.
         rewrite Max.succ_max_distr.
         apply Nat.max_le_compat;auto.
@@ -719,21 +675,20 @@ Module SRule (DT : Eqset_dec_pol).
         assert(exists m0 : nat, m0 <= S n0 /\ m0 |-F- B; M ++ [l]; UP (L ++ [F])).
         apply IH with (m:= L_weight  L);eauto using WeightLeq.
         apply LPos1 with (L:= [l] ++ (M ++ [F]));auto.
-        rewrite app_assoc_reverse.
-        solve_permutation.
+        rewrite app_assoc_reverse ...
         
         apply lexpPosUnion;auto.
         apply AsynchronousFlexpPos;auto.
         apply AsyncEqNeg;auto.
         assert((M ++ [l]) ++ [F] =mul=  (M ++ [F]) ++ [l]) by solve_permutation.
         rewrite H1;auto.
-        destruct H1 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl;eauto.
+        destruct H1 as [n'  [IHn IHd]]. 
+        exists (S n');split;auto. omega. 
       ++  (* FORALL *)
         assert(forall x, exists m, m <= S n0 /\ m |-F- B; M; UP ((Subst FX x :: L)  ++ [F])).
         intro.
         generalize (H5 x);intro.
-        eapply IH with (m:=Exp_weight (Subst FX x) + L_weight L);auto.
+        eapply IH with (m:=Exp_weight (Subst FX x) + L_weight L) ...
         rewrite <- subs_weight_weak with (x:=x). auto.
         apply ax_subs_prop in H1.
         destruct H1 as [n H1].
@@ -742,7 +697,6 @@ Module SRule (DT : Eqset_dec_pol).
         omega.
         eapply trih_fx.
         intro x.
-        generalize (H1' x); intro Hx.
-        auto.
+        generalize (H1' x); intro Hx ...
   Qed.
 End SRule.

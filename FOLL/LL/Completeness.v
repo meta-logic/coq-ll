@@ -4,9 +4,7 @@
 Here we prove the completeness theorem for the focused system
 *)
 
-                                                                       
-Require Export SequentCalculi. 
-Require Export StructuralRules.
+
 Require Export Permutation.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -15,6 +13,9 @@ Require Import Coq.Setoids.Setoid.
 Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
+Require Export SequentCalculi. 
+Require Export StructuralRules.
+
 
 Set Implicit Arguments.
 
@@ -201,15 +202,13 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply HDown in H7 ...
             apply AdequacyTri1 in H3.
             eapply tri_tensor with (N:=N) (M:=L1) ...
-            eapply LPos3 ;eauto.
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
             assert(HRI: RInd (S n0)) by( apply IH; auto using le_n_S).
             destruct HRI as [HUp  HDown] ...
-            apply HDown in H3 ...
+            apply HDown in H3 ... 
             apply AdequacyTri1 in H7.
             eapply tri_tensor with (M:=M0) (N:=L2) ...
-            eapply LPos3 ;eauto.
       ++ (* Par *)
         apply UpExtension in H6 ...
         destruct H6 as [m H6]. destruct H6 as [H6 H6'].
@@ -218,9 +217,11 @@ Module InvLemmas (DT : Eqset_dec_pol).
       ++ (* oplus1 *)
         assert(HRI: RInd (S n0)) by (apply IH ; auto).
         destruct HRI as [HUp  HDown] ...
+        apply tri_plus1 ...
       ++ (* oplus2 *)
         assert(HRI: RInd (S n0)) by (apply IH ; auto).
-        destruct HRI as [HUp  HDown] ... 
+        destruct HRI as [HUp  HDown] ...
+        apply tri_plus2 ...
       ++ (* with *)
         apply UpExtension in H6 ...
         destruct H6 as [m H6]. destruct H6 as [H6 H6'].
@@ -372,7 +373,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             eapply tri_dec1 with (F:=F) ...
             
             (* case positive atom *)
-            eapply tri_dec1 with (F:= E{ FX}) ... solve_permutation.
+            eapply tri_dec1 with (F:= E{ FX}) ... 
             eapply tri_ex with (t:=t).
             eapply tri_rel ...
             eapply tri_store ... apply IsPositiveAtomNotAssync;auto.
@@ -504,8 +505,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply HDown in H7 ...
             apply AdequacyTri1 in H3.
             eapply tri_tensor with (N:=N) (M:=L1 ++ [E{ FX}]) ...
-            eauto.
-            eapply LPos3 ;eauto.
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
             assert(HRI: RInd (S n0)) by( apply IH; auto using le_n_S).
@@ -513,7 +512,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply HDown in H3 ...
             apply AdequacyTri1 in H7.
             eapply tri_tensor with (M:=M0) (N:=L2 ++ [E{ FX}]) ...
-            eapply LPos3 ;eauto.
       ++ (* Par *)
         apply UpExtension in H6 ...
         destruct H6 as [m H6]. destruct H6 as [H6 H6'].
@@ -679,7 +677,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             eauto.
             
             (* case positive atom *)
-            eapply tri_dec1 with (F:= F ⊕ G) ... solve_permutation.
+            eapply tri_dec1 with (F:= F ⊕ G) ... 
             eapply tri_plus1 ...
             eapply tri_rel ...
             eapply tri_store ... apply IsPositiveAtomNotAssync;auto.
@@ -807,7 +805,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply AdequacyTri1 in H3 ...
             eapply HDown in H7 ...
             eauto.
-            eapply LPos3 ;eauto.
+           
             
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
@@ -817,7 +815,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply AdequacyTri1 in H7.
             eapply tri_tensor with (M:=M0) (N:=L2 ++ [F ⊕ G]) ...
             eassumption.
-            eapply LPos3 ;eauto.
       ++ (* Par *)
         apply UpExtension in H6 ...
         destruct H6 as [m H6]. destruct H6 as [H6 H6'].
@@ -896,14 +893,14 @@ Module InvLemmas (DT : Eqset_dec_pol).
           simpl_union_context.
           (* in M0 *)
           rewrite H1. rewrite HL1 in H4. 
-          apply trih_tensor with (N:= N) (M:=  [G ⊕ F] ++ L1) ...  solve_permutation.
+          apply trih_tensor with (N:= N) (M:=  [G ⊕ F] ++ L1) ...  
           assert(HS: G ⊕ F :: L1 =mul=  L1  ++ [G ⊕ F]) by eauto;rewrite HS;clear HS.
           apply H;eauto.
           assert(HS:  L1 ++ [F ⊕ G] =mul=   [F ⊕ G] ++ L1) by eauto;rewrite HS.
           assumption.
           (* in N *)
           rewrite H1. rewrite HL2 in H3.
-          apply trih_tensor with (N:= [G ⊕ F] ++ L2) (M:=  M0) ... solve_permutation.
+          apply trih_tensor with (N:= [G ⊕ F] ++ L2) (M:=  M0) ... 
           assert(HS: G ⊕ F :: L2 =mul=  L2  ++ [G ⊕ F]) by eauto;rewrite HS;clear HS.
           apply H;eauto.
           assert(HS:  L2 ++ [F ⊕ G] =mul=   [F ⊕ G] ++ L2) by eauto;rewrite HS.
@@ -982,7 +979,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
       destruct L;destruct L';simpl in *.
       + inversion H;subst.
         inversion H3;subst.
-        eapply tri_dec1 with (F:= ⊤ ** ⊤) ... eauto.
+        eapply tri_dec1 with (F:= ⊤ ** ⊤) ... 
         eapply tri_tensor with (N:=M) (M:=M') ...
       + inversion H3;subst ...
       + inversion H ...
@@ -1010,14 +1007,14 @@ Module InvLemmas (DT : Eqset_dec_pol).
           simpl_union_context.
           (* in M0 *)
           rewrite H1. rewrite HL1 in H4. 
-          apply trih_tensor with (N:= N) (M:=  [G ** F] ++ L1) ...  solve_permutation.
+          apply trih_tensor with (N:= N) (M:=  [G ** F] ++ L1) ... 
           assert(HS: G ** F :: L1 =mul=  L1  ++ [G ** F]) by eauto;rewrite HS;clear HS.
           apply H;eauto.
           assert(HS:  L1 ++ [F ** G] =mul=   [F ** G] ++ L1) by eauto;rewrite HS.
           assumption.
           (* in N *)
           rewrite H1. rewrite HL2 in H3.
-          apply trih_tensor with (N:= [G ** F] ++ L2) (M:=  M0) ... solve_permutation.
+          apply trih_tensor with (N:= [G ** F] ++ L2) (M:=  M0) ... 
           assert(HS: G ** F :: L2 =mul=  L2  ++ [G ** F]) by eauto;rewrite HS;clear HS.
           apply H;eauto.
           assert(HS:  L2 ++ [F ** G] =mul=   [F ** G] ++ L2) by eauto;rewrite HS.
@@ -1037,7 +1034,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
           rewrite HeqM. rewrite H3.
           eapply trih_dec1 with (F:= G ** F) ...
           assert (Hmax: max n0 m = max m n0) by apply Nat.max_comm; rewrite Hmax; clear Hmax.
-          apply trih_tensor with (N:=M0) (M:=N) ... eauto.
+          apply trih_tensor with (N:=M0) (M:=N) ... 
 
           rewrite H3.
           eapply trih_dec1 with (F:= F0) ...
@@ -1113,7 +1110,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
     Proof with InvTac.
       intros.
       eapply tri_dec1 with (F:= F ** G) ...
-      solve_permutation.
       rewrite app_nil_r.
       eapply tri_tensor with (N:=M1) (M:=M2);InvTac;
         eapply tri_rel ;auto using AsIsPosRelease;
@@ -1138,7 +1134,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
         (* case focus on F *) 
         eapply tri_dec1 with (F:= F ** F0);InvTac;try(solve_permutation);
           eapply tri_tensor with (N:=M1) (M:=M2) ...
-        solve_permutation.
         apply tri_rel;auto using AsyncRelease, AsIsPosRelease ... eapply AdequacyTri1;eauto.
         rewrite HeqM; eapply AdequacyTri1;eauto.
         
@@ -1210,7 +1205,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
           apply DestructMSet in H0; destruct H0 as [Hten1' | Hten2' ];
             [ destruct Hten1' as [HeqE' HeqM'] | destruct Hten2' as [L1' Hten2']; destruct Hten2'];subst.
           (* F and G were chosen *)
-          eapply tri_dec1 with (F:= F0 ** F1) ... solve_permutation.
+          eapply tri_dec1 with (F:= F0 ** F1) ... 
           rewrite HeqM'. rewrite HeqM.
           apply tri_tensor with (N:= L') (M:= L'0);InvTac;try solve_permutation;
             eapply AdequacyTri1;eauto.
@@ -1349,7 +1344,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [⊥] ++ [])).
         eapply HUp with (n:= m' )(m0:= m) ...
-        eapply EquivUpArrow2;eauto.
+        eapply EquivUpArrow2;eauto.  
       ++ (* tensor *)
         symmetry in H2.
         assert(HC: M ++ [F] =mul= [F] ++ M) by solve_permutation; rewrite HC in H2;clear HC. 
@@ -1359,15 +1354,13 @@ Module InvLemmas (DT : Eqset_dec_pol).
             rewrite HL1 in H7. rewrite H.
             assert(HRI: RInd (S m + m0)).  apply IH. simpl. apply le_n_S.
             rewrite Nat.add_comm. apply plus_le_compat_r ...
-            destruct HRI as [HUp  HDown] ...
-            eapply HDown in H7 ...
+            destruct HRI as [HUp  HDown];auto ... 
+             eapply HDown in H7  ... 
             apply AdequacyTri1 in H3.
             apply H7 in HD2.
             eapply tri_tensor with (N:=N ) (M:=L1 ++ M' ++ [F ** G]) ...
-            eauto.
             omega.
-            eapply LPos3 ;eauto.
-            auto.
+            assumption.
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
             assert(HRI: RInd (S m + n)).  apply IH. simpl. apply le_n_S.
@@ -1378,8 +1371,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply H3 in HD2.
             eapply tri_tensor with (M:=M0 ) (N:=L2 ++ M' ++ [F ** G]) ...
             omega.
-            eapply LPos3 ;eauto.
-            auto.
+            assumption.
       ++ (* Par *)
         apply UpExtension in H6 ...
         destruct H6 as [m' H6]. destruct H6 as [H6 H6'].

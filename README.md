@@ -11,7 +11,7 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested in Coq 8.6. No extra library is needed for compilation. 
+The project was tested in Coq 8.7. No extra library is needed for compilation. 
 
 There are two main directories
 
