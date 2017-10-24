@@ -1,5 +1,4 @@
-(* This file is part of the Linear Logic formalization in Coq:
-https://github.com/brunofx86/LL *)
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/meta-logic/coq-ll *)
 
 (** ** Multisets
 This module is an adaptation of the standard library of Multisets in Coq #<a href="https://coq.inria.fr/library/Coq.Sets.Multiset.html">Coq.Sets.Multiset</a>#

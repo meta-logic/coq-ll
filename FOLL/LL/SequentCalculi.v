@@ -1,5 +1,4 @@
-(* This file is part of the Linear Logic formalization in Coq:
-https://github.com/brunofx86/LL *)
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/meta-logic/coq-ll *)
 
 (** ** Linear Logic Sequent Calculi
 We formalize different sequent calculi for Classical Linear Logic: two
@@ -64,10 +63,8 @@ The considered systems are:
  *)
 
 
-(*Add LoadPath "../". *)
-Require Export StrongInduction.
+(* Add LoadPath "../".  *)
 Require Export Permutation.
-Require Export SyntaxLL.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -76,10 +73,11 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
+Require Export StrongInduction.
+Require Export SyntaxLL.
 Require Import Eqset.
 
 Set Implicit Arguments.
-
 
 Module SqSystems (DT : Eqset_dec_pol).
   
@@ -319,8 +317,6 @@ easily conclude the goal [G].
          eapply H  with (M':=  M' ) (B':=B')in H3;auto.
   Qed.
 
-
-
   Generalizable All Variables.
   Instance trih_morphh : Proper (meq ==> meq ==> eq ==> iff) (TriSystemh n).
   Proof. 
@@ -337,7 +333,6 @@ easily conclude the goal [G].
     + apply TriExchangeh with (B:=B) (M:=D);auto.
   Qed.
 
-  
   Theorem TriExchange : forall B B' M M' X, |-F-  B ; M ; X -> B =mul= B' -> M =mul= M' -> |-F- B' ; M' ; X.
     intros.
     apply AdequacyTri2 in H.
@@ -356,6 +351,7 @@ easily conclude the goal [G].
     + apply TriExchange with (B:=A) (M:=C);auto.
     + apply TriExchange with (B:=B) (M:=D);auto.
   Qed.
+  
   Instance tri_morph' : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystem).
   Proof. 
     intros A B Hab C D Hcd X Y Hxy; subst.
@@ -449,9 +445,6 @@ easily conclude the goal [G].
     refine (sig2_der_compat (symmetry PB) (symmetry PL) H).
   Qed.
 
-
-
-
   (** Dyadic system plus height of the derivation *)
   Reserved Notation " n '|--' B ';' L" (at level 80).
   Inductive sig2h: nat -> list Lexp -> list Lexp -> Prop :=
@@ -536,11 +529,8 @@ easily conclude the goal [G].
         eapply sig2h_ex;eauto.
       + (* forall *)
         eapply sig2h_fx;eauto.
-        
   Qed.
 
-  
-  
   Lemma Sig2InitNegative:  forall B A, IsNegativeAtom A ->  |-- B; [A°; A].
     intros.
     inversion H;try(rewrite AtomNeg);try(rewrite AtomPos); eapply sig2_init;eauto.
@@ -586,6 +576,7 @@ easily conclude the goal [G].
     intros.
     inversion H;subst;try(inversion H0);subst;simpl;try(rewrite Nat.sub_0_r);auto.
   Qed.
+  
   Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> LexpPos N -> exists m, m |-F- B ; M ++ N ; UP L.
     intros.
     generalize dependent M.
@@ -674,8 +665,6 @@ easily conclude the goal [G].
     apply tri_top.
   Qed.
 
-
-  
   Ltac autoLexp :=
     simpl;
     try(match goal with [|- Release _] => try(auto using IsPositiveAtomRelease); try(constructor) end);
@@ -716,13 +705,15 @@ easily conclude the goal [G].
     try(match goal with [H : ~ Asynchronous ?F |- _] => assert(Asynchronous F) by auto;contradiction
         end);
     invNegAtom;
+    try(match goal with [H1 : LexpPos ?M, H2 : ?M =mul= ?K ++ ?N |- LexpPos ?N]
+                    =>
+                    MReplaceIn M (K ++ N) H1; eapply LPos3 in H1;eauto end);
+    try(match goal with [H1 : LexpPos ?M, H2 : ?M =mul= ?N ++ ?K |- LexpPos ?N]
+                    =>
+                    MReplaceIn M (N ++ K) H1; eapply LPos2 in H1;eauto end);
+    try(match goal with [|- ?M =mul= ?N] => solve [ (timeout 1 solve_permutation) | (timeout 1 eauto )] end );
     invRel.
-
   
-
-
-
-
   Lemma AppSingleton : forall (F G: Lexp) M, [F] = M ++ [G] -> M = [].
     intros.
     destruct M;auto.
@@ -733,8 +724,9 @@ easily conclude the goal [G].
 
   (** Automatization of focused proofs. This tactic solves most of the cases for checking polarities of atoms and also determining when a formula is positive or negative *)
   Ltac InvTac :=
-    try(LexpSubst);
-    try(LexpSubst);
+    (repeat (progress autoLexp));
+    (do 3 try( LexpSubst));
+    
     try(match goal with [ H : [?F] = ?M ++ [?G] |- _] =>
                         assert(M=[]) by (eapply AppSingleton;eauto);subst;
                         simpl in H;inversion H;subst;clear H
@@ -750,12 +742,8 @@ easily conclude the goal [G].
                         rewrite Hx in H; clear Hx
         end);
     try(match goal with [H1 : true = isPositive ?n , H2 : false = isPositive ?n |- _] =>
-                        rewrite <- H1 in H2 ;intuition end);
-    autoLexp.
-
-  
-
-
+                        rewrite <- H1 in H2 ;intuition end)
+    .
 
   (** This tactic solves (mostly automatically) the whole negative phase. *)
   Ltac NegPhase :=
@@ -1394,7 +1382,4 @@ easily conclude the goal [G].
       eapply sig2hcc_then_sig3; eauto.
   Qed.
 
-  
-  
 End SqSystems.
-

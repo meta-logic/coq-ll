@@ -1,5 +1,4 @@
-(* This file is part of the Linear Logic formalization in Coq:
-https://github.com/brunofx86/LL *)
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/meta-logic/coq-ll *)
 
 (** ** Cut Elimination
 Here we prove cut-elimination for linear logic and, as a corollary, we show the consistency of the logic

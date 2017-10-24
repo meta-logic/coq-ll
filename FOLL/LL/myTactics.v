@@ -1,5 +1,4 @@
-  
-(* This file is part of the Linear Logic  formalization in Coq: https://github.com/brunofx86/LL *)
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/meta-logic/coq-ll *)
 
 (** ** Tactics
 Some tactics to automatize part of the proof of cut-elimination 
