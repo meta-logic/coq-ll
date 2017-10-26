@@ -2,7 +2,7 @@
 
 (** ** Completeness of Focusing
 Here we prove the completeness theorem for the focused system
-*)
+ *)
 
 
 Require Export Permutation.
@@ -21,7 +21,7 @@ Set Implicit Arguments.
 
 (* *** Invertibility lemmas
 This module proves that the application of positive rules can be exchanged
-*)
+ *)
 Module InvLemmas (DT : Eqset_dec_pol).
   Module Export SR := SRule DT.
 
@@ -805,7 +805,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply AdequacyTri1 in H3 ...
             eapply HDown in H7 ...
             eauto.
-           
+            
             
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
@@ -1355,7 +1355,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             assert(HRI: RInd (S m + m0)).  apply IH. simpl. apply le_n_S.
             rewrite Nat.add_comm. apply plus_le_compat_r ...
             destruct HRI as [HUp  HDown];auto ... 
-             eapply HDown in H7  ... 
+            eapply HDown in H7  ... 
             apply AdequacyTri1 in H3.
             apply H7 in HD2.
             eapply tri_tensor with (N:=N ) (M:=L1 ++ M' ++ [F ** G]) ...

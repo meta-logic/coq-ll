@@ -5,7 +5,7 @@ In this file we prove several invertibility lemmas for the focused system.
  *)
 
 
-Add LoadPath "../" . 
+(*Add LoadPath "../" .  *)
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
@@ -13,9 +13,9 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
-Require Export LL.SequentCalculi.
-Require Import LL.Eqset.
-Require Import LL.AuxResults.
+Require Export SequentCalculi.
+Require Import Eqset.
+Require Import AuxResults.
 Set Implicit Arguments.
 
 
@@ -328,7 +328,7 @@ Module SRule (DT : Eqset_dec_pol).
         rewrite H0;auto.
         rewrite <- subs_weight_weak with (x:=x). auto.
   Qed.  
- 
+  
   Theorem EquivAuxForAll : forall B  L L' M   FX, (forall x,  |-F- B ; M ; UP (L ++ [Subst FX x]++ L')) ->  |-F- B ; M ;  UP (L ++ [F{FX}] ++ L'). 
   Proof with InvTac .  
     intros.
@@ -357,9 +357,9 @@ Module SRule (DT : Eqset_dec_pol).
                                                                                          | 0   => solve_tac1
                                                                                          | Plus _ _ => solve_tac1
                                                                                          | _ ** _ => solve_tac1
-                                                                                          | ! _  => solve_tac1
+                                                                                         | ! _  => solve_tac1
                                                                                          | E{ _ }  => solve_tac1
-                                                                                          end
+                                                                                         end
             end) . 
       ++ (* bot *) 
         assert(Hp: forall x,  |-F- B; M; UP (L ++ [Subst FX x] ++ L')).
@@ -418,7 +418,7 @@ Module SRule (DT : Eqset_dec_pol).
     + assert (L'= []) by( apply emp_mult;auto).
       subst.
       eapply AdequacyTri1;eauto.
-    + destruct L'. (* as [_| l']. *)
+    + destruct L'.
       (* H0 is inconsisten *) 
       apply DestructMulFalse in H0. contradiction.
       apply DestructMSet2 in H0 as Heq.
@@ -454,90 +454,58 @@ Module SRule (DT : Eqset_dec_pol).
       ++ (* case 2 *)
         destruct Heq as [L1 [L2 [L1' [L2' Heq]]]].
         destruct Heq as [Heq [Heq1 Heq2]];subst.
-        inversion H;subst.
+        inversion H;subst. 
         +++ (* top *)
           eapply EquivAuxTop with (L:= a :: L1').
         +++ (* bottom *)
-          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 .
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 ...
           simpl in H5. 
           eapply AdequacyTri2 in H5. destruct H5.
-          
           apply EquivAuxBot with (L:= a :: L1') ...
-          apply AdequacyTri1 in H1 ...
-
+          apply AdequacyTri1 in H1 ... 
           simpl in Heqw. inversion Heqw. auto ...
-          solve_permutation.
-          reflexivity.
         +++ (* par *)
           eapply IH with (m:= L_weight(F :: G :: L1 ++ a :: L2))
                            (L:=F :: G :: L1 ++ a :: L2)
-                           (L' := [a] ++ L1' ++ [F ; G] ++ L2') in H5 .
+                           (L' := [a] ++ L1' ++ [F ; G] ++ L2') in H5  ...
           eapply AdequacyTri2 in H5. destruct H5.
-          
           eapply EquivAuxPar with (L:= a :: L1');eauto.
           simpl in Heqw. inversion Heqw. auto.
           simpl. rewrite Nat.add_assoc. auto ...
-          solve_permutation.
-          reflexivity.
         +++ (* with *)
           eapply IH with (m:= L_weight(F :: L1 ++ a :: L2))
                            (L:=F :: L1 ++ a :: L2)
-                           (L' := [a] ++ L1' ++ [F ] ++ L2') in H6 .
+                           (L' := [a] ++ L1' ++ [F ] ++ L2') in H6 ...
           eapply IH with (m:= L_weight(G :: L1 ++ a :: L2))
                            (L:=G :: L1 ++ a :: L2)
-                           (L' := [a] ++ L1' ++ [G ] ++ L2') in H7 .
+                           (L' := [a] ++ L1' ++ [G ] ++ L2') in H7 ...
           
-          apply EquivAuxWith with (L := a :: L1'); simpl;auto.
+          apply EquivAuxWith with (L := a :: L1'); simpl;auto .
           simpl in Heqw. inversion Heqw. auto.
           simpl. rewrite plus_assoc_reverse. apply le_plus_r.
-
-          solve_permutation.
-          reflexivity.
-          simpl in Heqw. inversion Heqw. simpl.
-          autounfold. omega.
-          solve_permutation.
-          reflexivity.
-          
+          simpl in Heqw. inversion Heqw.  autounfold. omega.
         +++ (* quest *)
-          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 .
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 ...
           eapply AdequacyTri2 in H5. destruct H5.
           eapply EquivAuxQuest with (L := a :: L1');eauto.
-          
-          simpl in Heqw. inversion Heqw. auto.
-          simpl. omega.
-          solve_permutation.
-          reflexivity.
-
+          simpl in Heqw. inversion Heqw. omega.
         +++ (* copy *)
-          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H7 .
-
+          eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H7 ...
           eapply EquivAuxSync with (L:=a :: L1');eauto.
-
           simpl in Heqw. rewrite L_weightApp in Heqw. simpl in Heqw.
-          rewrite L_weightApp.
-
+          rewrite L_weightApp. 
           generalize(exp_weight0  l);intro.
           apply GtZero in H1.
-          destruct H1.
+          destruct H1. 
           rewrite H1 in Heqw. simpl in Heqw.
-          
-          inversion Heqw.
+          inversion Heqw. 
           simpl. autounfold. omega.
-          rewrite <- Heq2.
-          solve_permutation.
-          
-          reflexivity.
         +++ (* forall *)
-          
-          assert(forall x, |-F- B; M; UP ((a :: L1' ) ++ [Subst FX x] ++ L2')).
+          assert(forall x, |-F- B; M; UP ((a :: L1' ) ++ [Subst FX x] ++ L2')) ...
           intro x.
-          eapply IH with (m:= L_weight(Subst FX x :: L1 ++ a :: L2)) (L:=Subst FX x :: L1 ++ a :: L2)  ;auto.
-          inversion Heqw.
-          simpl.
-          rewrite <- subs_weight_weak with (x:=x). auto.
-
-          solve_permutation.
-
+          eapply IH with (m:= L_weight(Subst FX x :: L1 ++ a :: L2)) (L:=Subst FX x :: L1 ++ a :: L2)  ...
+          inversion Heqw. simpl.
+          rewrite <- subs_weight_weak with (x:=x) ...
           apply EquivAuxForAll in H1.
           apply H1.
   Qed.
@@ -548,66 +516,36 @@ Module SRule (DT : Eqset_dec_pol).
     destruct H.
     eapply EquivUpArrow in H;eauto.
   Qed.
-
-
-
+  
   (* Weakening *)
   Theorem TriWeakening : forall B L F X n, n |-F- B ; L ; X -> n |-F- B ++ [F] ; L ; X.
+  Proof with InvTac .
     intros.
     generalize dependent L .
     generalize dependent B .
     generalize dependent F .
     generalize dependent X .
-    generalize dependent n .
-    induction n using strongind;intros;auto.
+    generalize dependent n . 
+    induction n using strongind;intros ...
     + (* Base *)
-      inversion H;subst.
-      ++ eapply trih_init1;auto.
-      ++ apply trih_init2 with (B' := B' ++ [F]);auto.
-         rewrite H1.  solve_permutation.
-
-      ++ eapply trih_one.
-      ++ eapply trih_top.
+      inversion H;subst ...
+      apply trih_init2 with (B' := B' ++ [F]) ...
     + (* Inductive *)
-      inversion H0;subst.
+      inversion H0;subst ...
       ++ eapply H in H3;auto.
-         eapply H in H4;auto.
+         eapply H in H4;auto. 
          eapply trih_tensor;eauto.
-      ++ eapply H in H2;auto.
-         eapply trih_plus1;eauto.
-      ++ eapply H in H2;auto.
-         eapply trih_plus2;eauto.
-      ++ eapply H in H2;auto.
-         eapply trih_bang;eauto.
-      ++ eapply H in H3;auto.
-         eapply trih_rel;eauto.
-      ++ eapply H in H2;auto.
-         eapply trih_bot;eauto.
-      ++ eapply H in H2;auto.
-         eapply trih_par;eauto.
-      ++ eapply H in H2;auto.
-         eapply H in H3;auto.
-         eapply trih_with;eauto.
-      ++  eapply H with (B := B ++ [F0]) (F:=F) in H2;auto.
-          eapply trih_quest;auto.
-          assert( (B ++ [F]) ++ [F0] =mul= (B ++ [F0]) ++ [F]) by solve_permutation.
-          rewrite H1.
+      ++  eapply H with (B := B ++ [F0]) (F:=F) in H2 ...
+          eapply trih_quest ...
+          MReplace ( (B ++ [F]) ++ [F0]) ( (B ++ [F0]) ++ [F]) .
           auto.
-      ++ eapply H in H3;auto.
-         eapply trih_store;eauto.
-      ++ eapply H in H4;auto.
+      ++ eapply H in H4 ...
          eapply trih_dec1 with (F:=F0);eauto.
       ++ eapply H with (F:=F) in H4;auto.
          rewrite H3. rewrite H3 in H4.
          eapply trih_dec2 with (F:=F0);eauto.
       ++ eapply H in H2;auto.
          eapply trih_ex;eauto.
-      ++ assert(forall x,  n |-F- B ++ [F]; L; UP (Subst FX x :: M)).
-         intro.
-         generalize(H2 x);intro.
-         eapply H in H1;eauto.
-         eapply trih_fx; auto.
-
   Qed.
   
   (* Up and Down relation *)
@@ -649,24 +587,21 @@ Module SRule (DT : Eqset_dec_pol).
         destruct H5 as [n'  [IHn IHd]].
         exists (S n');split;auto. omega.
       ++  (* PAR *)
-        apply IH with (m:= Exp_weight  F0 + Exp_weight  G + L_weight  L) in H5;auto.
+        apply IH with (m:= Exp_weight  F0 + Exp_weight  G + L_weight  L) in H5 ...
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl ...
-        simpl. omega.
+        exists (S n');split;auto. omega. simpl ... omega.
       ++ (* with *)
-        apply IH with (m:= Exp_weight  F0 + L_weight  L) in H6;auto.
-        apply IH with (m:= Exp_weight  G + L_weight L) in H7;auto.
+        apply IH with (m:= Exp_weight  F0 + L_weight  L) in H6 ...
+        apply IH with (m:= Exp_weight  G + L_weight L) in H7 ...
         destruct H6 as [n'  [IHn IHd]].
         destruct H7 as [m'  [IHn' IHd']].
         simpl.
-        
         exists (S (Init.Nat.max n' m'));split ...
         apply le_n_S.
         rewrite Max.succ_max_distr.
         apply Nat.max_le_compat;auto.
         autounfold. omega.
         autounfold. omega.
-
       ++  (* quest *)
         apply IH with (m:= L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
@@ -674,7 +609,7 @@ Module SRule (DT : Eqset_dec_pol).
         omega.
       ++ (* Store *)
         assert(exists m0 : nat, m0 <= S n0 /\ m0 |-F- B; M ++ [l]; UP (L ++ [F])).
-        apply IH with (m:= L_weight  L);eauto using WeightLeq.
+        apply IH with (m:= L_weight  L);eauto using WeightLeq ...
         apply LPos1 with (L:= [l] ++ (M ++ [F]));auto.
         rewrite app_assoc_reverse ...
         

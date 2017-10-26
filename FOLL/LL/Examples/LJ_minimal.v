@@ -1,5 +1,6 @@
 (* =============================================================== *)
 (* Minimal Specification of LJ to try to generate it automatically *)
+(* This file is underdevelopment *)
 (* =============================================================== *)
 
 Require Import Coq.Relations.Relations.
@@ -53,7 +54,6 @@ Module PL.
     inversion H.
     contradiction.
   Qed.
-
   
   (* ========================================*)
   (* !SI!: Some definitions in order to define multisets on object level formulas
@@ -578,7 +578,6 @@ Ltac conv :=
   try(rewrite <- AtomFlatten2);
   try(rewrite Equiv1);
   try(rewrite Equiv2).
- 
 
 
 Ltac magic :=
