@@ -5,7 +5,7 @@ In this file we prove several invertibility lemmas for the focused system.
  *)
 
 
-(* Add LoadPath "../" .  *)
+(*Add LoadPath "../" .  *)
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
@@ -75,7 +75,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
             end ) .
       ++ (* par *)
         inversionF H ...
-        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6 ...  omega.
+        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6 ...  autounfold. omega.
       ++(* with *)
         inversion H...
         apply IH with (L:= F :: L) (m:= (Exp_weight  F) + L_weight  L) in H7;autounfold;try(omega) ...

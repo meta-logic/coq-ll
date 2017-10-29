@@ -355,6 +355,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     fun T:Type  => flatten (S (term T) (X T)).
 
   Fixpoint SubstL   (S : SubsL ) (X : Term)  : list Lexp := map (fun s => Subst s X) S.
+  Hint Unfold Subst .
   
   (************************************************)
   (* Equality On LExp Formulas *)

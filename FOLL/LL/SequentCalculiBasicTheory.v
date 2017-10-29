@@ -938,6 +938,7 @@ easily conclude the goal [G].
   (** This tactic solves (mostly automatically) the whole negative phase. *)
   Ltac NegPhase :=
     repeat (
+        autounfold;simpl;simplifyFormula;
         match goal with
         | [|- |-F- _ ; _ ; UP (?l :: ?L)] =>
           match l with
@@ -956,6 +957,6 @@ easily conclude the goal [G].
           | Ex _ => apply tri_store;solveF
           | Fx _ => apply tri_fx;solveF;intro
           end
-        end);simpl in * ; simplifyFormula.
+        end).
 
 End SqBasic.
