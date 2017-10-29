@@ -3,7 +3,7 @@
 (** ** Soundness
 This file proves the soundness of the triadic (focused) system of linear logic *)
 
-(* Add LoadPath "../" . *)
+(* Add LoadPath "../" .  *)
 Require Export Permutation.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -13,30 +13,29 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
-Require Export SequentCalculi.
+Require Export LL.SequentCalculiBasicTheory.
+
 
 Set Implicit Arguments.
 
 Module FFSoundness (DT : Eqset_dec_pol).
-  Module Export Sys :=  SqSystems DT.
+  Module Export Sys :=  SqBasic DT.
 
   Theorem Soundness : forall (B : list Lexp) n  (M : list Lexp) A ,
       LexpPos M ->
       n |-F- B ; M ; A  ->  |-- B ; M ++ (Arrow2LL A).
-  Proof with InvTac.
+  Proof with solveF.
     intros B n M A MPos.
     generalize dependent B.
     generalize dependent M.
     generalize dependent A.
     induction n  using strongind;
       intros A M MPos B H1.
-    + inversion H1;subst ...
-      (* intit 2*)
-      rewrite H0.
+    + inversionF H1;subst ...
       eapply sig2_copy with (F:=  A3°);auto. 
 
     (* INDUCTIVE CASES *)
-    + inversion H1;simpl;subst.
+    + inversionF H1.
       ++ (* tensor *)
         apply sig2_tensor with (N:=M0) (M:=N) (F:=F) (G:=G) ...
         MReplace (F :: N) ( N ++ (Arrow2LL (DW F) )) .
@@ -84,7 +83,7 @@ Module FFSoundness (DT : Eqset_dec_pol).
       ++ (* store *)
         apply H in H3 ...
         simpl in *.
-        rewrite <- union_assoc in H3 ...
+        rewrite <- union_assoc in H3 ... 
       ++ (* decide *)
         apply H in H4 ...
         simpl in *.

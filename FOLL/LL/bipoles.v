@@ -1,3 +1,10 @@
+(* This file is part of the Linear Logic  formalization in Coq: https://github.com/meta-logic/coq-ll *)
+
+(** ** Bipoles 
+Basic definitions of Monopoles and Bipoles 
+*)
+
+
 Add LoadPath "../" .
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -7,18 +14,11 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
-
-
 Require Export Permutation.
 Require Export LL.SequentCalculi.
 Require Export LL.StructuralRules.
 Require Export LL.Multisets.
 
-
-(* ************ *)
-Require Import ZArith.
-Open Scope Z_scope.
-(* ************ *)
 Module Bipole (DT : Eqset_dec_pol).
   Module Export Sys :=  SqSystems DT.
 
@@ -170,52 +170,8 @@ Module Bipole (DT : Eqset_dec_pol).
                                                              ( par (atom (a1 1 (var x))) (atom (a1 1 (var y))) ) )).
   Hint Unfold CLEFT . 
 
-  Lemma EqFx : forall FX FX',
-      E{ FX} = (fun T : Type => ex (FX' T)) -> FX = FX'.
-    intros.
-    extensionality T.
-    assert( (E{ FX}) T = (fun T : Type => ex (FX' T)) T).
-    rewrite H;auto.
-    inversion H0.
-    auto.
-  Qed.
-
-  Ltac clearEx H :=
-    apply EqFx in H;subst.
-
-  Lemma EqTensor : forall F1 F2,
-      (fun T : Type => tensor (F1 T) (F2 T)) = Tensor F1 F2.
-    intros.
-    reflexivity.
-  Qed.
-
-  Lemma EqPar : forall F1 F2,
-      (fun T : Type => par (F1 T) (F2 T)) = Par F1 F2.
-    intros.
-    reflexivity.
-  Qed.
-   
   
-  Lemma EqPerp : forall t n,
-      (fun T : Type => perp (a1 n (t T))) = Perp (A1 n t) .
-    intros.
-    reflexivity .
-  Qed.
-
-  Lemma EqAtom : forall t n,
-      (fun T : Type => atom (a1 n (t T))) = Atom (A1 n t) .
-    intros.
-    reflexivity .
-  Qed.
-
- 
-  Lemma EqFC2 : forall n t t',
-      
-      (fun T : Type => fc2 n (t T) (t' T)) = FC2 n t t'.
-    intros;reflexivity.
-  Qed.
-
-
+  
   Lemma TermFlatten: forall (t:Term) (T:Type) ,   flattenT (t (term T)) =  (t T).
   intros.
   assert(ClosedT t) by apply ax_closedT.
@@ -233,7 +189,7 @@ Module Bipole (DT : Eqset_dec_pol).
   Qed.
  
      
-  Ltac cleanTerm H := repeat (rewrite EqTensor in H + rewrite EqPerp in H +  rewrite EqFC2 in H + rewrite EqPar in H + rewrite TermFlattenF in H + rewrite EqAtom in H).
+  Ltac invFProof H := autounfold in H;simpl in H;inversion H;InvTac;clear H;subst.
    
   Lemma ApplyingBipoleRM : forall Theory M F,
       ListBipoles Theory -> ListPosAtoms M -> BipoleRM F ->
@@ -242,15 +198,20 @@ Module Bipole (DT : Eqset_dec_pol).
   Proof with InvTac.
     intros.
     autounfold in *.
+    invFProof H2.
+    match goal with
+      [H :  Ex _ = _ |- _ ] => clearEx H
+    end.
     inversion H2;subst ...
     clearEx H3.
+    clear H2.
     compute in H6.
     inversion H6;subst ... 
-    clearEx H3.
-    unfold Subst in H7.
-    simpl in H7.
-    cleanTerm H7.
-    inversion H7 ...
+    clearEx H2.
+    unfold Subst in H5; simpl in H5.
+    cleanTerm H5.
+    inversion H5 ...
+    (* Branch par *)
     inversion H10;subst ...
     inversion H12...
     inversion H13;subst ...

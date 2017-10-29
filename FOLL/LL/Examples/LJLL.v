@@ -5,7 +5,7 @@ https://github.com/brunofx86/LL *)
 We specify the system LJ for intuitionistic propositional logic. We encode that system as a Linear Logic theory and we prove the adequacy of that encoding. For that, we use the techniques described here #<a href="http://www.sciencedirect.com/science/article/pii/S0304397512010894">[Miller and Pimentel 13]# and the formalization of the focused system for Linear Logic. 
  *)
 
-(*Add LoadPath "../../" . *)
+(* Add LoadPath "../../" . *)
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -800,7 +800,8 @@ Proof with InvTac.
       apply multisetEncode in H1.
       rewrite H1. 
       eapply tri_dec2 with 
-      (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)... 
+          (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)...
+      try(solve_permutation).
       eapply tri_ex with (t:= encodeTerm G). 
       eapply tri_ex with (t:= encodeTerm G') ...
       eapply tri_tensor with (N:= [encodeFL (PL.conj G G')])
@@ -822,7 +823,7 @@ Proof with InvTac.
                                (M:=  encodeList L);eauto ...
       
       unfold encodeFR;simpl;conv ...
-      apply tri_rel ... 
+      apply tri_rel ...
       apply tri_store ...
       rewrite union_comm;conv ...
     ++ (* disjunction R2 *)
@@ -1205,8 +1206,8 @@ Proof with InvTac.
   intros.
   inversion H;subst ... 
   (* first the exists *)
-  unfold INIT in H0.
-  LexpSubst. clear H0.
+  (*unfold INIT in H0. *)
+  (*LexpSubst.*) (*clear H0.*)
   unfold Subst in H3; simpl in H3.
   (* now the tensor *)
   inversion H3;subst ...

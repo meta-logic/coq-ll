@@ -5,8 +5,26 @@
 
 Require Import Arith.
 
-(** Just a set 
- *)
+(* Auxilarly arithmetic results *)
+Lemma GtZero : forall n, n >0 -> exists n', n = S n'.
+Proof.
+  intros.
+  destruct n.
+  inversion H.
+  exists n;auto.
+Qed.
+
+Lemma plus_le_reg_r: forall n m q : nat, n + q <= m + q -> n <= m.
+Proof.
+  intros.
+  assert (n+q = q + n) by (apply plus_comm).
+  assert (m+q = q + m) by (apply plus_comm).
+  rewrite H0 in H. rewrite H1 in H.
+  eapply plus_le_reg_l in H.
+  assumption.
+Qed.
+
+(** Just a set *)
 
 Module Type Eqset.
   Parameter A : Type.

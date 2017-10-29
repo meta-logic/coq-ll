@@ -14,7 +14,7 @@ Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sets.Multiset.
 Require Export List.
 Require Export Omega.
-Require Export Eqset.
+Require Export LL.Eqset.
 Export ListNotations.
 
 Module Type MultisetList (EQ : Eqset_dec).
