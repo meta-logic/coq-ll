@@ -5,7 +5,7 @@ https://github.com/brunofx86/LL *)
 We specify the system LJ for intuitionistic propositional logic. We encode that system as a Linear Logic theory and we prove the adequacy of that encoding. For that, we use the techniques described here #<a href="http://www.sciencedirect.com/science/article/pii/S0304397512010894">[Miller and Pimentel 13]# and the formalization of the focused system for Linear Logic. 
  *)
 
-(* Add LoadPath "../../" . *)
+Add LoadPath "../../" . 
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -15,10 +15,11 @@ Require Export Coq.Sorting.PermutEq.
 Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Export Permutation.
-Require Export SequentCalculi.
-Require Export StructuralRules.
-Require Export Multisets.
-Require Export StrongInduction.
+Require Export LL.SequentCalculi.
+Require Export LL.SequentCalculiBasicTheory.
+Require Export LL.Multisets.
+Require Export LL.StrongInduction.
+Require Export LL.FLLMetaTheory.
 
 Hint Resolve Max.le_max_r.
 Hint Resolve Max.le_max_l.
@@ -157,7 +158,7 @@ Export ListNotations.
 
 Notation " L  '|-P-' n ';' F" := (PL.sq L n F) (at level 80).
 
-Module SLL := SRule PL.F_dec.
+Module SLL := FLLMetaTheory PL.F_dec.
 Export SLL.
 
 (* Numbers for the predicates *)
@@ -239,12 +240,12 @@ Definition ILEFT  :Lexp :=
 
 Definition Theory := BLEFT :: INIT :: CRIGHT :: CLEFT :: DRIGHT1 :: DRIGHT2 :: DLEFT :: IRIGHT :: ILEFT :: nil.
 Hint Unfold Theory .
-
+   
 
 Example translation:  |-F- Theory ; [Atom (A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ;
                                        Atom (A1 lf (FC2 cj (FC1 pr (Cte (PL.atom  1)))
                                                         (FC1 pr (Cte (PL.atom 2))) )) ]  ; UP []. 
-Proof with unfold Theory in *;InvTac.
+Proof with unfold Theory in *;solveF.
   eapply tri_dec2 with (F:=CLEFT) (B' :=  [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT])...
   
   eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 1)))).
@@ -255,9 +256,7 @@ Proof with unfold Theory in *;InvTac.
                            (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]) ...                              
   apply Init1 ...                                                                                                     
   apply tri_rel ...
-  apply tri_par.                                                                                                        
-  apply tri_store ...                                                                                                       
-  apply tri_store ...
+  NegPhase.
   eapply tri_dec2 with (F:=CRIGHT) ...
 
   eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 1))).
@@ -270,22 +269,27 @@ Proof with unfold Theory in *;InvTac.
   eapply tri_with ; eapply tri_store ...
   
   + (* branch 1 *)
-    eapply tri_dec2 with (F:=INIT);eauto ...
+    eapply tri_dec2 with (F:=INIT);eauto ... 
     eapply tri_ex with (t:= (Cte (PL.atom 1))).
     eapply tri_tensor with
     (N:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺ ;Atom (A1 rg (FC1 pr (Cte (PL.atom 1))))  ])
       (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
     
     eapply tri_tensor with (M:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺])
-                             (N:= [(A1 rg (FC1 pr (Cte (PL.atom 1)))) ⁺]);InvTac;apply Init1 ...
+                             (N:= [(A1 rg (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...
+    apply Init1 ...
+    apply Init1 ... 
+    
   + (* branch 2 *)          
-    eapply tri_dec2 with (F:=INIT);eauto ...
+    eapply tri_dec2 with (F:=INIT) ...
     eapply tri_ex with (t:= (Cte (PL.atom 2))).
     eapply tri_tensor with (N:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺ ;
                                  Atom (A1 rg (FC1 pr (Cte (PL.atom 2)) ))])                                          (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...        
 
     eapply tri_tensor with (N:= [(A1 rg (FC1 pr (Cte (PL.atom 2)))) ⁺])
-                             (M:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]);InvTac;apply Init1 ...
+                             (M:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
+    apply Init1 ...
+    apply Init1 ...
 Qed.
 
 Fixpoint encodeTerm (F: PL.LForm) :=
@@ -522,19 +526,19 @@ Inductive LeftAtomL: list Lexp -> Prop :=
 Hint Constructors LeftAtomL.
 
 Lemma encodeRightRight : forall F, RightAtom (encodeFR F).
-Proof with InvTac.
+Proof with solveF.
   intros.
   destruct F;unfold encodeFR ...
 Qed.
 
 Lemma encodeLeftLeft : forall F, LeftAtom (encodeFL F).
-Proof with InvTac.
+Proof with solveF.
   intros.
   destruct F;unfold encodeFL ...
 Qed.
 
 Lemma encodeListLeft : forall L, LeftAtomL (encodeList L).
-Proof with InvTac.
+Proof with solveF.
   intros.
   induction L ...
   constructor ...
@@ -626,48 +630,48 @@ Proof.
 Qed.
 
 Lemma IsPBLEFT : ~ IsPositiveAtom BLEFT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPINIT : ~ IsPositiveAtom INIT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPCLEFT : ~ IsPositiveAtom CLEFT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPCRIGHT : ~ IsPositiveAtom CRIGHT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPDLEFT : ~ IsPositiveAtom DLEFT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPDRIGHT1 : ~ IsPositiveAtom DRIGHT1.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPDRIGHT2 : ~ IsPositiveAtom DRIGHT2.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 
 Lemma IsPILEFT : ~ IsPositiveAtom ILEFT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
 Lemma IsPIRIGHT : ~ IsPositiveAtom IRIGHT.
-Proof with InvTac.
+Proof with solveF.
   auto ...
 Qed.
 
@@ -753,7 +757,7 @@ Ltac conv :=
   try(rewrite Equiv2).
 
 Theorem Soundness: forall L F n, L  |-P- n ; F -> ( encodeSequent L F ).
-Proof with InvTac. 
+Proof with solveF.
   intros L F n HD.
   dependent induction n generalizing L F using strongind.
   
@@ -776,7 +780,7 @@ Proof with InvTac.
     rewrite H. autounfold. simpl.
     eapply tri_dec2 with (F:= BLEFT);eauto.
     eapply tri_tensor with (N:= [(A1 lf (Cte PL.bot)) ⁺] ) (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList L') ...
-    
+     
     apply Init1 ...
   + (* Inductive Cases *)
     inversion HD;subst;autounfold in *;simpl;autounfold;simpl.
@@ -797,15 +801,22 @@ Proof with InvTac.
       
     ++ (* case Conj L *)
       apply H in H3 ...
-      apply multisetEncode in H1.
-      rewrite H1. 
+      Check  multisetEncode.
+      simpl in H1 .
+      specialize H1 with (PL.conj G G') .  compute in H1
+      generalize(
+      apply multeq_meq in H1.
+      eapply multisetEncode in H1.
+      
+      (*apply multisetEncode in H1.
+      rewrite H1.  *)
       eapply tri_dec2 with 
           (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)...
-      try(solve_permutation).
       eapply tri_ex with (t:= encodeTerm G). 
       eapply tri_ex with (t:= encodeTerm G') ...
       eapply tri_tensor with (N:= [encodeFL (PL.conj G G')])
-                               (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList (L'));eauto;conv ...
+                               (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList (L'));conv ...
+
       apply Init1 ...
       apply tri_rel ...
       apply tri_par ...

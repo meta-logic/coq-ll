@@ -884,10 +884,10 @@ easily conclude the goal [G].
         match goal with
         | [|- Release _] => try(auto using IsPositiveAtomRelease); try(constructor)
         | [|- IsNegativeAtom _] => constructor;auto
-        | [|-~ Asynchronous _] => auto using NotAsyncAtom, NotAsyncAtom', NotAsyncOne ,NotAsyncZero, NotAsyncTensor, NotAsyncPlus, NotAsyncEx, NotAsyncBang
-        | [|- ~ IsPositiveAtom ?F] => auto using NotPATop,NotPABot,NotPAOne,NotPAZero,NotPATensor,NotPAPlus,NotPAWith,NotPAPar,NotPABang,NotPAQuest,NotPAExists,NotPAForall;
-                                      try( assert(HPosNeg: IsNegativeAtom F) by  (constructor;auto);
-                                           intro HisPos; apply PositiveNegative in HPosNeg;auto)
+        | [|-~ Asynchronous _] => eauto using NotAsyncAtom, NotAsyncAtom', NotAsyncOne ,NotAsyncZero, NotAsyncTensor, NotAsyncPlus, NotAsyncEx, NotAsyncBang
+        | [|- ~ IsPositiveAtom ?F] => eauto using NotPATop,NotPABot,NotPAOne,NotPAZero,NotPATensor,NotPAPlus,NotPAWith,NotPAPar,NotPABang,NotPAQuest,NotPAExists,NotPAForall
+                                      (* try( assert(HPosNeg: IsNegativeAtom F) by  (constructor;auto);
+                                           intro HisPos; apply PositiveNegative in HPosNeg;auto) *)
         | [H : ~ Asynchronous ?F |- _] => assert(Asynchronous F) by auto;contradiction
         | [H1 : LexpPos ?M, H2 : ?M =mul= ?K ++ ?N |- LexpPos ?N]
           => MReplaceIn M (K ++ N) H1; eapply LPos3 in H1;eauto
