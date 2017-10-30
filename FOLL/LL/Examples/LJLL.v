@@ -137,7 +137,8 @@ Module PL.
       eapply impL;eauto.
   Qed.
 
-  Definition meqPL := meq.
+  (*Definition meqPL := meq.
+  Hint Unfold meqPL .
 
   (*!! Why should I prove again these lemmas ? *)
   (* B: Just use the dot notation for multisets *)
@@ -150,7 +151,7 @@ Module PL.
     intros.
     symmetry in H.
     contradiction_multiset.
-  Qed.
+  Qed.*)
   
 End PL.
 
@@ -161,6 +162,7 @@ Notation " L  '|-P-' n ';' F" := (PL.sq L n F) (at level 80).
 Module SLL := FLLMetaTheory PL.F_dec.
 Export SLL.
 
+
 (* Numbers for the predicates *)
 Definition rg := 1%nat. (* UP PREDICATE *)
 Definition lf := 3. (* DOWN predicate *)
@@ -170,6 +172,7 @@ Definition pr := 1%nat. (* atoms / propositions *)
 Definition cj := 2%nat. (* conjunction *)
 Definition dj := 3%nat. (* disjunction *)
 Definition im := 4%nat. (* implication *)
+Hint Unfold rg lf bt pr cj dj im .
 
 (* Bottom Left *)
 Definition  BLEFT :Lexp := fun T:Type => tensor (perp (a1 lf (cte PL.bot))) top.
@@ -756,7 +759,7 @@ Ltac conv :=
   try(rewrite Equiv1);
   try(rewrite Equiv2).
 
-Theorem Soundness: forall L F n, L  |-P- n ; F -> ( encodeSequent L F ).
+Theorem Soundness: forall (L : list PL.LForm) F n, L  |-P- n ; F -> ( encodeSequent L F ).
 Proof with solveF.
   intros L F n HD.
   dependent induction n generalizing L F using strongind.
@@ -800,16 +803,10 @@ Proof with solveF.
       apply H in H3;conv ...
       
     ++ (* case Conj L *)
-      apply H in H3 ...
-      Check  multisetEncode.
-      simpl in H1 .
-      specialize H1 with (PL.conj G G') .  compute in H1
-      generalize(
-      apply multeq_meq in H1.
-      eapply multisetEncode in H1.
-      
-      (*apply multisetEncode in H1.
-      rewrite H1.  *)
+      Check multisetEncode.
+      assert (Heq : PL.MSFormulas.meq L (PL.conj G G' :: L')) ...
+      eapply multisetEncode in Heq.
+      rewrite Heq.
       eapply tri_dec2 with 
           (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)...
       eapply tri_ex with (t:= encodeTerm G). 
@@ -823,6 +820,7 @@ Proof with solveF.
       apply tri_store ... 
       apply tri_store;conv ... 
       MReplace (encodeFR F :: (encodeList L' ++ [encodeFL G]) ++ [encodeFL G']) (encodeFR F :: encodeFL G :: encodeFL G' :: encodeList L') ...
+      apply H in H3 ...
     ++  (* disjunction R1 *)
       apply H in H2 ...
       eapply tri_dec2 with 
@@ -834,7 +832,9 @@ Proof with solveF.
                                (M:=  encodeList L);eauto ...
       
       unfold encodeFR;simpl;conv ...
-      apply tri_rel ...
+      apply tri_rel;autounfold ... reflexivity.
+      
+      
       apply tri_store ...
       rewrite union_comm;conv ...
     ++ (* disjunction R2 *)
@@ -848,7 +848,7 @@ Proof with solveF.
 
       unfold encodeFR;simpl ...
 
-      apply tri_rel ...
+      apply tri_rel;autounfold ... 
       apply tri_store ...
       rewrite union_comm ...
     ++  (* disjunction LEFT *)
@@ -888,9 +888,9 @@ Proof with solveF.
       apply tri_store ...
       apply tri_store;conv ...
       
-      MReplace ((encodeList L ++ [encodeFL F0]) ++ [encodeFR G]) (encodeFR G :: encodeFL F0 :: encodeList L) ...
+      MReplace ((encodeList L ++ [encodeFL F0]) ++ [encodeFR G]) (encodeFR G :: encodeFL F0 :: encodeList L) ... 
     ++ (* Implication Left *)
-      assert(HLL' : PL.meqPL L (PL.impl F0 G :: L')) by 
+      assert(HLL' : PL.MSFormulas.meq L (PL.impl F0 G :: L')) by 
           solve [apply PL.MSFormulas.multeq_meq; auto].
       assert(H3' : PL.impl F0 G :: L' |-P- n0; F0) by
           solve [eapply PL.Exch;eauto]. clear H3.
@@ -907,6 +907,7 @@ Proof with solveF.
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G) ; encodeFR F])
                                (M:=  encodeList L') ...
 
+      
       (* First Tensor *)
       assert(HS:  (fun T : Type =>
                      tensor
@@ -921,7 +922,8 @@ Proof with solveF.
       extensionality T.
       do 3 rewrite TermFlatten.
       reflexivity.
-      rewrite HS. clear HS.
+      rewrite HS. clear HS. 
+      
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G)])
                                (M:=  [encodeFR F]) ...
       unfold encodeFL ...
@@ -980,14 +982,14 @@ Qed.
 
 
 Lemma AtomsTheoryFalse : forall A B, Theory =mul= Atom A :: B -> False.
-Proof with InvTac. 
+Proof with solveF. 
   intros.
   unfold Theory in H.
   multisetContr... 
 Qed.
 
 Lemma AtomsTheoryFalse' : forall A B, Theory =mul= Perp A :: B -> False.
-Proof with InvTac. 
+Proof with solveF.
   intros.
   unfold Theory in H.
   multisetContr... 
@@ -995,13 +997,15 @@ Qed.
 
 Lemma InvI1 : forall n t M,  true = isPositive n -> |-F- Theory; M; DW ((A1 n t) ⁻) ->
                                                                     M = [Dual_LExp ( (A1 n t) ⁻)].
-Proof with InvTac.
+Proof with solveF.
   intros n t M HPos HD1.
   inversion HD1;subst ...
   (* cannot be in B *)
   apply AtomsTheoryFalse in H3.
   contradiction.
-  inversion H0;subst ...  
+  inversion H0;subst ...
+  rewrite <- HPos in H1.
+  inversion H1.
   (* cannot be a release .. then H2 is inconsistent*)
 Qed.
 
@@ -1018,8 +1022,9 @@ Lemma RightLeftAtom :  forall F t, encodeFL F = (A1 lf t) ⁺ -> encodeFR F = (A
 Qed.
 
 Lemma encodeListIN : forall L F M, encodeList L =mul= [encodeFL F] ++ M -> In F L.
-Proof with InvTac.
+Proof with solveF.
   induction L; simpl in *;intros ...
+  contradiction_multiset.
   apply DestructMSet in H.
   destruct H.
   (* case 1 *)
@@ -1094,7 +1099,7 @@ Proof.
 Qed.
 
 Lemma encodeFL_aux' a L G L1:
-  encodeList L =mul= G :: L1 -> G = encodeFL a -> exists L', PL.meqPL L (a :: L').
+  encodeList L =mul= G :: L1 -> G = encodeFL a -> exists L', PL.MSFormulas.meq L (a :: L').
 Proof.
   intros Hm Hg.  
   rewrite Hg in Hm.
@@ -1108,7 +1113,7 @@ Qed.
 (*!! UP *)
 Lemma DestructMSet4 F G M L:
   encodeFR F :: encodeList L =mul= G :: M -> 
-  encodeFR F <> G -> exists  L' a, PL.meqPL L (a::L') /\ encodeFL a = G
+  encodeFR F <> G -> exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a = G
                                    /\ M =mul= (encodeFR F) :: encodeList L'.
 Proof.
   change (encodeFR F :: encodeList L =mul= G :: M) with ([encodeFR F] ++ encodeList L =mul= [G] ++ M).
@@ -1117,7 +1122,7 @@ Proof.
   assert (exists a, G = encodeFL a) by
       solve [eapply encodeFL_aux; eauto].
   destruct H1.
-  assert (exists L', PL.meqPL L (x :: L')) by
+  assert (exists L', PL.MSFormulas.meq L (x :: L')) by
       solve [eapply encodeFL_aux'; eauto].
   destruct H2.
   eexists x0. 
@@ -1133,12 +1138,12 @@ Proof.
 Qed.
 (********************)
 
-Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [((A1 lf (FC2 cj t t')) ⁻)°] -> exists L' G G', PL.meqPL L ((PL.conj G G') :: L') /\  (M =mul= (encodeFR F) :: encodeList L') /\ encodeFL (PL.conj G G') = ((A1 lf (FC2 cj t t')) ⁻)°.
+Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [((A1 lf (FC2 cj t t')) ⁻)°] -> exists L' G G', PL.MSFormulas.meq L ((PL.conj G G') :: L') /\  (M =mul= (encodeFR F) :: encodeList L') /\ encodeFL (PL.conj G G') = ((A1 lf (FC2 cj t t')) ⁻)°.
   intros.
   generalize(EncodeFRLFContr F (FC2 cj t t'));intro H'.
   rewrite union_comm in H.
   simpl in H.
-  assert(exists  L' a, PL.meqPL L (a::L') /\ encodeFL a =((A1 lf (FC2 cj t t')) ⁻)°
+  assert(exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a =((A1 lf (FC2 cj t t')) ⁻)°
                        /\ M =mul= (encodeFR F) :: encodeList L').
   apply DestructMSet4; auto.                     
   (*!! Multsets: from H' and H *)
@@ -1156,12 +1161,12 @@ Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
   split;auto.
 Qed.
 
-Lemma encodeInvDisj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [((A1 lf (FC2 dj t t')) ⁻)°] -> exists L' G G', PL.meqPL L ((PL.disj G G') :: L') /\  (M =mul= (encodeFR F) :: encodeList L') /\ encodeFL (PL.disj G G') = ((A1 lf (FC2 dj t t')) ⁻)°.
+Lemma encodeInvDisj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [((A1 lf (FC2 dj t t')) ⁻)°] -> exists L' G G', PL.MSFormulas.meq L ((PL.disj G G') :: L') /\  (M =mul= (encodeFR F) :: encodeList L') /\ encodeFL (PL.disj G G') = ((A1 lf (FC2 dj t t')) ⁻)°.
   intros.
   generalize(EncodeFRLFContr F (FC2 dj t t'));intro H'.
   rewrite union_comm in H.
   simpl in H.
-  assert(exists  L' a, PL.meqPL L (a::L') /\ encodeFL a =((A1 lf (FC2 dj t t')) ⁻)°
+  assert(exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a =((A1 lf (FC2 dj t t')) ⁻)°
                        /\ M =mul= (encodeFR F) :: encodeList L').
   
   apply DestructMSet4; auto.
@@ -1183,11 +1188,11 @@ Lemma encodeInvDisj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
 Qed.
 
 
-Lemma encodeInvImpl : forall F L M t1 t2 t3, encodeFR F :: encodeList L =mul= M ++ [((A1 rg t1) ⁻)°] ++ [((A1 lf (FC2 im t2 t3)) ⁻)°] -> exists L' G G', PL.meqPL L ((PL.impl G G') :: L') /\  (M ++ [((A1 rg t1) ⁻)°] =mul= (encodeFR F) :: encodeList L') /\ encodeFR F = ((A1 rg t1) ⁻)° /\ encodeFL (PL.impl G G') = ((A1 lf (FC2 im t2 t3)) ⁻)°.
+Lemma encodeInvImpl : forall F L M t1 t2 t3, encodeFR F :: encodeList L =mul= M ++ [((A1 rg t1) ⁻)°] ++ [((A1 lf (FC2 im t2 t3)) ⁻)°] -> exists L' G G', PL.MSFormulas.meq L ((PL.impl G G') :: L') /\  (M ++ [((A1 rg t1) ⁻)°] =mul= (encodeFR F) :: encodeList L') /\ encodeFR F = ((A1 rg t1) ⁻)° /\ encodeFL (PL.impl G G') = ((A1 lf (FC2 im t2 t3)) ⁻)°.
   intros.
   generalize(EncodeFRLFContr F (FC2 im t2 t3));intro H'.
 
-  assert(exists  L' a, PL.meqPL L (a::L') /\ encodeFL a =((A1 lf (FC2 im t2 t3)) ⁻)°
+  assert(exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a =((A1 lf (FC2 im t2 t3)) ⁻)°
                        /\ M ++ [((A1 rg t1) ⁻)°] =mul= (encodeFR F) :: encodeList L').
   (*!! Multsets: from H' and H *)
   apply DestructMSet4; auto. rewrite H. solve_permutation.
@@ -1212,8 +1217,8 @@ Qed.
 
 
 
-Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.meqPL L (F:: L') /\ F = PL.atom a.
-Proof with InvTac.
+Lemma InvINIT : forall L F, |-F- Theory ;(encodeFR F) :: encodeList L ; DW(INIT) -> exists L' a, PL.MSFormulas.meq L (F:: L') /\ F = PL.atom a.
+Proof with solveF.
   intros.
   inversion H;subst ... 
   (* first the exists *)
@@ -1252,8 +1257,8 @@ Qed.
 
 
 (* Inversion of Bottom Left *)
-Lemma InvBLEFT :forall F L,  |-F- Theory; encodeFR (F) :: encodeList L; DW BLEFT -> exists L', PL.meqPL L (PL.bot:: L').
-Proof with InvTac.
+Lemma InvBLEFT :forall F L,  |-F- Theory; encodeFR (F) :: encodeList L; DW BLEFT -> exists L', PL.MSFormulas.meq L (PL.bot:: L').
+Proof with solveF.
   intros.
   inversion H ...
   unfold BLEFT in H0.
@@ -1270,18 +1275,16 @@ Proof with InvTac.
 Qed.
 
 Lemma InvCRIGHT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW CRIGHT -> exists G1 G2 n1 n2, n = S ( S (S (S (S (S (max n1 n2))))))  /\ F = PL.conj G1 G2 /\ S ( S (S (S (S (S (max n1 n2)))))) |-F- Theory; encodeFR (PL.conj G1 G2) :: encodeList L; DW CRIGHT /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [] /\ n2 |-F- Theory; encodeFR G2 :: encodeList L ; UP [].
-Proof with InvTac.
+Proof with solveF.
   intros.
   inversion H;subst ...
-  unfold CRIGHT in H0. LexpSubst. clear H0.
-  inversion H4;subst ...
-  unfold Subst in H0. simpl in H0. 
+  inversionF H4;subst ...
+  unfold Subst in H5. simpl in H5. 
 
   change ((fun T : Type => ex (fun x : T => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))))))
-  with (E{ fun T x => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))) }) in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H5. simpl in H5.
-  inversion H5;subst ...
+  with (E{ fun T x => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))) }) in H5 ...
+
+  inversionF H5;subst ...
   
   assert (HS : (fun T : Type =>
                   tensor (perp (a1 rg (fc2 cj (flattenT (t (term T))) (t0 T))))
@@ -1328,29 +1331,13 @@ Qed.
 
 
 
-Lemma InvCLEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW CLEFT -> exists L' G1 G2 n1, n = S ( S (S (S (S ( S (S n1))))))  /\ PL.meqPL L  ((PL.conj G1 G2) :: L') /\ n1 |-F- Theory; encodeFR F :: encodeFL G1 :: encodeFL G2 :: encodeList L' ; UP [].
-Proof with InvTac.
+Lemma InvCLEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW CLEFT -> exists L' G1 G2 n1, n = S ( S (S (S (S ( S (S n1))))))  /\ PL.MSFormulas.meq L  ((PL.conj G1 G2) :: L') /\ n1 |-F- Theory; encodeFR F :: encodeFL G1 :: encodeFL G2 :: encodeList L' ; UP [].
+Proof with solveF.
   intros.
   inversion H;subst ...
-  unfold CLEFT in H0.
-  
-  change ((fun T : Type => ex
-                             (fun x : T => ex (fun y : T => tensor (perp (a1 lf (fc2 cj (var x) (var y))))
-                                                                   (par (atom (a1 lf (var x))) (atom (a1 lf (var y))))))))
-  with
-  (E{ fun _ x => ex (fun y => tensor (perp (a1 lf (fc2 cj (var x) (var y)))) (par (atom (a1 lf (var x))) (atom (a1 lf (var y)))) ) }) in H0.
-  LexpSubst. clear H0.
   unfold Subst in H4;simpl in H4.
-  inversion H4 ...
-  change (fun T : Type =>
-            ex
-              (fun x : T =>
-                 tensor (perp (a1 lf (fc2 cj (t T) (var x))))
-                        (par (atom (a1 lf (t T))) (atom (a1 lf (var x))))))
-  with
-  (E{ fun T x => tensor (perp (a1 lf (fc2 cj (t T) (var x))))
-                        (par (atom (a1 lf (t T))) (atom (a1 lf (var x))))}) in H0.
-  LexpSubst. clear H0.
+  inversionF H4 ...
+
   unfold Subst in H5;simpl in H5.
   assert (HS : (fun T : Type =>
                   tensor (perp (a1 lf (fc2 cj (flattenT (t (term T))) (t0 T))))
@@ -1359,7 +1346,7 @@ Proof with InvTac.
   extensionality T;simpl.
   rewrite TermFlattenG. auto.
   rewrite HS in H5. clear HS.
-  inversion H5 ...
+  inversionF H5 ...
   (* H8 *)
   inversion H8;subst ...
   inversion H10...
@@ -1397,53 +1384,16 @@ Proof with InvTac.
 Qed.
 
 
-Lemma InvILEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW ILEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S ( (S (S (S (max n1 n2))))))))))  /\ PL.meqPL L  ((PL.impl G1 G2) :: L') /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
-Proof with InvTac.
+Lemma InvILEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW ILEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S ( (S (S (S (max n1 n2))))))))))  /\ PL.MSFormulas.meq L  ((PL.impl G1 G2) :: L') /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
+Proof with solveF.
   intros.
   inversion H;subst ...
-  unfold ILEFT in H0.
-  LexpSubst;clear H0.
   unfold Subst in H4;simpl in H4.
-  inversion H4 ...
-  change (fun T : Type =>
-            ex (fun x : T =>
-                  ex
-                    (fun x0 : T =>
-                       tensor
-                         (tensor (perp (a1 lf (fc2 im (t T) (var x)))) (perp (a1 rg (var x0))))
-                         (witH
-                            (par (atom (a1 rg (t T))) (atom (a1 lf (fc2 im (t T) (var x)))))
-                            (par (atom (a1 lf (var x))) (atom (a1 rg (var x0))))))))
-  with
-  (E{ fun T x => ex
-                   (fun x0 : T =>
-                      tensor
-                        (tensor (perp (a1 lf (fc2 im (t T) (var x)))) (perp (a1 rg (var x0))))
-                        (witH
-                           (par (atom (a1 rg (t T))) (atom (a1 lf (fc2 im (t T) (var x)))))
-                           (par (atom (a1 lf (var x))) (atom (a1 rg (var x0)))))) }) in H0 .
-  LexpSubst. clear H4 H0.
+  inversionF H4 ...
   unfold Subst in H5;simpl in H5.
-  inversion H5 ...
-  change(fun T : Type =>
-           ex
-             (fun x : T =>
-                tensor
-                  (tensor
-                     (perp (a1 lf (fc2 im (flattenT (t (term T))) (t0 T)))) (perp (a1 rg (var x))))
-                  (witH
-                     (par (atom (a1 rg (flattenT (t (term T))))) (atom (a1 lf (fc2 im (flattenT (t (term T))) (t0 T)))))
-                     (par (atom (a1 lf (t0 T))) (atom (a1 rg (var x)))))))
-  with
-  (E{ fun T x => tensor
-                   (tensor
-                      (perp (a1 lf (fc2 im (flattenT (t (term T))) (t0 T)))) (perp (a1 rg (var x))))
-                   (witH
-                      (par (atom (a1 rg (flattenT (t (term T))))) (atom (a1 lf (fc2 im (flattenT (t (term T))) (t0 T)))))
-                      (par (atom (a1 lf (t0 T))) (atom (a1 rg (var x))))) } ) in H0.
-  LexpSubst. clear H0.
+  inversionF H5 ...
   unfold Subst in H4;simpl in H4. clear H5.
-  inversion H4 ...
+  inversionF H4 ...
   assert(HS :  (fun T : Type =>
                   tensor
                     (tensor
@@ -1462,8 +1412,8 @@ Proof with InvTac.
                Tensor (Tensor (Perp (A1 lf (FC2 im t t0))) (Perp (A1 rg t1))) (With (Par (Atom (A1 rg t)) (Atom (A1 lf (FC2 im t t0)))) (Par (Atom (A1 lf t0)) (Atom (A1 rg t1)))) ).
   extensionality T.
   do 3 rewrite TermFlattenG.
-  reflexivity. rewrite HS in H0;clear HS.
-  LexpSubst. clear H4.
+  reflexivity. 
+  clear H4.
   
   (* Inversion of H7 *)
   inversion H7;subst ... clear H7. (* release *)
