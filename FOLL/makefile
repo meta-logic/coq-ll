@@ -43,7 +43,7 @@ CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 
 makefile.conf: 
-	coq_makefile LL/Completeness.v LL/Eqset.v LL/SequentCalculiBasicTheory.v LL/CutCases.v LL/FLLMetaTheory.v LL/Soundness.v LL/CutElimination.v LL/Multisets.v LL/StrongInduction.v LL/CutTactics.v LL/SequentCalculi.v LL/Syntax.v -o makefile INSTALLDEFAULTROOT = . -Q LL LL
+	coq_makefile LL/Completeness.v LL/Eqset.v LL/SequentCalculiBasicTheory.v LL/CutCases.v LL/FLLMetaTheory.v LL/Soundness.v LL/CutElimination.v LL/Multisets.v LL/StrongInduction.v LL/CutTactics.v LL/SequentCalculi.v LL/Syntax.v LL/Examples/LJLL.v -o makefile INSTALLDEFAULTROOT = . -Q LL LL
 
 # This file can be created by the user to hook into double colon rules or
 # add any other Makefile code he may need

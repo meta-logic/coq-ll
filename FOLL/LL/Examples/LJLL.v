@@ -5,7 +5,7 @@ https://github.com/brunofx86/LL *)
 We specify the system LJ for intuitionistic propositional logic. We encode that system as a Linear Logic theory and we prove the adequacy of that encoding. For that, we use the techniques described here #<a href="http://www.sciencedirect.com/science/article/pii/S0304397512010894">[Miller and Pimentel 13]# and the formalization of the focused system for Linear Logic. 
  *)
 
-Add LoadPath "../../" . 
+(*Add LoadPath "../../" .  *)
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -803,7 +803,6 @@ Proof with solveF.
       apply H in H3;conv ...
       
     ++ (* case Conj L *)
-      Check multisetEncode.
       assert (Heq : PL.MSFormulas.meq L (PL.conj G G' :: L')) ...
       eapply multisetEncode in Heq.
       rewrite Heq.
@@ -1383,57 +1382,86 @@ Proof with solveF.
   unfold lf in H7. simpl in H7. intuition.
 Qed.
 
+Lemma TermFlattenFun : forall t:Term , (fun T : Type => flattenT (t (term T))) = t.
+  intros.
+  extensionality T.
+  rewrite TermFlattenG;auto.
+Qed.
+
+Lemma TermFlattenFun': forall t:Term ,
+    (fun T:Type => flattenT (flattenT (t (term (term T))))) = t.
+  intros.
+  extensionality T.
+  do 2 rewrite TermFlattenG;auto.
+Qed.
+
+Hint Resolve TermFlattenFun .
+
+Ltac simplifyH H :=
+  unfold Subst in H;
+  simpl in H;
+  repeat 
+    match goal with
+    | [H : context[fun _ : Type => flattenT( _ (term _))] |- _] => rewrite TermFlattenFun in H
+    | [H : context[fun _ : Type => flattenT(flattenT ( _ (term _ ) ))] |- _] => rewrite TermFlattenFun' in H
+    | [H : context[fun _ : Type => a0 _ ] |- _ ] => rewrite EqA0 in H 
+    | [H : context[fun _ : Type => a1 _ _] |- _ ] => rewrite EqA1 in H 
+    | [H : context[fun _ : Type => a2 _ _ _] |- _ ] => rewrite EqA2 in H 
+    | [H : context[fun _ : Type => cte _] |- _ ] => rewrite EqCte in H 
+    | [H : context[fun _ : Type => fc1 _ _] |- _ ] => rewrite EqFC1 in H 
+    | [H : context[fun _ : Type => fc2 _ _ _] |- _ ] => rewrite EqFC2 in H 
+    | [H : context[fun _ : Type => atom _] |- _ ] => rewrite EqAtom in H 
+    | [H : context[fun _ : Type => perp _] |- _ ] => rewrite EqPerp in H 
+    | [H : context[fun _ : Type => tensor _ _] |- _ ] => rewrite EqTensor in H 
+    | [H : context[fun _ : Type => par _ _] |- _ ] => rewrite EqPar in H 
+    | [H : context[fun _ : Type => witH _ _] |- _ ] => rewrite EqWith in H 
+    | [H : context[fun _ : Type => plus _ _] |- _ ] => rewrite EqPlus in H 
+    | [H : context[fun _ : Type => quest _] |- _ ]  => rewrite EqQuest in H 
+    | [H : context[fun _ : Type => bang _] |- _ ] => rewrite EqBang in H 
+    | [H : context[fun _ : Type => ex _] |- _ ] => rewrite EqEx in H 
+    | [H : context[fun _ : Type => fx _] |- _ ] => rewrite EqFx in H 
+    end.
+
+Ltac simplifyG :=
+  match goal with
+  | [ |- ?G] =>
+    let H := type of G in
+    simplifyH H
+  end.
+
 
 Lemma InvILEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW ILEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S ( (S (S (S (max n1 n2))))))))))  /\ PL.MSFormulas.meq L  ((PL.impl G1 G2) :: L') /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
 Proof with solveF.
   intros.
-  inversion H;subst ...
-  unfold Subst in H4;simpl in H4.
-  inversionF H4 ...
-  unfold Subst in H5;simpl in H5.
-  inversionF H5 ...
-  unfold Subst in H4;simpl in H4. clear H5.
-  inversionF H4 ...
-  assert(HS :  (fun T : Type =>
-                  tensor
-                    (tensor
-                       (perp
-                          (a1 lf
-                              (fc2 im (flattenT (flattenT (t (term (term T))))) (flattenT (t0 (term T)))))) 
-                       (perp (a1 rg (t1 T))))
-                    (witH
-                       (par
-                          (atom (a1 rg (flattenT (flattenT (t (term (term T)))))))
-                          (atom
-                             (a1 lf
-                                 (fc2 im (flattenT (flattenT (t (term (term T))))) (flattenT (t0 (term T)))))))
-                       (par (atom (a1 lf (flattenT (t0 (term T)))))
-                            (atom (a1 rg (t1 T)))))) =
-               Tensor (Tensor (Perp (A1 lf (FC2 im t t0))) (Perp (A1 rg t1))) (With (Par (Atom (A1 rg t)) (Atom (A1 lf (FC2 im t t0)))) (Par (Atom (A1 lf t0)) (Atom (A1 rg t1)))) ).
-  extensionality T.
-  do 3 rewrite TermFlattenG.
-  reflexivity. 
-  clear H4.
-  
-  (* Inversion of H7 *)
-  inversion H7;subst ... clear H7. (* release *)
+  inversionF H;subst ... (* exists *)
+  inversionF H4;subst ... clear H4. (* exists *)
+  inversionF H5;subst ... clear H5. (* exists *)
+  inversionF H4;subst ... clear H4. (* tensor*)
+  simplifyH H0 ...
+
+  (* Inversion of H7 -- H2 in the end --*)
+  inversionF H7;subst ... clear H7 H3. (* release *)
   inversion H8;subst ... clear H8. (* with *)
-  inversion H9;subst ... clear H9.
-  inversion H7;subst ... clear H7.
-  inversion H11;subst ... clear H3  H8 H9 H11. (* conslusion in H12 *)
-  inversion H10;subst ... clear H10. (* with *)
-  inversion H6;subst ... clear H6. (* store *)
-  inversion H9;subst ... clear H9. (* conslusion in H10 *)
-  clear H7 H8.
+
+  (* 2 branches H7 and H9 *)
+  (* H9 *)
+  inversion H9;subst ... clear H9. (* store *)
+  inversion H6;subst ... clear H6 H9.
+  inversion H10;subst ... clear H10 H8. (* conslusion in H9 *)
+  (* H7 *)
+  inversion H7;subst ... clear H7. (* store *)
+  inversion H6;subst ... clear H6 H8. (* store *)
+  inversion H10;subst ... clear H10 H7. (* conslusion in H8 *)
+
+  
   (* Inversion of H2 *)
-  inversion H2;subst ... (* tensor *)
-  (* First Tensor in H4 *)
-  inversion H4;subst ...
-  (* Second Parte in H8 *)
-  inversion H8;subst ...
+  inversion H2;subst ... clear H2. (* tensor *)
+  (* First Branh in H4 *)
+  inversionF H4 ... clear H7 H4 . (* conclusion in H3 *)
+  (* Second Parte in H10 *)
+  inversionF H10;subst ... clear H6 H10.
 
   (*****************)
-  clear H9 H11 H2 H4 H8.
   rewrite H3 in H1. clear H3.
   apply encodeInvImpl in H1.
   destruct H1 as [L' H1].
@@ -1444,13 +1472,14 @@ Proof with solveF.
   destruct H1'';subst.
   assert(HS :(M ++ [(A1 lf t0) ⁺]) ++ [(A1 rg t1) ⁺]  =mul=
              (((M ++ [(A1 rg t1) ⁺]) ++ [(A1 lf t0) ⁺])  )) ...
-  rewrite HS in H10;clear HS.
-  rewrite H1' in H10.
-  eexists L'. exists G. exists G'. exists n0. exists n1.
+ 
+  rewrite HS in H9;clear HS.
+  rewrite H1' in H9.
+  eexists L'. exists G. exists G'. exists n2. exists n0.
+  split;auto using Nat.max_comm. 
   split;auto.
   split;auto.
-  split;auto.
-  clear H10.
+  clear H9.
   assert(HS: encodeList L =mul= encodeList (PL.impl G G' :: L'))
     by (apply multisetEncode;auto).
   rewrite HS;clear HS.
@@ -1459,289 +1488,215 @@ Proof with solveF.
   symmetry in H1'.
   apply EncSidesCorrect in H1'.
   destruct H1';subst.
-  rewrite <- H4 in H12.
+  rewrite <- H4 in H8.
   apply InvFLIm in H2.
   destruct H2;subst.
   apply RightLeftAtom in H2.
   rewrite H2.
   assert(HS:  (A1 rg t) ⁺ :: ((A1 lf (FC2 im t t0)) ⁻)° :: encodeList L'
               =mul= (encodeList L' ++ [(A1 rg t) ⁺]) ++ [(A1 lf (FC2 im t t0)) ⁺]) ...
-  rewrite HS;clear HS.
-  assumption.
+  
+  rewrite HS;clear HS ...
+  
+ 
   apply InvFLIm in H2.
   destruct H2;subst.
   rewrite H3.
-  MReplace(encodeFR F :: (A1 lf t0) ⁺ :: encodeList L') ((encodeFR F :: encodeList L') ++ [(A1 lf t0) ⁺]).
-  assumption.
+  MReplace(encodeFR F :: (A1 lf t0) ⁺ :: encodeList L') ((encodeFR F :: encodeList L') ++ [(A1 lf t0) ⁺]) ...
   (*****************)
   
   (* cannot be from B *)
-  apply AtomsTheoryFalse in H13. contradiction.
+  apply AtomsTheoryFalse in H7. contradiction.
   (* cannot be a release *)
-  inversion H5;subst.
-  unfold lf in H6. simpl in H6. intuition.
+  inversion H2;subst.
+  unfold lf in H4. simpl in H4. intuition.
   
   (* cannot be from B *)
   apply AtomsTheoryFalse in H11. contradiction.
   (* cannot be a release *)
-  inversion H5;subst.
-  unfold lf in H6. simpl in H6. intuition.
+  inversion H2;subst.
+  unfold lf in H5. simpl in H5. intuition.
 Qed.
 
 
-Lemma InvDLEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW DLEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S (max n1 n2))))))  /\ PL.meqPL L  ((PL.disj G1 G2) :: L') /\ n1 |-F- Theory; encodeFR F :: encodeFL G1 :: encodeList L' ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
-Proof with InvTac.
+Lemma InvDLEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW DLEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S (max n1 n2))))))  /\  PL.MSFormulas.meq L  ((PL.disj G1 G2) :: L') /\ n1 |-F- Theory; encodeFR F :: encodeFL G1 :: encodeList L' ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
+Proof with solveF.
   intros.
-  inversion H;subst ...
-  unfold DLEFT in H0.
-  LexpSubst;clear H0.
-  unfold Subst in H4;simpl in H4.
-  inversion H4 ...
-  change (fun T : Type =>
-            ex
-              (fun x : T =>
-                 tensor (perp (a1 lf (fc2 dj (t T) (var x))))
-                        (witH (atom (a1 lf (t T))) (atom (a1 lf (var x))))))
-  with
-  (E{ fun T x => 
-        tensor (perp (a1 lf (fc2 dj (t T) (var x))))
-               (witH (atom (a1 lf (t T))) (atom (a1 lf (var x))))}) in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H5;simpl in H5.
-  assert (HS : (fun T : Type =>
-                  tensor (perp (a1 lf (fc2 dj (flattenT (t (term T))) (t0 T))))
-                         (witH (atom (a1 lf (flattenT (t (term T)))))
-                               (atom (a1 lf (t0 T))))) =
-               Tensor (Perp (A1 lf (FC2 dj t t0))) (With (Atom (A1 lf t)) (Atom (A1 lf t0))) ).
-  extensionality T;simpl.
-  rewrite TermFlattenG. auto.
-  rewrite HS in H5. clear HS.
-  inversion H5 ...
-  (* H8 *)
-  inversion H8;subst ...
-  inversion H10...
-  inversion H12;subst ...
-  inversion H13;subst ...
-  clear H10 H3  H4 H12 H13 H14 H16.
-  (* H2 *)
-  inversion H2;subst ...
+  inversionF H;subst ... clear H.
+  simplifyH H4.
+
+  inversionF H4;subst ... clear H4.
+  simplifyH H3.
+
+  inversionF H3 ... clear H3.
+  
+  (* 2 branches: H1 and H6 *)
+  (* H1 *)
+  inversionF H1 ... clear H1 H5.
+  (* H6 *)
+  inversionF H6 ... clear H6 H1. 
+  inversionF H5 ... clear H5.  (* with *)
+  (* 2 atoms: H6 and H7 *)
+  inversionF H6 ... clear H5 H6.
+  inversionF H7 ... clear H5 H7.
+  
   (* case Init *)
-  apply encodeInvDisj in H1.
+  apply encodeInvDisj in H0.
+  rename H0 into H1.
   destruct H1 as [L' H1].
   destruct H1 as [G H1].
   destruct H1 as [G' H1].
   destruct H1 as [H1  H1'].
   destruct H1' as [H1'  H1''].
-  rewrite H1' in H17.
-  rewrite H1' in H15.
+  rewrite H1' in H8.
+  rewrite H1' in H6.
   apply InvFLDj in H1''.
   destruct H1'' as [HGt HGt'].
-  rewrite <- HGt'  in H17.
-  rewrite <- HGt  in H15.
-  eexists L'. exists G. exists G'. exists n. exists n1.
+  rewrite <- HGt  in H8.
+  rewrite <- HGt'  in H6.
+  eexists L'. exists G. exists G'. exists n. exists n0.
   split;auto.
   split;auto.
   split;auto.
   assert(HM:encodeFR F :: encodeFL G :: encodeList L' =mul=  
             (encodeFR F :: encodeList L') ++ [encodeFL G] ) ...  
-  rewrite HM; assumption.
+  rewrite HM ...
 
   assert(HM:encodeFR F :: encodeFL G' :: encodeList L' =mul=  
             (encodeFR F :: encodeList L') ++ [encodeFL G'] ) ...
-  rewrite HM; assumption.
-  
+  rewrite HM ...
   
   (* cannot be from B *)
-  apply AtomsTheoryFalse in H9. contradiction.
+  apply AtomsTheoryFalse in H7. contradiction.
   (* cannot be a release *)
-  inversion H3;subst.
-  unfold lf in H4. simpl in H4. intuition.
+  inversion H2;subst.
+  unfold lf in H3. simpl in H3. intuition.
 Qed.
 
 
 
 Lemma InvDRIGHT1 :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW DRIGHT1 -> exists   G1 G2 n1, n =  (S (S (S ( S (S n1)))))  /\ F = PL.disj G1 G2 /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [].
-Proof with InvTac.
+Proof with solveF.
   intros.
-  inversion H;subst ...
-  unfold DRIGHT1 in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H4;simpl in H4.
-  inversion H4;subst ...
-  change (fun T : Type =>
-            ex
-              (fun x : T => tensor (perp (a1 rg (fc2 dj (t T) (var x)))) (atom (a1 rg (t T)))))
-  with
-  (E{ fun T x => tensor (perp (a1 rg (fc2 dj (t T) (var x)))) (atom (a1 rg (t T)))}) in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H5;simpl in H5.
-  assert(HS : (fun T : Type =>
-                 tensor (perp (a1 rg (fc2 dj (flattenT (t (term T))) (t0 T))))
-                        (atom (a1 rg (flattenT (t (term T))))))
-              = Tensor (Perp (A1 rg (FC2 dj t t0))) (Atom (A1 rg t)) ).
-  extensionality T;simpl.
-  rewrite TermFlattenG. auto.
-  rewrite HS in H5. clear HS.
-  inversion H5 ...
-  (* H8 *)
-  inversion H8;subst ...
-  (* cannot be an axiom *)
-  inversion H9 ...
-  apply A1InvN in H6;subst. unfold rg in H3. simpl in H3. intuition.
-  (* cannot be from the theory *)
-  apply AtomsTheoryFalse' in H10.
-  contradiction.
-  (* it is a release *)
-  inversion H10;subst ...
+  inversion H;subst ... clear H.
+  simplifyH H4.
+  
+  inversion H4 ... clear H4.
+  simplifyH H3 ...
+  inversion H3 ... clear H3.
 
-  (* H2 *)
-  inversion H2;subst ...
-  apply EncSidesCorrect in H1.
-  destruct H1 as [H1 H1'].
-  apply InvDj in H1.
-  destruct H1 as [G HG].
+  
+  (* 2 branches H1 and H6 *)
+  inversion H1 ... clear H5.
+  (* Cannot be a negative atom *)
+  inversion H6 ... unfold rg in H5. inversion H5 ... LexpSubst. simpl in H2. inversion H2.
+  (* cannot be an atom in the theory *)
+  apply AtomsTheoryFalse' in H7; contradiction.
+  (* it is a release *)
+  inversion H7;subst ... clear H7 H9 H2.
+  
+  apply EncSidesCorrect in H0.
+  destruct H0 as [H0 H0'].
+  
+  apply InvDj in H0.
+  destruct H0 as [G HG].
   destruct HG as [G' HG].
   destruct HG as [HG [HG' HG'']];subst.
-  rewrite <- H1' in H13.
-  rewrite <- HG' in H13.
-  exists G. exists G'. eexists. 
+  
+  exists G. exists G'. eexists.
   split;auto.
   split;auto.
+  rewrite <- H0' in H10. rewrite <- HG' in H10.
   MReplace (encodeFR G :: encodeList L) ( encodeList L ++ [encodeFR G])...
   
   (* cannot be from the theory *)
-  apply AtomsTheoryFalse in H14.
-  contradiction.
+  apply AtomsTheoryFalse in H7 ; contradiction.
   (* cannot be a release *)
-  inversion H6;subst ...
-  unfold rg in H7. simpl in H7. intuition.
+  inversion H2... intuition.
 Qed.
 
-
 Lemma InvDRIGHT2 :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW DRIGHT2 -> exists   G1 G2 n1, n =  (S (S (S ( S (S n1)))))  /\ F = PL.disj G1 G2 /\ n1 |-F- Theory; encodeFR G2 :: encodeList L ; UP [].
-Proof with InvTac.
+Proof with solveF.
   intros.
-  inversion H;subst ...
-  unfold DRIGHT2 in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H4;simpl in H4.
-  inversion H4;subst ...
-  change  (fun T : Type =>
-             ex
-               (fun x : T =>
-                  tensor (perp (a1 rg (fc2 dj (t T) (var x)))) (atom (a1 rg (var x)))))
-  with
-  (E{ fun T x => tensor (perp (a1 rg (fc2 dj (t T) (var x)))) (atom (a1 rg (var x)))} ) in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H5;simpl in H5.
-  assert(HS : (fun T : Type =>
-                 tensor (perp (a1 rg (fc2 dj (flattenT (t (term T))) (t0 T))))
-                        (atom (a1 rg (t0 T))))
-              = Tensor (Perp (A1 rg (FC2 dj t t0))) (Atom (A1 rg t0)) ).
-  extensionality T;simpl.
+  inversion H;subst ... clear H.
+  simplifyH H4.
   
-  rewrite TermFlattenG. auto.
-  rewrite HS in H5. clear HS.
-  inversion H5 ...
-  (* H8 *)
-  inversion H8;subst ...
-  (* cannot be an axiom *)
-  inversion H9 ...
-  apply A1InvN in H6;subst. unfold rg in H3. simpl in H3. intuition.
-  (* cannot be from the theory *)
-  apply AtomsTheoryFalse' in H10.
-  contradiction.
-  (* it is a release *)
-  inversion H10;subst ...
+  inversion H4 ... clear H4.
+  simplifyH H3 ...
+  inversion H3 ... clear H3.
 
-  (* H2 *)
-  inversion H2;subst ...
-  apply EncSidesCorrect in H1.
-  destruct H1 as [H1 H1'].
-  apply InvDj in H1.
-  destruct H1 as [G HG].
+  
+  (* 2 branches H1 and H6 *)
+  inversion H1 ... clear H5.
+  (* Cannot be a negative atom *)
+  inversion H6 ... unfold rg in H5. inversion H5 ... LexpSubst. simpl in H2. inversion H2.
+  (* cannot be an atom in the theory *)
+  apply AtomsTheoryFalse' in H7; contradiction.
+  (* it is a release *)
+  inversion H7;subst ... clear H7 H9 H2.
+  
+  apply EncSidesCorrect in H0.
+  destruct H0 as [H0 H0'].
+  
+  apply InvDj in H0.
+  destruct H0 as [G HG].
   destruct HG as [G' HG].
   destruct HG as [HG [HG' HG'']];subst.
-  rewrite <- H1' in H13.
-  rewrite <- HG'' in H13.
-  exists G. exists G'. eexists. 
+  
+  exists G. exists G'. eexists.
   split;auto.
   split;auto.
-  MReplace (encodeFR G' :: encodeList L) ( encodeList L ++ [encodeFR G']) ...
-
+  rewrite <- H0' in H10. rewrite <- HG'' in H10.
+  MReplace (encodeFR G' :: encodeList L) ( encodeList L ++ [encodeFR G'])...
+  
   (* cannot be from the theory *)
-  apply AtomsTheoryFalse in H14.
-  contradiction.
+  apply AtomsTheoryFalse in H7 ; contradiction.
   (* cannot be a release *)
-  inversion H6;subst ...
-  unfold rg in H7. simpl in H7. intuition.
+  inversion H2... intuition.
 Qed.
 
 Lemma InvIRight :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW IRIGHT -> exists   G1 G2 n1, n =  (S (S (S ( S (S (S (S n1)))))))  /\ F = PL.impl G1 G2 /\ n1 |-F- Theory; encodeFR G2 :: encodeFL G1 :: encodeList L ; UP [].
-Proof with InvTac.
+Proof with solveF.
   intros.
-  inversion H;subst ...
-  unfold IRIGHT in H0.
-  LexpSubst. clear H0.
-  unfold Subst in H4;simpl in H4.
-  inversion H4;subst ...
-  change (fun T : Type =>
-            ex
-              (fun x : T =>
-                 tensor (perp (a1 rg (fc2 im (t T) (var x))))
-                        (par (atom (a1 lf (t T))) (atom (a1 rg (var x))))))
-  with
-  (E{ fun T x => tensor (perp (a1 rg (fc2 im (t T) (var x))))
-                        (par (atom (a1 lf (t T))) (atom (a1 rg (var x))))}) in H0.
-  
-  LexpSubst. clear H0.
-  unfold Subst in H5;simpl in H5.
-  assert(HS : (fun T : Type =>
-                 tensor (perp (a1 rg (fc2 im (flattenT (t (term T))) (t0 T))))
-                        (par (atom (a1 lf (flattenT (t (term T)))))
-                             (atom (a1 rg (t0 T))))) =
-              Tensor (Perp (A1 rg (FC2 im t t0))) (Par (Atom (A1 lf t) ) (Atom (A1 rg t0) )) ) ...
-  extensionality T;simpl.
-  rewrite TermFlattenG. auto.
-  rewrite HS in H5. clear HS.
-  inversion H5 ...
-  (* H8 *)
-  inversion H8;subst ... clear H8.
-  inversion H10 ... clear H10.
-  inversion H9;subst ... clear H9.
-  inversion H12;subst ... clear H3 H11 H10 H12.
+  inversion H ... clear H.
+  simplifyH H4.
+  inversion H4... clear H4.
+  simplifyH H3.
 
-  (* H2 *)
-  inversion H2;subst ...
-  apply EncSidesCorrect in H1.
-  destruct H1 as [H1 H1'].
-  apply InvIm in H1.
-  destruct H1 as [G HG].
+  inversion H3... clear H3.
+
+  (* 2 branches: H1 and H6 *)
+  (* H1 *)
+  inversion H1... clear H1 H5.
+  (* H6 *)
+  inversion H6 ... clear H1 H6.
+  inversion H5 ... clear H5.
+  inversion H4 ... clear H4 H6.
+  inversion H7 ... clear H7 H5.
+
+  apply EncSidesCorrect in H0.
+  destruct H0 as [H0 H0'].
+  apply InvIm in H0.
+  destruct H0 as [G HG].
   destruct HG as [G' HG].
   destruct HG as [HG [HG' HG'']];subst.
-  rewrite <- H1' in H13.
-
-  rewrite <- HG'' in H13.
+  
+  rewrite <- HG'' in H6.
   apply LeftRightAtom in HG'.
-  rewrite <- HG' in H13.
+  rewrite <- HG' in H6.
   exists G. exists G'. eexists.  
   split;auto.
-  split;auto. 
-
-  assert(HS:  encodeFR G' :: encodeFL G :: encodeList L =mul= 
-              (encodeList L ++ [encodeFL G]) ++ [encodeFR G']) ...
-  rewrite HS ...
-
+  split;auto.
+  MReplace (encodeFR G' :: encodeFL G :: encodeList L) ((M ++ [encodeFL G]) ++ [encodeFR G']) ...
+  
   (* cannot be from the theory *)
-  apply AtomsTheoryFalse in H9.
-  contradiction.
+  apply AtomsTheoryFalse in H7. contradiction.
   (* Cabbot be  release *)
-  inversion H3;subst ...
-  unfold rg in H6 ... intuition.
+  inversion H2;subst ... intuition.
 Qed.
 
 Theorem Completeness : forall L F, ( encodeSequent L F ) -> exists n, L |-P- n ; F.
-Proof with InvTac.
+Proof with solveF.
   intros.
   unfold encodeSequent in H.
   apply AdequacyTri2 in H.
@@ -1759,7 +1714,6 @@ Proof with InvTac.
       inversion HPos;subst.
       assert(encodeFR F = F0 \/ In F0 (encodeList L)). 
       eapply DestructMSet'; eauto.
-      (*!! from H3 *)
       destruct H1;subst.
       contradiction.
       assert(IsPositiveAtom F0) by( eapply PositiveIn;eauto).
@@ -1802,9 +1756,7 @@ Proof with InvTac.
        +++ (* case CRIGHT *)
          apply InvCRIGHT in H4.
          destruct H4 as [G1].
-         destruct H1 as [G2].
-         destruct H1 as [n1].
-         destruct H1 as [n2].
+         destruct H1 as [G2 [n1 [n2]]].
          destruct H1. subst.
          destruct H4. subst.
          destruct H4. subst.
@@ -1816,25 +1768,16 @@ Proof with InvTac.
          assert(n1 <= max n1 n2). apply Nat.le_max_l. omega.
        +++  (* case CLEFT *)
          apply InvCLEFT in H4.
-         destruct H4 as [L' H4].
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
+         destruct H4 as [L' [G1 [G2 [n1]]]].
+         destruct H1; subst.
          destruct H4; subst.
-         destruct H4; subst.
-         assert(HL : encodeFR F :: encodeFL G1 :: encodeFL G2 :: encodeList L' =
-                     encodeFR F :: encodeList (G1 :: G2 :: L')) by reflexivity.
-         rewrite HL in H4. clear HL.
-         apply H  with (m:=n1) in H4... destruct H4 as [n H4].
-
+         apply H  with (m:=n1) (L:= G1 :: G2 :: L') in H4... destruct H4 as [n H4].
          eexists. eapply PL.cL;eauto.
          omega.
        +++ (* DISJ RIGHT 1 *)
          apply InvDRIGHT1 in H4.
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
-         destruct H4; subst.
+         destruct H4 as [G1 [G2 [n1]]].
+         destruct H1; subst.
          destruct H4; subst.
          apply H with (m:=n1) in H4.
          destruct H4 as [n H4].
@@ -1843,76 +1786,53 @@ Proof with InvTac.
          omega.
        +++ (* DISJ RIGHT 2 *)
          apply InvDRIGHT2 in H4.
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
-         destruct H4; subst.
+         destruct H4 as [G1 [G2 [n1]]].
+         destruct H1; subst.
          destruct H4; subst.
          apply H with (m:=n1) in H4.
          destruct H4 as [n H4].
          eexists.
          apply PL.dR2;eauto.
-         omega.
+         omega. 
        +++ (* DISJ LEFT *)
          apply InvDLEFT in H4.
-         destruct H4 as [L' H4].
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
-         destruct H4 as [n2 H4].
-         destruct H4; subst.
+         destruct H4 as [L' [G1 [G2 [n1 [n2]] ]]].
+         destruct H1; subst.
          destruct H4; subst.
          destruct H4.
-         assert(HG1 : encodeFR F :: encodeFL G1 :: encodeList L' =
-                      encodeFR F :: encodeList (G1 :: L')) by reflexivity.
-         assert(HG2 : encodeFR F :: encodeFL G2 :: encodeList L' =
-                      encodeFR F :: encodeList (G2 :: L')) by reflexivity.
-         
-         rewrite HG1 in H4.
-         rewrite HG2 in H5.
-         apply H  with (m:=n1) in H4... destruct H4 as [m1 H4].
-         apply H  with (m:=n2) in H5... destruct H5 as [m2 H5].
+
+         apply H  with (m:=n1) (L:= G1 :: L') in H4... destruct H4 as [m1 H4].
+         apply H  with (m:=n2) (L:= G2 :: L') in H5... destruct H5 as [m2 H5].
          
          eexists. eapply PL.dL;eauto.
          assert(n2 <= max n1 n2). apply Nat.le_max_r. omega.
          assert(n1 <= max n1 n2). apply Nat.le_max_l. omega.
        +++ (* Implication Right *)
          apply InvIRight in H4.
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
+         destruct H4 as [G1 [G2 [n1]]].
+         destruct H1; subst.
          destruct H4; subst.
-         destruct H4; subst.
-         assert(HG : encodeFR G2 :: encodeFL G1 :: encodeList L =
-                     encodeFR G2 :: encodeList (G1 :: L)) by reflexivity.
-         rewrite HG  in H4.
-         apply H with (m:=n1) in H4.
+         
+         apply H with (m:=n1) (L:= G1::L)in H4.
          destruct H4 as [n H4].
          eexists.
          apply PL.impR;eauto.
          omega.
        +++ (* IMP Left *)
          apply InvILEFT in H4.
-         destruct H4 as [L' H4].
-         destruct H4 as [G1 H4].
-         destruct H4 as [G2 H4].
-         destruct H4 as [n1 H4].
-         destruct H4 as [n2 H4].
+         destruct H4 as [L' [G1 [G2 [n1 [n2]]]]].
+         destruct H1; subst.
          destruct H4; subst.
          destruct H4; subst.
-         destruct H4; subst.
-         apply H with (m:=n1) in H4; 
-           [|repeat apply Nat.le_le_succ_r; auto].
-         destruct H4 as [n1' H4].
-         assert(HS : encodeFR F :: encodeFL G2 :: encodeList L' =
-                     encodeFR F :: encodeList (G2 :: L')) by reflexivity.
-         rewrite HS  in H5;clear HS.
 
-         apply H with (m:=n2) in H5; 
-           [|repeat apply Nat.le_le_succ_r; auto]. 
-         
+         apply H with (m:=n1) in H4.
+         apply H with (m:=n2) (L:= G2 :: L')in H5.
+
+         destruct H4 as [n1' H4].
          destruct H5 as [n2' H5].
-         
          eexists.
          eapply PL.impL;eauto.
+         
+         repeat apply Nat.le_le_succ_r ...
+         repeat apply Nat.le_le_succ_r ...
 Qed.
