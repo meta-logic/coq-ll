@@ -16,11 +16,11 @@ Require Import Coq.Program.Equality.
 Require Import Coq.Logic.FunctionalExtensionality.
 Require Export Permutation.
 Require Export LL.SequentCalculi.
-Require Export LL.StructuralRules.
+Require Export LL.FLLMetaTheory.
 Require Export LL.Multisets.
 
 Module Bipole (DT : Eqset_dec_pol).
-  Module Export Sys :=  SqSystems DT.
+  Module Export Sys :=  FLLMetaTheory DT.
 
   (* Monopoles *)
   Inductive MonopoleI : Lexp -> Prop  :=
@@ -53,16 +53,16 @@ Module Bipole (DT : Eqset_dec_pol).
   
   Theorem MonopoleRelease :  forall B M F, MonopoleI F ->
                                            |-F- B ; M ; DW (F) -> |-F- B ; M ; UP [F] .
-  Proof with InvTac.
+  Proof with solveF.
     intros.
-    inversion H;subst;(inversion H0;InvTac);subst;
+    inversion H;subst;(inversion H0;solveF);subst;
       try(
           match goal with
           | [H: IsPositiveAtom ?F, H' : IsNegativeAtom ?F |- _] => eapply PositiveNegativeFalse;eauto
           end);
       try(
           match goal with
-          | [H: IsPositiveAtom ?F |- _] => inversion H;InvTac
+          | [H: IsPositiveAtom ?F |- _] => inversion H;solveF
           end).
   Qed.
 
@@ -80,10 +80,10 @@ Module Bipole (DT : Eqset_dec_pol).
                                               
   
   Hint Constructors BipoleI BipoleB .
-  Ltac prove_biP := constructor;InvTac;try(intro;autounfold;simpl); try eapply bi_bi.
+  Ltac prove_biP := constructor;solveF;try(intro;autounfold;simpl); try eapply bi_bi.
                                                 
   Example bleft : forall C n, isPositive n = true ->  BipoleI (fun T:Type => tensor (perp (a1 n (cte C))) top).
-  Proof with InvTac.
+  Proof with solveF.
     intros.
     constructor ...
     eapply bi_neg ...
@@ -94,7 +94,7 @@ Module Bipole (DT : Eqset_dec_pol).
                                  tensor
                                    (tensor  (perp (a1 n (fc1 n' (var x)))) (perp (a1 m (fc1 m' (var x))))
                                    ) top)).
-  Proof with InvTac.
+  Proof with solveF.
     intros.
     prove_biP.
     prove_biP.
@@ -109,7 +109,7 @@ Module Bipole (DT : Eqset_dec_pol).
                                            tensor
                                              (perp (a1 n (fc2 n' (var x) (var y))))
                                              ( par (atom (a1 n (var x))) (atom (a1 n (var y))) ) ))).
-  Proof with InvTac.
+  Proof with solveF.
     intros.
     prove_biP.
     prove_biP.
@@ -129,7 +129,7 @@ Module Bipole (DT : Eqset_dec_pol).
                                                              (atom (a1 n (var x)))
                                                              (atom (a1 n (var y)))
                                 ) ))).
-  Proof with InvTac.
+  Proof with solveF.
     intros.
     prove_biP.
     prove_biP.
@@ -140,9 +140,9 @@ Module Bipole (DT : Eqset_dec_pol).
   Qed.   
 
   Lemma BipoleAtom : forall F, BipoleI F -> ~ IsPositiveAtom F.
-  Proof with InvTac.
+  Proof with solveF.
     intros F H Hneg.
-    inversion H; subst;InvTac;(try inversion Hneg;InvTac).
+    inversion H; subst;solveF;(try inversion Hneg;solveF).
   Qed.
 
   (* A more restricted biPole --used in rules -- *)
@@ -152,7 +152,7 @@ Module Bipole (DT : Eqset_dec_pol).
   Hint Constructors BipoleRM .
 
   Lemma BipoleRM_Bipole : forall F, BipoleRM F -> BipoleI F .
-  Proof with InvTac.
+  Proof with solveF.
     intros .
     induction H.
     prove_biP.
@@ -181,41 +181,37 @@ Module Bipole (DT : Eqset_dec_pol).
   Qed. 
 
 
-  Lemma TermFlattenF : forall t : Term ,
-      (fun T : Type => flattenT (t (term T))) = t.
-    intros.
-    extensionality T.
-    apply TermFlatten.
-  Qed.
- 
      
-  Ltac invFProof H := autounfold in H;simpl in H;inversion H;InvTac;clear H;subst.
+  Ltac invFProof H := simplifyH H ; inversion H ; solveF; clear H.
    
   Lemma ApplyingBipoleRM : forall Theory M F,
       ListBipoles Theory -> ListPosAtoms M -> BipoleRM F ->
       |-F- Theory ; M ; DW CLEFT ->
                         False .
-  Proof with InvTac.
+  Proof with solveF.
     intros.
+    
     autounfold in *.
     invFProof H2.
-    match goal with
-      [H :  Ex _ = _ |- _ ] => clearEx H
-    end.
-    inversion H2;subst ...
-    clearEx H3.
-    clear H2.
-    compute in H6.
-    inversion H6;subst ... 
-    clearEx H2.
-    unfold Subst in H5; simpl in H5.
-    cleanTerm H5.
-    inversion H5 ...
-    (* Branch par *)
-    inversion H10;subst ...
-    inversion H12...
-    inversion H13;subst ...
-    inversion H16;subst ...
+    invFProof H6.
+    invFProof H5.
+    
+    (* Branch par H8 *)
+    invFProof H8.
+    invFProof H9.
+    invFProof H8. clear H10.
+    invFProof H11. clear H9 H5.
+
+    (* Branch Init H4 *)
+    invFProof H4.
+    (* this is the "real case " *)
+    admit.
+
+    (* this case is a contradiction due to H8 *)
+    admit.
+    (*this case is a contradiction due to H5 *)
+    admit.
+    
   Admitted.
     
 
