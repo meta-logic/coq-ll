@@ -4,7 +4,7 @@
  *)
 
 
-(* Add LoadPath "../".  *)
+(*Add LoadPath "../../".  *)
 Require Export Permutation.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -938,7 +938,7 @@ easily conclude the goal [G].
   (** This tactic solves (mostly automatically) the whole negative phase. *)
   Ltac NegPhase :=
     repeat (
-        autounfold;simpl;simplifyFormula;
+        autounfold;simpl;
         match goal with
         | [|- |-F- _ ; _ ; UP (?l :: ?L)] =>
           match l with

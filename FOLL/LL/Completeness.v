@@ -5,7 +5,7 @@ Here we prove the completeness theorem for the focused system
  *)
 
 
-(*Add LoadPath "../". *)
+(* Add LoadPath "../".  *)
 Require Export Permutation.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -1121,7 +1121,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
     Proof with solveF.
       intros HNM  HM1pos HM2pos HD1 HD2.
       apply EquivUpArrow2 with (L':= L1 ++ l :: L2) (L := l:: L2 ++ L1);eauto ...
-      inversion HD2;subst;NegPhase ...
+      inversion HD2;subst;NegPhase.
       (* bot *)
       apply EquivUpArrow2 with (L:= L1 ++ L2) (L' := L2 ++ L1);eauto ...
       assert(HUp : RUp(n' + n)) by (apply IH;omega) ...
@@ -1363,9 +1363,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
         (* HD1  + HM1Pos is inconsistent *)
         apply  NegPosAtom in H4.
         apply AppSingleton in H;subst;simpl in *.
-        compute in H4;simplifyFormula.
         inversionF HD1...
-        
         assert(False) by (eapply NegPosAtomContradiction;eauto).
         contradiction.
       ++ (* atom 2 *)
@@ -1382,7 +1380,6 @@ Module InvLemmas (DT : Eqset_dec_pol).
         (* same inconsistency *)
         apply  NegPosAtom in H4.
         apply AppSingleton in H;subst;simpl in *.
-        compute in H4;simplifyFormula.
         inversionF HD1...
         assert(False) by (eapply NegPosAtomContradiction;eauto).
         contradiction.
@@ -1529,7 +1526,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
   (* =============================================== *)
   Module Completeness.
     
-    
+     
     Theorem CompletenessAux : forall B L n,  n |-- B ; L -> |-F- B ; empty ; UP L.
     Proof with solveF;NegPhase.
       intros.
@@ -1543,13 +1540,18 @@ Module InvLemmas (DT : Eqset_dec_pol).
           destruct HA3 as [HA3 | HA3];
             (* Positive Polarity *)
             apply EquivUpArrow2 with (L:= [A3 ⁺; A3 ⁻]);NegPhase ...
-          eapply tri_dec1 with (F:=A3 ⁻) ...
+          eapply tri_dec1 with (F:=A3 ⁻).
           apply PositiveNegativeAtomNeg;auto.
+          eauto.
+          auto...
+          
           (* Negative Atom *)
-          eapply tri_dec1 with (F:=A3 ⁺) ...
+          eapply tri_dec1 with (F:=A3 ⁺).
           apply NegativePositiveAtomNeg ...
+          eauto.
+          auto...
         ++ (* one *)
-          apply EquivUpArrow2 with (L:= [1]) ...
+          apply EquivUpArrow2 with (L:= [1]) ... 
           eapply tri_dec1 with (F:=1) ...
         ++ (* top *)
           apply EquivUpArrow2 with (L:= ⊤ :: M) ...          

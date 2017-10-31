@@ -5,7 +5,7 @@ https://github.com/brunofx86/LL *)
 We specify the system LJ for intuitionistic propositional logic. We encode that system as a Linear Logic theory and we prove the adequacy of that encoding. For that, we use the techniques described here #<a href="http://www.sciencedirect.com/science/article/pii/S0304397512010894">[Miller and Pimentel 13]# and the formalization of the focused system for Linear Logic. 
  *)
 
-(*Add LoadPath "../../" .  *)
+(* Add LoadPath "../" . *) 
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -136,23 +136,6 @@ Module PL.
       eapply H with (L' := L') in H5;auto.
       eapply impL;eauto.
   Qed.
-
-  (*Definition meqPL := meq.
-  Hint Unfold meqPL .
-
-  (*!! Why should I prove again these lemmas ? *)
-  (* B: Just use the dot notation for multisets *)
-
-  Lemma Contradiction_mset : forall a L,  meq []  (a :: L) -> False.
-    intros.
-    contradiction_multiset.
-  Qed.
-  Lemma Contradiction_mset' : forall a L,  meq  (a :: L) [] -> False.
-    intros.
-    symmetry in H.
-    contradiction_multiset.
-  Qed.*)
-  
 End PL.
 
 Export ListNotations.
@@ -243,12 +226,13 @@ Definition ILEFT  :Lexp :=
 
 Definition Theory := BLEFT :: INIT :: CRIGHT :: CLEFT :: DRIGHT1 :: DRIGHT2 :: DLEFT :: IRIGHT :: ILEFT :: nil.
 Hint Unfold Theory .
-   
+
+
 
 Example translation:  |-F- Theory ; [Atom (A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ;
                                        Atom (A1 lf (FC2 cj (FC1 pr (Cte (PL.atom  1)))
                                                         (FC1 pr (Cte (PL.atom 2))) )) ]  ; UP []. 
-Proof with unfold Theory in *;solveF.
+Proof with unfold Theory in *;solveF;simplifyG.
   eapply tri_dec2 with (F:=CLEFT) (B' :=  [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT])...
   
   eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 1)))).
@@ -256,7 +240,7 @@ Proof with unfold Theory in *;solveF.
   simpl.                                                                                                          
 
   eapply tri_tensor with (N:= [(A1 lf (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])           
-                           (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]) ...                              
+                         (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]) ...                              
   apply Init1 ...                                                                                                     
   apply tri_rel ...
   NegPhase.
@@ -265,24 +249,21 @@ Proof with unfold Theory in *;solveF.
   eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 1))).
   eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 2))).                                                                                
   eapply tri_tensor with
-  (N:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])
-    (M:=[Atom (A1 lf (FC1 pr (Cte (PL.atom 1)))) ; Atom (A1 lf (FC1 pr (Cte (PL.atom 2)) ))]);eauto ...
+      (N:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])
+      (M:=[Atom (A1 lf (FC1 pr (Cte (PL.atom 1)))) ; Atom (A1 lf (FC1 pr (Cte (PL.atom 2)) ))]);eauto ...
   eapply Init1 ...
   eapply tri_rel ...
   eapply tri_with ; eapply tri_store ...
   
   + (* branch 1 *)
-    eapply tri_dec2 with (F:=INIT);eauto ... 
+    eapply tri_dec2 with (F:=INIT)... 
     eapply tri_ex with (t:= (Cte (PL.atom 1))).
     eapply tri_tensor with
-    (N:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺ ;Atom (A1 rg (FC1 pr (Cte (PL.atom 1))))  ])
-      (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
+        (N:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺ ;Atom (A1 rg (FC1 pr (Cte (PL.atom 1))))  ])
+        (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
     
     eapply tri_tensor with (M:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺])
-                             (N:= [(A1 rg (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...
-    apply Init1 ...
-    apply Init1 ... 
-    
+                           (N:= [(A1 rg (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...
   + (* branch 2 *)          
     eapply tri_dec2 with (F:=INIT) ...
     eapply tri_ex with (t:= (Cte (PL.atom 2))).
@@ -290,9 +271,7 @@ Proof with unfold Theory in *;solveF.
                                  Atom (A1 rg (FC1 pr (Cte (PL.atom 2)) ))])                                          (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...        
 
     eapply tri_tensor with (N:= [(A1 rg (FC1 pr (Cte (PL.atom 2)))) ⁺])
-                             (M:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
-    apply Init1 ...
-    apply Init1 ...
+                           (M:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
 Qed.
 
 Fixpoint encodeTerm (F: PL.LForm) :=
@@ -680,85 +659,6 @@ Qed.
 
 Hint Resolve IsPINIT IsPCLEFT IsPCRIGHT IsPBLEFT IsPDLEFT IsPDRIGHT1 IsPDRIGHT2 IsPILEFT IsPIRIGHT.
 
-Lemma TermFlattenG: forall (t:Term) (T:Type) ,   flattenT (t (term T)) =  (t T).
-  intros.
-  assert(ClosedT t) by apply ax_closedT.
-  induction H; try(reflexivity).
-  simpl. rewrite IHClosedT. auto.
-  simpl. rewrite IHClosedT1. rewrite IHClosedT2. auto.
-Qed.
-
-Lemma TermFlatten: forall F (T:Type) ,   flattenT (encodeTerm F (term T)) =  (encodeTerm F T).
-  intros.
-  induction F;auto;
-    simpl;
-    rewrite IHF1;
-    rewrite IHF2;
-    auto.
-Qed.
-
-Lemma AtomFlatten : forall F G n m,   (fun T : Type => perp (a1 n (fc2 m (flattenT (encodeTerm F (term T))) (encodeTerm G T))))=
-                                      Perp (A1 n (FC2 m (encodeTerm F) (encodeTerm G))).
-  intros.
-  
-  extensionality T.
-  
-  rewrite TermFlatten.
-  reflexivity.
-Qed.
-
-Lemma AtomFlatten' : forall F G n m,   (fun T : Type => atom (a1 n (fc2 m (flattenT (encodeTerm F (term T))) (encodeTerm G T))))=
-                                       Atom (A1 n (FC2 m (encodeTerm F) (encodeTerm G))).
-  intros.
-  extensionality T.
-  rewrite TermFlatten.
-  reflexivity.
-Qed.
-
-Lemma AtomFlatten'' : forall F  n,   (fun T : Type => atom (a1 n (flattenT (encodeTerm F (term T)))))=
-                                     Atom (A1 n (encodeTerm F)).
-  intros.
-  extensionality T.
-  rewrite TermFlatten.
-  reflexivity.
-Qed. 
-
-Lemma AtomFlatten2 : forall F n, (A1 n (encodeTerm F)) ⁺ = fun T : Type => atom (a1 n (flattenT (encodeTerm F (term T)))).
-  intros.
-  extensionality T.
-  rewrite TermFlatten;auto.
-Qed.
-
-Lemma AtomFlatten3 : forall F n, (A1 n (encodeTerm F)) ⁺ = fun T : Type => atom (a1 n  (encodeTerm F T)).
-  intros.
-  extensionality T.
-  reflexivity.
-Qed.
-
-Lemma FlattenEncTerm:  forall F G n m,  ( (A1 n (FC2 m (encodeTerm F) (encodeTerm G))) ⁺) =
-                                        Dual_LExp (fun T : Type => perp (a1 n (fc2 m (flattenT (encodeTerm F (term T))) (encodeTerm G T)))).
-  intros.
-  rewrite AtomFlatten.
-  reflexivity.
-Qed.
-
-Lemma Equiv1 : forall F, (A1 lf (encodeTerm F)) ⁺ = encodeFL F.
-  intro;reflexivity.
-Qed.
-Lemma Equiv2 : forall F, (A1 rg (encodeTerm F)) ⁺ =  encodeFR F.
-  intro;reflexivity.
-Qed.
-
-Ltac conv := 
-  simpl;
-  try (rewrite AtomFlatten);
-  try (rewrite AtomFlatten');
-  try (rewrite <- AtomFlatten3);
-  try (rewrite AtomFlatten'');
-  try(rewrite <- AtomFlatten2);
-  try(rewrite Equiv1);
-  try(rewrite Equiv2).
-
 Theorem Soundness: forall (L : list PL.LForm) F n, L  |-P- n ; F -> ( encodeSequent L F ).
 Proof with solveF.
   intros L F n HD.
@@ -772,9 +672,9 @@ Proof with solveF.
     eapply tri_dec2 with (F:= INIT);eauto.
     eapply tri_ex with (t:= (Cte (PL.atom a))).
     eapply tri_tensor with (N:= [A1 rg (FC1 pr (Cte (PL.atom a))) ⁺ ; (A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺])
-                             (M:= encodeList L');eauto.
+                           (M:= encodeList L');eauto.
     eapply tri_tensor with (N:=[(A1 rg (FC1 pr (Cte (PL.atom a)))) ⁺])
-                             (M:= [(A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺]) ...
+                           (M:= [(A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺]) ...
     apply Init1 ...
     apply Init1 ...
     apply tri_rel...
@@ -783,67 +683,68 @@ Proof with solveF.
     rewrite H. autounfold. simpl.
     eapply tri_dec2 with (F:= BLEFT);eauto.
     eapply tri_tensor with (N:= [(A1 lf (Cte PL.bot)) ⁺] ) (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList L') ...
-     
+    
     apply Init1 ...
-  + (* Inductive Cases *)
-    inversion HD;subst;autounfold in *;simpl;autounfold;simpl.
-    ++ (* Conj R *)
+  + (* Inductive Cases *) 
+    inversion HD;subst;autounfold in *;simpl;autounfold;simpl;simplifyG.
+    ++ (* Conj R *) 
       eapply tri_dec2 with (F:= CRIGHT);eauto.
       eapply tri_ex with (t:= encodeTerm F0).
       eapply tri_ex with (t:= encodeTerm G).
       eapply tri_tensor with (N:= [(A1 rg (FC2 cj (encodeTerm F0)  (encodeTerm G))) ⁺])
-                               (M:= encodeList L);eauto;conv ... 
+                             (M:= encodeList L);eauto ...
+      simplifyG ...
+      
       apply tri_rel ...
       apply tri_with; apply tri_store ...
       (* Branch F *)
       rewrite union_comm.
-      apply H in H1;conv ...
+      apply H in H1 ... simplifyG ...
       (* Branch G *)
-      rewrite union_comm.
-      apply H in H3;conv ...
+      rewrite union_comm. 
+      apply H in H3 ... 
       
     ++ (* case Conj L *)
       assert (Heq : PL.MSFormulas.meq L (PL.conj G G' :: L')) ...
       eapply multisetEncode in Heq.
       rewrite Heq.
       eapply tri_dec2 with 
-          (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT)...
+          (B':= [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= CLEFT);eauto.
       eapply tri_ex with (t:= encodeTerm G). 
       eapply tri_ex with (t:= encodeTerm G') ...
       eapply tri_tensor with (N:= [encodeFL (PL.conj G G')])
-                               (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList (L'));conv ...
+                             (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList (L'));simplifyG ...
 
       apply Init1 ...
       apply tri_rel ...
       apply tri_par ...
       apply tri_store ... 
-      apply tri_store;conv ... 
+      apply tri_store ... simplifyG ...
       MReplace (encodeFR F :: (encodeList L' ++ [encodeFL G]) ++ [encodeFL G']) (encodeFR F :: encodeFL G :: encodeFL G' :: encodeList L') ...
       apply H in H3 ...
     ++  (* disjunction R1 *)
       apply H in H2 ...
       eapply tri_dec2 with 
-      (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= DRIGHT1)...
-      try solve_permutation.
+          (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT2; DLEFT; IRIGHT; ILEFT]) (F:= DRIGHT1)...
       eapply tri_ex with (t:= encodeTerm F0). 
       eapply tri_ex with (t:= encodeTerm G) ...
       eapply tri_tensor with (N:= [encodeFR (PL.disj F0 G)])
-                               (M:=  encodeList L);eauto ...
+                             (M:=  encodeList L);eauto ...
       
-      unfold encodeFR;simpl;conv ...
+      unfold encodeFR;simpl ... simplifyG ...
       apply tri_rel;autounfold ... reflexivity.
       
       
       apply tri_store ...
-      rewrite union_comm;conv ...
+      rewrite union_comm. simplifyG ...
     ++ (* disjunction R2 *)
       apply H in H2 ...
       eapply tri_dec2 with 
-      (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DLEFT; IRIGHT; ILEFT]) (F:= DRIGHT2)...
+          (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DLEFT; IRIGHT; ILEFT]) (F:= DRIGHT2)...
       eapply tri_ex with (t:= encodeTerm F0). 
       eapply tri_ex with (t:= encodeTerm G) ...
       eapply tri_tensor with (N:= [encodeFR (PL.disj F0 G)])
-                               (M:=  encodeList L);eauto;conv ...
+                             (M:=  encodeList L);eauto;simplifyG ...
 
       unfold encodeFR;simpl ...
 
@@ -856,15 +757,15 @@ Proof with solveF.
       apply H in H3 ...
       apply H in H5 ...
       eapply tri_dec2 with 
-      (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; IRIGHT; ILEFT]) (F:= DLEFT)...
+          (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; IRIGHT; ILEFT]) (F:= DLEFT)...
       eapply tri_ex with (t:= encodeTerm F0).   
       eapply tri_ex with (t:= encodeTerm G) ...
       eapply tri_tensor with (N:= [encodeFL (PL.disj F0 G)])
-                               (M:=  encodeFR F :: encodeList L');eauto;conv...
+                             (M:=  encodeFR F :: encodeList L');eauto;simplifyG ...
       unfold encodeFL ...
 
       apply tri_rel ...
-      apply tri_with;apply tri_store;unfold encodeSequent in *;simpl in *;conv ...
+      apply tri_with;apply tri_store;unfold encodeSequent in *;simpl in *;simplifyG ...
       (* Branch F0 *)
       MReplace ( encodeFR F :: encodeList L' ++ [encodeFL F0]) (encodeFR F :: encodeFL F0 :: encodeList L') ...
       (* Branch G *)
@@ -873,19 +774,19 @@ Proof with solveF.
     ++ (* Implication Right *)
       apply H in H2 ...
       eapply tri_dec2 with 
-      (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; ILEFT]) (F:= IRIGHT)...
+          (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; ILEFT]) (F:= IRIGHT)...
       try solve_permutation.
       eapply tri_ex with (t:= encodeTerm F0). 
       eapply tri_ex with (t:= encodeTerm G) ...
       eapply tri_tensor with (N:= [encodeFR (PL.impl F0 G)])
-                               (M:=  encodeList L);eauto;conv ...
+                             (M:=  encodeList L);eauto;simplifyG ...
 
       unfold encodeFR;simpl ...
 
       apply tri_rel ...
       apply tri_par ...
       apply tri_store ...
-      apply tri_store;conv ...
+      apply tri_store ... simplifyG ...
       
       MReplace ((encodeList L ++ [encodeFL F0]) ++ [encodeFR G]) (encodeFR G :: encodeFL F0 :: encodeList L) ... 
     ++ (* Implication Left *)
@@ -898,33 +799,18 @@ Proof with solveF.
       apply H in H3' ...
       apply H in H5 ...
       eapply tri_dec2 with 
-      (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT]) (F:= ILEFT)...
+          (B':=[BLEFT; INIT; CRIGHT; CLEFT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT]) (F:= ILEFT)...
       eapply tri_ex with (t:= encodeTerm F0). 
       eapply tri_ex with (t:= encodeTerm G) ... 
       eapply tri_ex with (t:= encodeTerm F) ...
-      rewrite HLL'. conv.
+      rewrite HLL'. simplifyG ...
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G) ; encodeFR F])
-                               (M:=  encodeList L') ...
+                             (M:=  encodeList L') ...
 
       
       (* First Tensor *)
-      assert(HS:  (fun T : Type =>
-                     tensor
-                       (perp
-                          (a1 lf
-                              (fc2 im
-                                   (flattenT (flattenT (encodeTerm F0 (term (term T)))))
-                                   (flattenT (encodeTerm G (term T))))))
-                       (perp (a1 rg (encodeTerm F T)))) =
-                  Tensor (Perp (A1 lf (FC2 im (encodeTerm F0) (encodeTerm G))))
-                         (Perp (A1 rg (encodeTerm F)))).
-      extensionality T.
-      do 3 rewrite TermFlatten.
-      reflexivity.
-      rewrite HS. clear HS. 
-      
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G)])
-                               (M:=  [encodeFR F]) ...
+                             (M:=  [encodeFR F]) ...
       unfold encodeFL ...
       unfold encodeFR ...
       (* With *)
@@ -932,22 +818,7 @@ Proof with solveF.
       eapply tri_with ...
       (* first branch with *)
       eapply tri_par ...
-      assert(HS: (fun T : Type =>
-                    atom (a1 rg (flattenT (flattenT (encodeTerm F0 (term (term T)))))))=
-                 Atom (A1 rg (encodeTerm F0))).
-      extensionality T.
-      do 2 rewrite TermFlatten;auto.
-      rewrite HS;clear HS.
       eapply tri_store ...
-      assert(HS: (fun T : Type =>
-                    atom
-                      (a1 lf
-                          (fc2 im (flattenT (flattenT (encodeTerm F0 (term (term T)))))
-                               (flattenT (encodeTerm G (term T)))))) =
-                 Atom (A1 lf (FC2 im (encodeTerm F0) (encodeTerm G)))).
-      extensionality T.
-      do 3 rewrite TermFlatten;auto.
-      rewrite HS;clear HS.
       eapply tri_store ...
       unfold encodeFR in H3'. simpl in H3'.
       assert(HS: (encodeList L' ++ [(A1 rg (encodeTerm F0)) ⁺]) ++
@@ -959,13 +830,7 @@ Proof with solveF.
       eapply tri_par ...
       eapply tri_store...
       eapply tri_store...
-      assert(HS: (fun T : Type => atom (a1 lf (flattenT (encodeTerm G (term T))))) =
-                 Atom (A1 lf (encodeTerm G))).
-      extensionality T.
-      rewrite TermFlatten;auto.
-      rewrite HS;clear HS.
-      change (fun T : Type => atom (a1 rg (encodeTerm F T))) with (Atom (A1 rg (encodeTerm F))).
-      simpl in H5.
+      
       unfold encodeFL in H5.
       unfold encodeFR in H5.
       MReplace ( (encodeList L' ++ [(A1 lf (encodeTerm G)) ⁺]) ++
@@ -1035,6 +900,14 @@ Proof with solveF.
   right.
   apply IHL with (M:= M');auto.
 Qed.
+
+Lemma Equiv1 : forall F, (A1 lf (encodeTerm F)) ⁺ = encodeFL F.
+  intro;reflexivity.
+Qed.
+Lemma Equiv2 : forall F, (A1 rg (encodeTerm F)) ⁺ =  encodeFR F.
+  intro;reflexivity.
+Qed.
+
 
 Lemma NotEqFRFL : forall F G, encodeFR G <> encodeFL F.
   intros F G Hn.
@@ -1227,7 +1100,7 @@ Proof with solveF.
   (* now the tensor *)
   inversion H3;subst ...
   change (fun T : Type => tensor (tensor (perp (a1 rg (fc1 pr (t T)))) (perp (a1 lf (fc1 pr (t T))))) top)
-  with (Tensor (Tensor (Perp (A1 rg (FC1 pr t))) (Perp (A1 lf (FC1 pr t)))) Top) in H0.
+    with (Tensor (Tensor (Perp (A1 rg (FC1 pr t))) (Perp (A1 lf (FC1 pr t)))) Top) in H0.
   LexpSubst.
   (* Now the tensor in H2 *)
   inversion H2;subst ...
@@ -1262,7 +1135,7 @@ Proof with solveF.
   inversion H ...
   unfold BLEFT in H0.
   change ((fun T : Type => tensor (perp (a1 lf (cte PL.bot))) top)) with
-  (Tensor (Perp (A1 lf (Cte PL.bot)) ) Top) in H0.
+      (Tensor (Perp (A1 lf (Cte PL.bot)) ) Top) in H0.
   LexpSubst.
   apply InvI1 in H2;subst ...
   change (((A1 lf (Cte PL.bot)) ⁻)°) with (encodeFL PL.bot) in H1.
@@ -1281,7 +1154,7 @@ Proof with solveF.
   unfold Subst in H5. simpl in H5. 
 
   change ((fun T : Type => ex (fun x : T => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))))))
-  with (E{ fun T x => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))) }) in H5 ...
+    with (E{ fun T x => tensor (perp (a1 rg (fc2 cj (t T) (var x)))) (witH (atom (a1 rg (t T))) (atom (a1 rg (var x)))) }) in H5 ...
 
   inversionF H5;subst ...
   
@@ -1382,52 +1255,11 @@ Proof with solveF.
   unfold lf in H7. simpl in H7. intuition.
 Qed.
 
-Lemma TermFlattenFun : forall t:Term , (fun T : Type => flattenT (t (term T))) = t.
-  intros.
-  extensionality T.
-  rewrite TermFlattenG;auto.
-Qed.
 
-Lemma TermFlattenFun': forall t:Term ,
-    (fun T:Type => flattenT (flattenT (t (term (term T))))) = t.
-  intros.
-  extensionality T.
-  do 2 rewrite TermFlattenG;auto.
-Qed.
 
-Hint Resolve TermFlattenFun .
+(*Hint Resolve TermFlattenFun . *)
 
-Ltac simplifyH H :=
-  unfold Subst in H;
-  simpl in H;
-  repeat 
-    match goal with
-    | [H : context[fun _ : Type => flattenT( _ (term _))] |- _] => rewrite TermFlattenFun in H
-    | [H : context[fun _ : Type => flattenT(flattenT ( _ (term _ ) ))] |- _] => rewrite TermFlattenFun' in H
-    | [H : context[fun _ : Type => a0 _ ] |- _ ] => rewrite EqA0 in H 
-    | [H : context[fun _ : Type => a1 _ _] |- _ ] => rewrite EqA1 in H 
-    | [H : context[fun _ : Type => a2 _ _ _] |- _ ] => rewrite EqA2 in H 
-    | [H : context[fun _ : Type => cte _] |- _ ] => rewrite EqCte in H 
-    | [H : context[fun _ : Type => fc1 _ _] |- _ ] => rewrite EqFC1 in H 
-    | [H : context[fun _ : Type => fc2 _ _ _] |- _ ] => rewrite EqFC2 in H 
-    | [H : context[fun _ : Type => atom _] |- _ ] => rewrite EqAtom in H 
-    | [H : context[fun _ : Type => perp _] |- _ ] => rewrite EqPerp in H 
-    | [H : context[fun _ : Type => tensor _ _] |- _ ] => rewrite EqTensor in H 
-    | [H : context[fun _ : Type => par _ _] |- _ ] => rewrite EqPar in H 
-    | [H : context[fun _ : Type => witH _ _] |- _ ] => rewrite EqWith in H 
-    | [H : context[fun _ : Type => plus _ _] |- _ ] => rewrite EqPlus in H 
-    | [H : context[fun _ : Type => quest _] |- _ ]  => rewrite EqQuest in H 
-    | [H : context[fun _ : Type => bang _] |- _ ] => rewrite EqBang in H 
-    | [H : context[fun _ : Type => ex _] |- _ ] => rewrite EqEx in H 
-    | [H : context[fun _ : Type => fx _] |- _ ] => rewrite EqFx in H 
-    end.
 
-Ltac simplifyG :=
-  match goal with
-  | [ |- ?G] =>
-    let H := type of G in
-    simplifyH H
-  end.
 
 
 Lemma InvILEFT :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW ILEFT -> exists L' G1 G2 n1 n2, n =  S (S (S (S ( S (S ( (S (S (S (max n1 n2))))))))))  /\ PL.MSFormulas.meq L  ((PL.impl G1 G2) :: L') /\ n1 |-F- Theory; encodeFR G1 :: encodeList L ; UP [] /\ n2 |-F- Theory; encodeFR F :: encodeFL G2 :: encodeList L' ; UP [].
@@ -1472,7 +1304,7 @@ Proof with solveF.
   destruct H1'';subst.
   assert(HS :(M ++ [(A1 lf t0) ⁺]) ++ [(A1 rg t1) ⁺]  =mul=
              (((M ++ [(A1 rg t1) ⁺]) ++ [(A1 lf t0) ⁺])  )) ...
- 
+  
   rewrite HS in H9;clear HS.
   rewrite H1' in H9.
   eexists L'. exists G. exists G'. exists n2. exists n0.
@@ -1498,7 +1330,7 @@ Proof with solveF.
   
   rewrite HS;clear HS ...
   
- 
+  
   apply InvFLIm in H2.
   destruct H2;subst.
   rewrite H3.
@@ -1768,10 +1600,15 @@ Proof with solveF.
          assert(n1 <= max n1 n2). apply Nat.le_max_l. omega.
        +++  (* case CLEFT *)
          apply InvCLEFT in H4.
-         destruct H4 as [L' [G1 [G2 [n1]]]].
-         destruct H1; subst.
+         destruct H4 as [L' H4].
+         destruct H4 as [G1 H4].
+         destruct H4 as [G2 H4].
+         destruct H4 as [n1 H4].
          destruct H4; subst.
-         apply H  with (m:=n1) (L:= G1 :: G2 :: L') in H4... destruct H4 as [n H4].
+         destruct H4; subst.
+         assert(HL : encodeFR F :: encodeFL G1 :: encodeFL G2 :: encodeList L' = encodeFR F :: encodeList (G1 :: G2 :: L')) by reflexivity.
+         rewrite HL in H4. clear HL.
+         apply H  with (m:=n1) in H4... destruct H4 as [n H4].
          eexists. eapply PL.cL;eauto.
          omega.
        +++ (* DISJ RIGHT 1 *)
