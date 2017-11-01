@@ -33,7 +33,7 @@ make html
 We briefly describe the content (theorems and definitions) of the .v files. The documentation of the library offers more detailed explanations. 
 
 
-### LL/SyntaxLL
+### LL/Syntax
 This file defines the syntax of linear logic and its notation.  We also define several notions needed for the focused system (e.g., negative and positive formulas, polarity of atoms, etc)
 
 ### LL/Multisets
@@ -60,15 +60,15 @@ where
 ### LL/StrongInduction
 Most of the proofs require the strong induction principle. This file defines such principle. 
 
-### LL/StructuralRules
+### LL/SequentCalculiBasicTheory
 We prove that, for all systems, multiset-equivalent contexts prove the same theorems (exchange rule). We also prove that the classical context (in dyadic systems) admits the usual weakening and contraction rules (preserving the height of the derivation). 
 
 
-### LL/CutCases
+### LL/Cut_Elim
 In this file we prove the cases for the elimination of the rule CUT. Each lemma corresponds to one of the connectives (and its dual). 
 
-### LL/MetaTheory/CutElimination
-The proof of the cut-elimination theorem.
+### LL/CutElimination
+The proof of the cut-elimination theorem and consistency of LL as a corollary. 
 
 
 ### LL/Soundness
