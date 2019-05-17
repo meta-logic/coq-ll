@@ -1,0 +1,17 @@
+-R . "LL"
+LL/Completeness.v
+LL/CutCases.v
+LL/CutElimination.v
+LL/CutTactics.v
+LL/Eqset.v
+LL/FLLMetaTheory.v
+LL/Multisets.v
+LL/SequentCalculi.v
+LL/SequentCalculiBasicTheory.v
+LL/Soundness.v
+LL/StrongInduction.v
+LL/Syntax.v
+LL/Examples/Example.v
+LL/Examples/LJLL.v
+LL/Examples/test.v
+
