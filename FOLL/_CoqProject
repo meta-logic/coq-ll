@@ -13,5 +13,4 @@ LL/StrongInduction.v
 LL/Syntax.v
 LL/Examples/Example.v
 LL/Examples/LJLL.v
-LL/Examples/test.v
 
