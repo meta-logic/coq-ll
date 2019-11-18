@@ -598,7 +598,7 @@ Qed.
 
 
 Set Implicit Arguments.
-Hint Resolve  app_nil_r.
+Hint Resolve  app_nil_r : core .
 
 (** Invertibility of the OPlus Rule *)
 Module InvPlus.

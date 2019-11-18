@@ -818,9 +818,10 @@ Module CCases (DT : Eqset_dec_pol).
             rewrite union_comm in P.
             eapply H.
             
-            Focus 2.
+            2:{
             change (0%nat) with (0+0).
             refine (sig3_cut _ _ P H4 H2); auto.
+            }
             eapply WeightEF; eauto.       
             
           + simpl_cases2.
@@ -918,9 +919,10 @@ Module CCases (DT : Eqset_dec_pol).
              rewrite union_comm in P.
              eapply H.
              
-             Focus 2.
-             change (0%nat) with (0+0).
-             refine (sig3_cut _ _ P H5 H4); auto.
+             2: {
+               change (0%nat) with (0+0).
+               refine (sig3_cut _ _ P H5 H4); auto.
+               }
              eapply WeightFE; eauto.
           -- simpl_cases2. organizer.
              refine (tab_ex H0 _ Hw P H3 H4 H5 Hn2 Hn1 ). omega.

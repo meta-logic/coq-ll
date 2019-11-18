@@ -686,7 +686,7 @@ Proof.
     subst.
     eexists.
     eassumption.
-  + destruct L' as [_| l'].
+  + destruct L' as [| l'].
     (* H0 is inconsisten *)
     apply DestructMulFalse in H0. contradiction.
     

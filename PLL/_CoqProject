@@ -1,0 +1,20 @@
+-R . ""
+./LL/Atoms.v
+./LL/MultisetLL.v
+./LL/Eqset.v
+./LL/Syntax.v
+./LL/SequentCalculi.v
+./LL/llTactics.v
+./LL/Multisets.v
+#Focus system
+./LL/Focusing/TriSystem.v
+./LL/Focusing/Soundness.v
+./LL/Focusing/BDefinitions.v
+./LL/Focusing/StructuralRulesTriSystem.v
+./LL/Focusing/InvLemmas.v
+./LL/Focusing/Completeness.v
+#Meta-theory
+./LL/MetaTheory/CutElimination.v
+./LL/MetaTheory/StructuralRules.v
+./LL/MetaTheory/CutCases.v
+./LL/MetaTheory/StrongInduction.v

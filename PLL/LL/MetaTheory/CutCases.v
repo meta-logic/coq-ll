@@ -9,7 +9,7 @@ In this file we prove the cases for cut-elimination. Each lemma contains a case 
 (* Require Export Tactics.
 Set Implicit Arguments. *)
 
-Require Import myTactics.
+Require Import llTactics.
 
 Lemma aux_CUT_ap n1 n2 h B L M1 M2 v:   
   (forall m : nat,

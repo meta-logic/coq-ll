@@ -24,7 +24,7 @@ Parameter var: Set.
 
 (** Decidability of equality on atomic propositions *)
 Axiom Var_eq_dec : forall x y : var, {x = y} + {x <> y}.   
-Hint Resolve Var_eq_dec.
+Hint Resolve Var_eq_dec : core .
 
 (** Equality on atomic propositions *)
 Definition VarEq (x y: var):= 
@@ -68,7 +68,7 @@ Proof.
   contradiction.
 Qed.
 
-Hint Resolve eqVar_refl eqVar_symm eqVar_trans.
+Hint Resolve eqVar_refl eqVar_symm eqVar_trans : core .
 
 (** [eqVar] is an equivalence relation *)
 Add Parametric Relation : var eqVar
@@ -105,7 +105,7 @@ Proof.
   contradiction.
 Qed.
 
-Hint Resolve eqVar_refl' eqVar_symm' eqVar_trans'.
+Hint Resolve eqVar_refl' eqVar_symm' eqVar_trans' : core .
 
 Theorem eqVar_then_eq : forall x y, VarEq x y = true -> x = y.
 Proof.
@@ -115,4 +115,4 @@ Proof.
   inversion H.
 Qed.
 
-Hint Resolve eqVar_then_eq.
+Hint Resolve eqVar_then_eq : core .

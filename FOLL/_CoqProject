@@ -1,4 +1,4 @@
--R . "LL"
+-R . ""
 LL/Completeness.v
 LL/CutCases.v
 LL/CutElimination.v

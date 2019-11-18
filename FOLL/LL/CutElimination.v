@@ -514,30 +514,33 @@ Module CElimination (DT : Eqset_dec_pol).
               eexists;
               refine (sig3_with _ Ht1 Ht2); auto; resolve_rewrite.
             
-            Focus 2.
-            assert (exists m, m |~> 0; F0 :: B; M) as Hyp.
-            rewrite meq_swap_cons in H4.
-            eapply height_preserving_weakning_sig3 with (D:=[F0]) in Hn1.
-            rewrite union_comm in Hn1.
+            2:{
+              assert (exists m, m |~> 0; F0 :: B; M) as Hyp.
+              rewrite meq_swap_cons in H4.
+              eapply height_preserving_weakning_sig3 with (D:=[F0]) in Hn1.
+              rewrite union_comm in Hn1.
             
-            refine (H0 _ _ _ _ _ _); 
-              [ | 
-                change (0%nat) with (0+0);
-                refine (sig3_ccut _ _ _ Hn1 H4);
-                auto]; resolve_max.
-            destruct Hyp as [t Ht];
-              eexists;
-              refine (sig3_quest _ Ht); auto; resolve_rewrite.
-            Focus 2.
-            assert (exists m, m |~> 0; B; [F0]) as Hyp.
-            refine (H0 _ _ _ _ _ _); 
-              [ | 
-                change (0%nat) with (0+0);
-                refine (sig3_ccut _ _ _ Hn1 H4);
-                auto]; resolve_max.
-            destruct Hyp as [t Ht];
-              eexists;
-              refine (sig3_bang _ Ht); auto; resolve_rewrite.  
+              refine (H0 _ _ _ _ _ _); 
+                [ | 
+                  change (0%nat) with (0+0);
+                  refine (sig3_ccut _ _ _ Hn1 H4);
+                  auto]; resolve_max.
+              destruct Hyp as [t Ht];
+                eexists;
+                refine (sig3_quest _ Ht); auto; resolve_rewrite.
+            }
+
+            2:{
+              assert (exists m, m |~> 0; B; [F0]) as Hyp.
+              refine (H0 _ _ _ _ _ _); 
+                [ | 
+                  change (0%nat) with (0+0);
+                  refine (sig3_ccut _ _ _ Hn1 H4);
+                  auto]; resolve_max.
+              destruct Hyp as [t Ht];
+                eexists;
+                refine (sig3_bang _ Ht); auto; resolve_rewrite.
+            }
             
             destruct (FEqDec F0 F°); subst.
             assert (exists m, m |~> 0; B; F° :: L) as Hyp. 
@@ -551,8 +554,7 @@ Module CElimination (DT : Eqset_dec_pol).
             
             refine (H _ _ _ _ _ _ _); 
               [ | change (0%nat) with (0+0)].
-            Focus 2.
-            refine (sig3_cut _ _ _ H2 Ht); auto. 
+            2:{  refine (sig3_cut _ _ _ H2 Ht); auto. }
             inversion Hw.  unfold Lexp_weight; auto.
             apply not_eqLExp_sym in n1.
             simpl_cases2.

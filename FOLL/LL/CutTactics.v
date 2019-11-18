@@ -14,8 +14,8 @@ Require Export Omega.
 Export ListNotations.
 Set Implicit Arguments.
 
-Hint Resolve Max.le_max_r.
-Hint Resolve Max.le_max_l.
+Hint Resolve Max.le_max_r: core .
+Hint Resolve Max.le_max_l: core .
 
 Module CTactics (DT : Eqset_dec_pol).
   Module Export Sys :=  SqBasic DT.

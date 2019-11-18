@@ -21,8 +21,8 @@ Require Export LL.Multisets.
 Require Export LL.StrongInduction.
 Require Export LL.FLLMetaTheory.
 
-Hint Resolve Max.le_max_r.
-Hint Resolve Max.le_max_l.
+Hint Resolve Max.le_max_r : core .
+Hint Resolve Max.le_max_l : core .
 
 
 Module PL.
@@ -155,7 +155,7 @@ Definition pr := 1%nat. (* atoms / propositions *)
 Definition cj := 2%nat. (* conjunction *)
 Definition dj := 3%nat. (* disjunction *)
 Definition im := 4%nat. (* implication *)
-Hint Unfold rg lf bt pr cj dj im .
+Hint Unfold rg lf bt pr cj dj im : core .
 
 (* Bottom Left *)
 Definition  BLEFT :Lexp := fun T:Type => tensor (perp (a1 lf (cte PL.bot))) top.
@@ -225,7 +225,7 @@ Definition ILEFT  :Lexp :=
                                     (atom (a1 rg (var z)))))))).
 
 Definition Theory := BLEFT :: INIT :: CRIGHT :: CLEFT :: DRIGHT1 :: DRIGHT2 :: DLEFT :: IRIGHT :: ILEFT :: nil.
-Hint Unfold Theory .
+Hint Unfold Theory : core .
 
 
 
@@ -286,13 +286,13 @@ Fixpoint encodeTerm (F: PL.LForm) :=
 
 Definition encodeFL (F: PL.LForm) := Atom (A1 lf ( encodeTerm F)). (* left encoding *)
 Definition encodeFR (F: PL.LForm) := Atom (A1 rg ( encodeTerm F)). (* right encoding *)
-Hint Unfold encodeFL encodeFR.
+Hint Unfold encodeFL encodeFR : core .
 
 Definition encodeList := map encodeFL.
 
 Definition encodeSequent (L: list PL.LForm) (F: PL.LForm) :=
   |-F- Theory ; (encodeFR F) :: encodeList L ; UP [].
-Hint Unfold encodeSequent.
+Hint Unfold encodeSequent: core .
 
 Inductive IsPositiveAtomL : list Lexp -> Prop :=
 | ispL_nil : IsPositiveAtomL nil
@@ -494,18 +494,18 @@ Qed.
 (* Encode Right only produces right atoms *)
 Inductive RightAtom: Lexp -> Prop :=
 | at_r : forall t, RightAtom ((Atom (A1 rg t))).
-Hint Constructors RightAtom.
+Hint Constructors RightAtom : core .
 
 (* Encode Left only produces left atoms *)
 Inductive LeftAtom : Lexp -> Prop :=
 | at_l : forall t, LeftAtom ((Atom (A1 lf t))).
-Hint Constructors LeftAtom.
+Hint Constructors LeftAtom : core .
 
 (* Encode List only produces left atoms *)
 Inductive LeftAtomL: list Lexp -> Prop :=
 | lf_nil : LeftAtomL  nil
 | lf_cons : forall L F, LeftAtom F -> LeftAtomL L -> LeftAtomL (F :: L) .
-Hint Constructors LeftAtomL.
+Hint Constructors LeftAtomL : core .
 
 Lemma encodeRightRight : forall F, RightAtom (encodeFR F).
 Proof with solveF.
@@ -657,7 +657,7 @@ Proof with solveF.
   auto ...
 Qed.
 
-Hint Resolve IsPINIT IsPCLEFT IsPCRIGHT IsPBLEFT IsPDLEFT IsPDRIGHT1 IsPDRIGHT2 IsPILEFT IsPIRIGHT.
+Hint Resolve IsPINIT IsPCLEFT IsPCRIGHT IsPBLEFT IsPDLEFT IsPDRIGHT1 IsPDRIGHT2 IsPILEFT IsPIRIGHT : core .
 
 Theorem Soundness: forall (L : list PL.LForm) F n, L  |-P- n ; F -> ( encodeSequent L F ).
 Proof with solveF.
@@ -1254,10 +1254,6 @@ Proof with solveF.
   inversion H3;subst.
   unfold lf in H7. simpl in H7. intuition.
 Qed.
-
-
-
-(*Hint Resolve TermFlattenFun . *)
 
 
 

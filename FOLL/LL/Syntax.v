@@ -86,7 +86,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   Arguments fc1 [T].   Arguments fc2 [T].
   Arguments a0 [T]. Arguments a1 [T]. Arguments a2 [T]. 
   Arguments atom [T]. Arguments perp [T].
-  Arguments top [T]. Arguments one [T]. Arguments bot [T]. Arguments zero [T].
+  Arguments top [T] . Arguments one [T]. Arguments bot [T]. Arguments zero [T].
   Arguments tensor [T]. Arguments par [T]. Arguments plus [T]. Arguments witH [T].
   Arguments bang [T]. Arguments quest [T].
   Arguments ex [T]. Arguments fx [T].
@@ -310,7 +310,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     rewrite <- ng_involutive with (T:=T);auto.
   Qed.
   
-  Hint Rewrite Neg2pos Ng_involutive.
+  Hint Rewrite Neg2pos Ng_involutive : core .
 
   
 
@@ -355,7 +355,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     fun T:Type  => flatten (S (term T) (X T)).
 
   Fixpoint SubstL   (S : SubsL ) (X : Term)  : list Lexp := map (fun s => Subst s X) S.
-  Hint Unfold Subst .
+  Hint Unfold Subst  : core .
   
   (************************************************)
   (* Equality On LExp Formulas *)
@@ -687,7 +687,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
     Definition Lexp_weight (P : Lexp) :nat := lexp_weight (P _).
 
-    Hint Unfold Lexp_weight Dual_LExp.
+    Hint Unfold Lexp_weight Dual_LExp : core .
 
     Theorem WeightDestruct0 : forall F:Lexp, 0%nat = Lexp_weight F ->
                                              (exists A, F = Atom A) \/ (exists A, F = Perp A) \/
@@ -713,7 +713,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Lemma wt_trans: forall F G T, eq_wt F G -> eq_wt G T -> eq_wt F T.
     Proof. unfold eq_wt; intros; rewrite H, H0; auto. Qed. 
     
-    Hint Resolve wt_refl wt_symm wt_trans.
+    Hint Resolve wt_refl wt_symm wt_trans : core .
     
     Add Parametric Relation : (Lexp) eq_wt 
         reflexivity proved by wt_refl
@@ -826,7 +826,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | fx _ => true
       end.
     Definition AsynchronousF (F:Lexp) : bool := asynchronousF (F _).
-    Hint Unfold AsynchronousF.
+    Hint Unfold AsynchronousF : core .
     
     Inductive Asynchronous : Lexp -> Prop :=
     | aTop :   Asynchronous Top
@@ -836,7 +836,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | aQuest : forall F  , Asynchronous (Quest F)
     | aForall : forall FX  , Asynchronous (Fx FX).
     
-    Hint Constructors Asynchronous.
+    Hint Constructors Asynchronous : core .
 
     Theorem AsyncEqL : forall F:Lexp , Asynchronous F -> AsynchronousF F = true.
     Proof.
@@ -867,7 +867,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | IsNA2 : forall n t t', true = isPositive n -> IsNegativeAtom (Perp (A2 n t t'))
     | IsNA2'' : forall n t t', false = isPositive n -> IsNegativeAtom (Atom (A2 n t t')).
     
-    Hint Constructors IsNegativeAtom.
+    Hint Constructors IsNegativeAtom : core .
     
     (* Positive Atoms *)
     Inductive IsPositiveAtom : Lexp -> Prop :=
@@ -878,7 +878,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | IsPA2 : forall n t t', false = isPositive n -> IsPositiveAtom (Perp (A2 n t t'))
     | IsPA2'' : forall n t t', true = isPositive n -> IsPositiveAtom (Atom (A2 n t t')).
     
-    Hint Constructors IsPositiveAtom.
+    Hint Constructors IsPositiveAtom : core .
     
     (* Complexity of formulas for the focused system *)
     Fixpoint exp_weight (P:lexp unit) : nat :=
@@ -895,7 +895,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       end.
 
     Definition Exp_weight (F:Lexp) :nat := exp_weight(F _).
-    Hint Unfold Exp_weight.
+    Hint Unfold Exp_weight : core .
 
     Theorem exp_weight0 : forall  F:Lexp , Exp_weight F > 0.
       intros.
@@ -1118,7 +1118,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | l_sin : forall a, (AsynchronousF a = false) -> LexpPos' [a]
     | l_cos : forall a l, LexpPos' [a] -> LexpPos' l -> LexpPos' (a::l).
     
-    Hint Resolve l_nil l_sin l_cos.
+    Hint Resolve l_nil l_sin l_cos : core .
 
     (* Properties of lexpPos *)
     Lemma lexpPosUnion a L: LexpPos [a] -> LexpPos L -> LexpPos ([a] ++ L).
@@ -1172,8 +1172,8 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | RelForall : forall FX, release (fx FX).
 
     Definition Release (F:Lexp) := release (F _).
-    Hint Unfold Release.
-    Hint Constructors release.
+    Hint Unfold Release : core .
+    Hint Constructors release : core .
 
     Lemma IsPositiveAtomRelease: forall F, IsPositiveAtom F -> Release F.
       intros.
@@ -1192,7 +1192,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | NAPlus : forall F G,  NotAsynchronous ( Plus F  G)
     | NABang : forall F,  NotAsynchronous ( ! F )
     | NAExists : forall FX,  NotAsynchronous ( Ex FX ).
-    Hint Constructors NotAsynchronous.
+    Hint Constructors NotAsynchronous : core .
     
     Theorem AsynchronousEquiv : forall F, NotAsynchronous F <-> ~ Asynchronous F.
     Proof.
@@ -1227,9 +1227,9 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | PPPlus : forall F G,  posOrNegAtom ( plus F  G)
     | PPBang : forall F,  posOrNegAtom ( bang F )
     | PPExists : forall FX,  posOrNegAtom ( ex FX).
-    Hint Constructors posOrNegAtom.
+    Hint Constructors posOrNegAtom : core .
     Definition PosOrNegAtom (F:Lexp) := posOrNegAtom (F _).
-    Hint Unfold PosOrNegAtom.
+    Hint Unfold PosOrNegAtom : core .
 
     (* ~ Asynchronous (Subst FX t)*)
     Inductive posFormula : lexp unit -> Prop :=
@@ -1239,9 +1239,9 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | PFPlus : forall F G,  posFormula ( plus F  G)
     | PFBang : forall F,  posFormula ( bang F )
     | PFExists : forall FX,  posFormula ( ex FX).
-    Hint Constructors posFormula.
+    Hint Constructors posFormula : core .
     Definition PosFormula (F:Lexp) := posFormula (F _).
-    Hint Unfold PosFormula.
+    Hint Unfold PosFormula : core .
 
     Lemma PosFormulaPosOrNegAtom : forall F, PosFormula F -> PosOrNegAtom F.
       intros.
@@ -1468,7 +1468,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       intros Hn; inversion Hn.
     Qed.
 
-    Hint Resolve NotRelTensor NotRelPlus NotRelBang NotRelEx NotRelOne NotRelZero NotAsyncAtom NotAsyncAtom'.
+    Hint Resolve NotRelTensor NotRelPlus NotRelBang NotRelEx NotRelOne NotRelZero NotAsyncAtom NotAsyncAtom' : core .
 
     Lemma  IsPositiveAtomNotAssync : forall F,  IsPositiveAtom F -> ~ Asynchronous F.
     Proof.
@@ -1672,13 +1672,13 @@ Module FormulasLL (DT : Eqset_dec_pol).
     Definition eqA_dec := FEqDec.
   End lexp_eq.  
   
-  Hint Rewrite Neg2pos Ng_involutive.
-  Hint Resolve wt_refl wt_symm wt_trans.
-  Hint Constructors Asynchronous.
-  Hint Resolve l_nil l_sin l_cos.
-  Hint Constructors release.
-  Hint Constructors NotAsynchronous.
-  Hint Constructors posOrNegAtom.
+  Hint Rewrite Neg2pos Ng_involutive : core .
+  Hint Resolve wt_refl wt_symm wt_trans : core .
+  Hint Constructors Asynchronous : core .
+  Hint Resolve l_nil l_sin l_cos : core .
+  Hint Constructors release : core .
+  Hint Constructors NotAsynchronous : core .
+  Hint Constructors posOrNegAtom : core .
 
   Declare Module Export MSetList : MultisetList lexp_eq.
 

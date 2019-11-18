@@ -30,18 +30,18 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       simpl;eapply tri_store;auto
     end.
 
-  Hint Rewrite Neg2pos Ng_involutive.
-  Hint Constructors Asynchronous.
-  Hint Constructors IsNegativeAtom.
-  Hint Resolve l_nil l_sin l_cos.
-  Hint Unfold Lexp_weight Dual_LExp.
+  Hint Rewrite Neg2pos Ng_involutive : core .
+  Hint Constructors Asynchronous : core .
+  Hint Constructors IsNegativeAtom : core .
+  Hint Resolve l_nil l_sin l_cos : core .
+  Hint Unfold Lexp_weight Dual_LExp : core .
   (*Hint Constructors Release. *)
-  Hint Constructors NotAsynchronous.
-  Hint Resolve wt_refl wt_symm wt_trans.
+  Hint Constructors NotAsynchronous : core .
+  Hint Resolve wt_refl wt_symm wt_trans : core .
   (* Hint Constructors PosOrPosAtom. *)
   (*Hint Constructors NotPosOrPosAtom.
   Hint Resolve exp_weight_inv. *)
-  Hint Unfold Exp_weight.
+  Hint Unfold Exp_weight : core .
 
   Theorem EquivAuxBot : forall B  L L' M ,  |-F- B ; M ; UP (L ++ L') -> |-F- B ; M ;  UP (L ++ [Bot] ++ L').
   Proof with solveF.
@@ -197,7 +197,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         simpl. eapply tri_fx;auto;intro.
   Qed.
 
-  Hint Resolve AsyncEqNeg.
+  Hint Resolve AsyncEqNeg : core .
   Theorem EquivAuxSync : forall B  L L' M  F ,  ~ Asynchronous F ->  |-F- B ; M ++ [F] ; UP (L ++ L') -> |-F- B ; M ;  UP (L ++ [F] ++ L').
   Proof with solveF .
     intros.

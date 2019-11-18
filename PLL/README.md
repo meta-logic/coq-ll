@@ -11,7 +11,7 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested in Coq 8.6. No extra library is needed for compilation. 
+The project was tested in Coq 8.10. No extra library is needed for compilation. 
 
 ### Building 
 
@@ -30,7 +30,7 @@ make html
 
 ## Structure of the project / proofs
 
-We briefly describe the content (theorems and definitions) of the .v files. The documentation of the library offers more detailed explanations. 
+We briefly describe the content (theorems and definitions) in the .v files. The documentation of the library offers more detailed explanations. 
 
 
 ### LL/Atoms

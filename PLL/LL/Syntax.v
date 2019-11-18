@@ -101,7 +101,7 @@ Proof.
 	            rewrite <- IHF; reflexivity. 
 Qed.
 
-Hint Rewrite neg2pos ng_involutive.
+Hint Rewrite neg2pos ng_involutive : core.
 
 (** Decidability of equality on formulas *)
 Lemma LExp_eq_dec : forall A B: lexp, {A = B} + {A <> B}.
@@ -178,7 +178,7 @@ Proof.
     unfold eqVar;unfold VarEq; 
       destruct (Var_eq_dec); auto. 
 Qed.
-Hint Resolve eqLExp_refl.
+Hint Resolve eqLExp_refl : core.
 
 Lemma eq_then_eqLExp: forall A B, A = B -> eqLExp A B.
 Proof. intros; rewrite H; auto. Qed.
@@ -202,7 +202,7 @@ Proof.
   rewrite IHA with (B:=B); auto.     
 Qed.
 
-Hint Resolve eqLExp_then_eq eq_then_eqLExp.
+Hint Resolve eqLExp_then_eq eq_then_eqLExp : core.
 
 
 Lemma tns_eq f1 f2 g1 g2 : f1 ** g1 = f2 ** g2 <-> f1=f2/\g1=g2.
@@ -265,17 +265,17 @@ Proof.
   simpl in H; auto.
   subst; auto. 
 Qed.
-Hint Resolve tns_eq par_eq pls_eq wth_eq bng_eq qst_eq atp_eq atn_eq.
+Hint Resolve tns_eq par_eq pls_eq wth_eq bng_eq qst_eq atp_eq atn_eq : core.
 
 Lemma eqLExp_symm: forall x y, eqLExp x y -> eqLExp y x.
 Proof. intros. apply eqLExp_then_eq in H; auto. Qed.
-Hint Resolve eqLExp_symm.
+Hint Resolve eqLExp_symm : core.
 
 Lemma eqLExp_trans: forall x y z, eqLExp x y -> eqLExp y z -> eqLExp x z.
 Proof. intros;
          apply eqLExp_then_eq in H; 
          apply eqLExp_then_eq in H0; subst; auto. Qed.
-Hint Resolve eqLExp_trans.
+Hint Resolve eqLExp_trans : core.
 
 
 Add Parametric Relation : lexp eqLExp

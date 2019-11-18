@@ -15,7 +15,7 @@ Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
 Require Import Omega.
-Require Export LL.myTactics.
+Require Export LL.llTactics.
 Require Export List.
 Export ListNotations.
 Require Import Coq.Program.Equality.
@@ -48,7 +48,7 @@ Inductive Asynchronous : lexp -> Prop :=
 | AWith :  forall F G, Asynchronous (With F G)
 | AQuest : forall F  , Asynchronous (Quest F).
 
-Hint Constructors Asynchronous.
+Hint Constructors Asynchronous : core.
 
 Theorem AsyncEqR : forall F:lexp, AsynchronousF F = true -> Asynchronous F.
 Proof.
@@ -66,7 +66,7 @@ Qed.
 Inductive IsNegativeAtom : lexp -> Prop :=
   IsNA : forall v, IsNegativeAtom (Perp v).
 
-Hint Constructors IsNegativeAtom.
+Hint Constructors IsNegativeAtom : core.
 
 Definition IsNegativeAtomF (F:lexp) :=
   match F with
@@ -180,7 +180,7 @@ Inductive lexpPos' : list lexp -> Prop :=
 | l_sin : forall a, (AsynchronousF a = false) -> lexpPos' [a]
 | l_cos : forall a l, lexpPos' [a] -> lexpPos' l -> lexpPos' (a::l).
 
-Hint Resolve l_nil l_sin l_cos.
+Hint Resolve l_nil l_sin l_cos : core.
 
 (* Properties of lexpPos *)
 Lemma lexpPosUnion a L: lexpPos [a] -> lexpPos L -> lexpPos ([a] ++ L).
@@ -309,7 +309,7 @@ Proof.
   contradiction.
 Qed.
 
-Hint Resolve eqArrow_refl eqArrow_symm eqArrow_trans.
+Hint Resolve eqArrow_refl eqArrow_symm eqArrow_trans : core.
 
 Add Parametric Relation : Arrow eqArrow
     reflexivity proved by eqArrow_refl
@@ -359,7 +359,7 @@ Inductive Release : lexp-> Prop :=
 | RelWith : forall F G, Release (With F G)
 | RelQuest : forall F, Release (Quest F).
 
-Hint Constructors Release.
+Hint Constructors Release : core.
 Theorem ReleaseR : forall F:lexp, ReleaseF F = true -> Release F.
 Proof.
   intros.
@@ -382,7 +382,7 @@ Inductive NotAsynchronous : lexp -> Prop :=
 | NAPlus : forall F G,  NotAsynchronous ( Plus F  G)
 | NABang : forall F,  NotAsynchronous ( ! F ).
 
-Hint Constructors NotAsynchronous.
+Hint Constructors NotAsynchronous : core.
 
 Theorem AsynchronousEquiv : forall F, NotAsynchronous F <-> ~ Asynchronous F.
 Proof.
@@ -401,7 +401,7 @@ Inductive PosOrPosAtom : lexp -> Prop :=
 | PPPlus : forall F G,  PosOrPosAtom ( Plus F  G)
 | PPBang : forall F,  PosOrPosAtom ( ! F ).
 
-Hint Constructors PosOrPosAtom.
+Hint Constructors PosOrPosAtom : core.
 
 Inductive NotPosOrPosAtom : lexp -> Prop :=
 | NPPAtom :  forall v,  NotPosOrPosAtom (Perp v)
@@ -411,7 +411,7 @@ Inductive NotPosOrPosAtom : lexp -> Prop :=
 | NPPWith : forall F G, NotPosOrPosAtom (With F G)
 | NPPQuest : forall F , NotPosOrPosAtom (Quest F).
 
-Hint Constructors NotPosOrPosAtom.
+Hint Constructors NotPosOrPosAtom : core.
 
 Lemma DecPosOrPosAtom1 : forall F, PosOrPosAtom F -> ~ NotPosOrPosAtom F.
 Proof.

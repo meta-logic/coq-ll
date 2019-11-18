@@ -76,7 +76,7 @@ Module Type MultisetList (EQ : Eqset_dec).
        count_occ_nil
        count_occ_inv_nil
        count_occ_cons_eq
-       count_occ_cons_neq.
+       count_occ_cons_neq : core .
   
   
   Lemma in_countIn : forall a l, In a l -> a # l > 0.
@@ -139,7 +139,7 @@ Module Type MultisetList (EQ : Eqset_dec).
        not_in_cons 
        in_nil
        in_split
-       in_inv.
+       in_inv : core .
   
   Lemma mult_eqA_compat: forall x y M, x = y -> x # M = y # M.
   Proof.
@@ -327,7 +327,7 @@ Module Type MultisetList (EQ : Eqset_dec).
        singleton
        mult
        union
-       diff.
+       diff : core .
 
   Hint Resolve mult_eqA_compat 
        meq_multeq
@@ -336,11 +336,11 @@ Module Type MultisetList (EQ : Eqset_dec).
        union_mult
        diff_mult
        singleton_mult_in
-       singleton_mult_notin.
+       singleton_mult_notin : core .
 
   Hint Rewrite empty_mult
        union_mult
-       diff_mult using trivial.
+       diff_mult using trivial :core .
   
   
   (*   Parameter mset_ind_type: forall P : Multiset -> Type,
@@ -407,8 +407,7 @@ Module Type MultisetList (EQ : Eqset_dec).
     (solve [try_solve_meq_ext] || 
      fail "Couldn't show multisets equality"). 
 
-  Hint Unfold member
-       remove.
+  Hint Unfold member remove : core .
 
   Section meq_equivalence.
     
@@ -425,7 +424,7 @@ Module Type MultisetList (EQ : Eqset_dec).
   End meq_equivalence.             
 
 
-  Hint Resolve meq_refl meq_sym meq_trans.
+  Hint Resolve meq_refl meq_sym meq_trans : core .
 
   Instance meq_Equivalence : Equivalence meq.
   Proof.
@@ -483,7 +482,7 @@ Module Type MultisetList (EQ : Eqset_dec).
   Proof. intros. rewrite meq_cons_app; solve_meq. Qed.
   Lemma union_assoc : forall M N P, M ++ N ++ P =mul= (M ++ N) ++ P.
   Proof. solve_meq. Qed.
-  Hint Resolve meq_cons_app union_comm_cons union_comm union_assoc. 
+  Hint Resolve meq_cons_app union_comm_cons union_comm union_assoc : core .
   
   Lemma member_singleton x y : x € [y] -> x = y.
   Proof.
@@ -573,7 +572,7 @@ Module Type MultisetList (EQ : Eqset_dec).
     intros. rewrite H. rewrite rem_aM_cons. auto.
   Qed.     
 
-  Hint Resolve rem_a rem_ab rem_not_ab rem_aM_app rem_abM_app rem_not_abM_app rem_aM_cons.
+  Hint Resolve rem_a rem_ab rem_not_ab rem_aM_app rem_abM_app rem_not_abM_app rem_aM_cons : core .
   Lemma emp_mult : forall M, M =mul= [] <-> M = [].
   Proof.
     split; intros; subst; auto.
@@ -585,7 +584,7 @@ Module Type MultisetList (EQ : Eqset_dec).
   Lemma union_perm M N P : M ++ N ++ P =mul= M ++ P ++ N.
 
   Proof. solve_meq. Qed.
-  Hint Resolve union_perm.
+  Hint Resolve union_perm : core .
   Lemma union_empty M : M ++ [] =mul= M.
 
   Proof. solve_meq. Qed.
@@ -695,11 +694,11 @@ Module Type MultisetList (EQ : Eqset_dec).
     omega.
   Qed.
   
-  Hint Resolve meq_union_meq meq_union_meq2.
+  Hint Resolve meq_union_meq meq_union_meq2 : core .
   
   Lemma meq_meq_union M N P : M =mul= N -> M ++ P =mul= N ++ P.
   Proof. solve_meq. Qed.
-  Hint Resolve meq_meq_union.
+  Hint Resolve meq_meq_union : core .
   Lemma meq_ins_ins_eq a a' M M' :
     M ++ [a] =mul= M' ++ [a'] -> a = a' -> M =mul= M'.
   Proof.
@@ -761,7 +760,7 @@ Module Type MultisetList (EQ : Eqset_dec).
     rewrite union_comm, (union_comm N _).
     auto.
   Qed.     
-  Hint Resolve insert_meq.
+  Hint Resolve insert_meq : core .
   Lemma insert_remove_eq a b M : a = b -> M =mul= rem a (b :: M).
   
   Proof.
@@ -880,8 +879,8 @@ Module Type MultisetList (EQ : Eqset_dec).
   Proof.
     mset_unfold; intros.
     apply multeq_meq; intro x.
-    assert (((x#M) + (x#[a]))%nat
-            = ((x#N) + (x#P))%nat).
+    assert (((x # M) + (x # [a]))
+            = (( x # N) + (x # P))).
     rewrite <- !union_mult.
     apply meq_multeq; trivial.
     case (eqA_dec x a); intro x_a.
@@ -966,7 +965,7 @@ Module Type MultisetList (EQ : Eqset_dec).
        member_union
        member_meq_union
        union_comm
-       union_assoc.
+       union_assoc : core  .
 
   Hint Resolve union_empty
        not_empty
@@ -986,7 +985,7 @@ Module Type MultisetList (EQ : Eqset_dec).
        member_notempty
        singleton_notempty
        union_isempty
-       union_notempty.
+       union_notempty : core .
   
   Section Multiset.
 
@@ -1077,7 +1076,7 @@ Proof. solve_meq. Qed.
   Lemma union_right : forall M N1 N2, N1 =mul= N2 -> (M ++ N1) =mul= (M ++ N2).
   Proof. solve_meq. Qed.
 
-  Hint Resolve union_left union_right.
+  Hint Resolve union_left union_right : core .
 
   Lemma union_rotate x y z : x ++ (y ++ z) =mul= z ++ (x ++ y).
   Proof. solve_meq. Qed.
@@ -1099,7 +1098,7 @@ Proof. solve_meq. Qed.
   Lemma union_perm_left'' x a z : (a :: x) ++ z  =mul= a :: (x ++ z).
   Proof. auto. Qed.
 
-  Hint Resolve union_rotate union_reverse meq_congr union_perm_left union_perm_left' union_perm_left''.
+  Hint Resolve union_rotate union_reverse meq_congr union_perm_left union_perm_left' union_perm_left'' : core .
 
   Lemma multiset_twist1 x y z t : x ++ ((y ++ z) ++ t) =mul= (y ++ (x ++ t)) ++ z.
   Proof. solve_meq. Qed.
@@ -1107,7 +1106,7 @@ Proof. solve_meq. Qed.
   Lemma multiset_twist2 x y z t : x ++ ((y ++ z) ++ t) =mul= (y ++ (x ++ z)) ++ t.
   Proof. solve_meq. Qed.
 
-  Hint Resolve multiset_twist1 multiset_twist2.
+  Hint Resolve multiset_twist1 multiset_twist2 : core .
 
   Lemma treesort_twist1 x y z t u :
     u =mul= (y ++ z) ->
@@ -1133,12 +1132,12 @@ Proof. solve_meq. Qed.
     omega.
   Qed.
 
-  Hint Resolve treesort_twist1 treesort_twist2.
+  Hint Resolve treesort_twist1 treesort_twist2 : core .
 
   Lemma my_p x y z t : ((x ++ y) ++ z) ++ t =mul= t ++ (z ++ (x ++ y)).
   Proof. solve_meq. Qed.
 
-  Hint Resolve my_p.
+  Hint Resolve my_p : core .
 
   Lemma meq_skip : forall a M1 M2, M1 =mul= M2 -> a :: M1 =mul= a :: M2.
   Proof. intros. change (a :: M1 =mul= a :: M2) with ([a] ++ M1 =mul= [a] ++ M2). 
@@ -1165,7 +1164,7 @@ Proof. solve_meq. Qed.
   Proof. change ((a :: b :: c :: M) =mul= (c :: a :: b :: M)) with 
          (([a] ++ [b] ++ [c] ++ M) =mul= ([c] ++ [a] ++ [b] ++ M)).
          solve_meq. Qed.      
-  Hint Resolve meq_skip meq_swap meq_swap_cons union_rotate_cons.
+  Hint Resolve meq_skip meq_swap meq_swap_cons union_rotate_cons : core .
 
   Lemma pair_app (F G: A) : [F; G] = [F]++[G].
   Proof. auto. Qed.
@@ -1194,7 +1193,7 @@ Proof. solve_meq. Qed.
     intros. rewrite app_assoc.
     auto.
   Qed.
-  Hint Resolve union_assoc_cons.
+  Hint Resolve union_assoc_cons : core .
   
   Ltac app_normalize := repeat (
                             rewrite <- !union_assoc_cons ||
@@ -1211,7 +1210,7 @@ Proof. solve_meq. Qed.
     change (a :: b :: L =mul= b :: a :: L) with
     ([a] ++ [b] ++ L =mul= [b] ++ [a] ++ L). auto. Qed.
 
-  Hint Resolve perm_cons_single perm_cons.
+  Hint Resolve perm_cons_single perm_cons : core .
 
   Lemma union_middle : forall M N1 N2 : list A, N1 =mul= N2 -> N1 ++ M =mul= M ++ N2.
   Proof.
@@ -1452,7 +1451,7 @@ Proof. solve_meq. Qed.
 
          intros. inversion H0. Qed.
 
-  Hint Resolve member_insert_cons.
+  Hint Resolve member_insert_cons : core .
 
   Lemma member_then_eq : forall a L,
       a € L -> exists P1 P2, L = P1 ++ [a] ++ P2.
@@ -1524,7 +1523,7 @@ Proof. solve_meq. Qed.
     exists x; auto.   
   Qed.
   Arguments solsls [M N X a].
-  Hint Resolve solsls.
+  Hint Resolve solsls : core .
   Lemma solsls2 : forall M N X Y a,
       M ++ N =mul= a :: Y -> 
       M =mul= a :: X -> Y =mul= N ++ X.
@@ -1539,7 +1538,7 @@ Proof. solve_meq. Qed.
   Qed.
 
   Arguments solsls2 [M N X Y a].
-  Hint Resolve solsls2.
+  Hint Resolve solsls2 : core .
   Lemma member_unit : forall a b,
       b = a <-> a € [b].
   Proof.
@@ -1920,7 +1919,7 @@ Proof. solve_meq. Qed.
       ]
     end.
 
-  Hint Resolve member_insert_cons.
+  Hint Resolve member_insert_cons : core .
 
   Lemma notInMul a F L M : 
     ~ In a L  ->

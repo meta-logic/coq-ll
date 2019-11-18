@@ -84,10 +84,8 @@ Module SqSystems (DT : Eqset_dec_pol).
   Module Export SxLL := FormulasLL DT.
   Export DT.
 
-  Hint Resolve Max.le_max_r. 
-  Hint Resolve Max.le_max_l.
-  Hint Constructors IsNegativeAtom.
-  Hint Constructors IsPositiveAtom.
+  Hint Resolve Max.le_max_r  Max.le_max_l : core .
+  Hint Constructors IsNegativeAtom IsPositiveAtom : core .
 
   
   (****** ARROWS ******)
@@ -141,7 +139,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   | tri_ex  : forall B FX M t, |-F- B; M ; DW (Subst FX t) -> |-F- B; M ; DW (E{FX})
   | tri_fx  : forall B L FX M,    (forall x, |-F- B ; L ; UP( (Subst FX x) ::  M)) -> |-F- B ; L ; UP (F{FX} :: M)
   where " '|-F-' B ';' L ';' X " := (TriSystem B L X).
-  Hint Constructors TriSystem.
+  Hint Constructors TriSystem : core .
   
   (******************************************************)
   (** Triadic system with meassures *)
@@ -173,7 +171,7 @@ Module SqSystems (DT : Eqset_dec_pol).
       forall B L n FX M,
         (forall x : Term, n |-F- B ; L ; UP( (Subst FX x) ::  M)) -> S n |-F- B ; L ; UP (F{FX} :: M)
   where " n '|-F-' B ';' L ';' X " := (TriSystemh n B L X).
-  Hint Constructors TriSystemh.
+  Hint Constructors TriSystemh : core .
   
   (** Dyadic System *)
   Reserved Notation " '|--' B ';' L" (at level 80).
@@ -246,7 +244,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   | sig2h_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-- B ; [Subst FX x] ++  M) -> S n |-- B ; L
                                                                                                                       
   where "n |-- B ; L" := (sig2h n B L).
-  Hint Constructors sig2h.
+  Hint Constructors sig2h : core .
 
   (* Dyadic system with inductive measures *)
   Reserved Notation "n '|-c' B ';' L" (at level 80).
@@ -384,9 +382,9 @@ Module SqSystems (DT : Eqset_dec_pol).
   Notation " n '~>' m ';' w ';' h ';' B ';' L"
     := (sig3_cut_general w h n m B L) (at level 80).
 
-  Hint Constructors sig2h.
-  Hint Constructors sig2hc.
-  Hint Constructors sig2hcc.
-  Hint Constructors sig3.
+  Hint Constructors sig2h : core .
+  Hint Constructors sig2hc : core .
+  Hint Constructors sig2hcc : core .
+  Hint Constructors sig3 : core .
 
 End SqSystems.

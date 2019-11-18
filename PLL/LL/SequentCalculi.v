@@ -70,8 +70,7 @@ Require Export List.
 Export ListNotations.
 Set Implicit Arguments.
 
-Hint Resolve Max.le_max_r.
-Hint Resolve Max.le_max_l.
+Hint Resolve Max.le_max_r Max.le_max_l : core .
 
 (** Dyadic system  (one-sided) *)
 Reserved Notation " '|--' B ';' L" (at level 80).
@@ -561,10 +560,7 @@ Proof.
   refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
 Qed.
 
-Hint Constructors sig2h.
-Hint Constructors sig2hc.
-Hint Constructors sig2hcc.
-Hint Constructors sig3.
+Hint Constructors sig2h sig2hc sig2hcc sig3 : core.
 
 Theorem sig2_iff_sig2h :  forall B L, |-- B ; L <-> exists m, m |-- B ; L .
 Proof.

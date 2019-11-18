@@ -57,7 +57,7 @@ Qed.
 (* End Simple Lemmas *)
 
 Hint Resolve sig2h_nil sig2hc_nil sig2hcc_nil sig3_nil 
-     sig2h_cnil sig2hc_cnil sig2hcc_cnil sig3_cnil.
+     sig2h_cnil sig2hc_cnil sig2hcc_cnil sig3_cnil : core .
 
 (** Exchange Rule *)
 Theorem sig2h_exchange: forall n B1 B2 L1 L2, B1 =mul= B2 -> L1 =mul= L2 -> 

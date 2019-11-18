@@ -23,12 +23,12 @@ Set Implicit Arguments.
 Module SqBasic (DT : Eqset_dec_pol).
   
   Module Export Sys :=  SqSystems DT.
-  Hint Resolve Max.le_max_r. 
-  Hint Resolve Max.le_max_l.
-  Hint Constructors sig2h.
-  Hint Constructors sig2hc.
-  Hint Constructors sig2hcc.
-  Hint Constructors sig3.
+  Hint Resolve Max.le_max_r : core .
+  Hint Resolve Max.le_max_l : core .
+  Hint Constructors sig2h : core .
+  Hint Constructors sig2hc : core .
+  Hint Constructors sig2hcc : core .
+  Hint Constructors sig3 : core .
 
   
   
@@ -144,7 +144,7 @@ Module SqBasic (DT : Eqset_dec_pol).
   Lemma Sig2Top: forall B M M', |-- B; M ++ ⊤ :: M'.
     intros. eapply sig2_top;auto.
   Qed.
-  Hint Resolve Sig2InitNegative Sig2InitNegative' Sig2One Sig2Top.
+  Hint Resolve Sig2InitNegative Sig2InitNegative' Sig2One Sig2Top : core .
 
   Lemma sig2hc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-c B1 ; L1 -> n |-c B2 ; L2.
   Proof.
@@ -354,10 +354,10 @@ Module SqBasic (DT : Eqset_dec_pol).
     refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
   Qed.
 
-  Hint Constructors sig2h.
-  Hint Constructors sig2hc.
-  Hint Constructors sig2hcc.
-  Hint Constructors sig3.
+  Hint Constructors sig2h : core .
+  Hint Constructors sig2hc : core .
+  Hint Constructors sig2hcc : core .
+  Hint Constructors sig3 : core .
 
   Theorem sig2hc_then_sig2hcc: forall n B L, sig2hc n B L -> sig2hcc n B L.
   Proof.

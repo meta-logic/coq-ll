@@ -13,8 +13,7 @@ Require Export Omega.
 Export ListNotations.
 Set Implicit Arguments.
 
-Hint Resolve Max.le_max_r.
-Hint Resolve Max.le_max_l.
+Hint Resolve Max.le_max_r Max.le_max_l :core.
 
 Ltac aux_bases :=
   match goal with
@@ -167,31 +166,6 @@ Ltac resolve_rewrite :=
       rewrite P; auto; try solve_permutation    
     end.
 
-(* Lemma resolve_le_l : forall x y z a, x <= max a y -> y <= z -> x <= max a z.
-Proof.
-  intros.
-  assert (max a y <= max a z).
-  apply Nat.max_le_compat_l; auto.
-  refine (le_trans _ _ _ H _); auto.
-Qed.
-
-Lemma resolve_le_r : forall x y z a, x <= max y a -> y <= z -> x <= max z a.
-Proof.
-  intros.
-  rewrite Max.max_comm in H.
-  rewrite Max.max_comm.
-  refine (resolve_le_l _ H H0).
-Qed.
-
- (* Hint Resolve Max.max_0_l
-             Max.max_0_r
-             Max.le_max_l
-             Max.le_max_r
-             plus_le_compat_l
-             plus_le_compat_r
-             le_n_S. *)
-             
- *)
 
 Ltac resolve_max :=
   simpl;

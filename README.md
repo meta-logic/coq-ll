@@ -11,20 +11,20 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested in Coq 8.7. No extra library is needed for compilation. 
+The project was tested in Coq 8.10. No extra library is needed for compilation. 
 
 There are two main directories
 
  - PLL : Formalizing propositional linear logic. 
  - FOLL : Formalizing first order linear logic. 
 
- In both directories, the source files can be compiles with
+ In both directories, the source files can be compiled with
 
 ```
 make
 ```
 
-and HTML documentation can be generated with 
+and the HTML documentation can be generated with 
 
 ```
 make html

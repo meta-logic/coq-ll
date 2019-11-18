@@ -28,13 +28,13 @@ Module InvLemmas (DT : Eqset_dec_pol).
 
   (*******************************************************************)
   (* Some automation *)
-  Hint Rewrite Neg2pos Ng_involutive.
-  Hint Constructors Asynchronous.
-  Hint Constructors IsNegativeAtom.
-  Hint Resolve l_nil l_sin l_cos.
-  Hint Constructors NotAsynchronous.
-  Hint Unfold Release.
-  Hint Constructors release.
+  Hint Rewrite Neg2pos Ng_involutive : core .
+  Hint Constructors Asynchronous : core .
+  Hint Constructors IsNegativeAtom : core .
+  Hint Resolve l_nil l_sin l_cos : core .
+  Hint Constructors NotAsynchronous : core .
+  Hint Unfold Release : core .
+  Hint Constructors release : core .
   (* End Automation section *)
   (*************************************************************)
 

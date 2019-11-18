@@ -7,7 +7,7 @@ Proof of cut-elimination and the consistency of LL as a corollary.
  *)
 
 Require Export CutCases.
-Require Export myTactics.
+Require Export llTactics.
 Set Implicit Arguments.
 
 Lemma ap_cut_free B L M1 M2 v :
@@ -569,30 +569,32 @@ Proof.
             eexists;
             refine (sig3_with _ Ht1 Ht2); auto; resolve_rewrite.
           
-          Focus 2.
-          assert (exists m, m |~> 0; F1 :: B; M) as Hyp.
-          rewrite meq_swap_cons in H4.
-          eapply height_preserving_weakning_sig3 with (D:=[F1]) in Hn1.
-          rewrite union_comm_app in Hn1.
-          
-          refine (H0 _ _ _ _ _ _); 
-            [ | 
-              change (0%nat) with (0+0);
-              refine (sig3_ccut _ _ _ Hn1 H4);
-              auto]; resolve_max.
-          destruct Hyp as [t Ht];
-            eexists;
-            refine (sig3_quest _ Ht); auto; resolve_rewrite.
-          Focus 2.
-          assert (exists m, m |~> 0; B; [F1]) as Hyp.
-          refine (H0 _ _ _ _ _ _); 
-            [ | 
-              change (0%nat) with (0+0);
-              refine (sig3_ccut _ _ _ Hn1 H4);
-              auto]; resolve_max.
-          destruct Hyp as [t Ht];
-            eexists;
-            refine (sig3_bang _ Ht); auto; resolve_rewrite.  
+          2 : {
+            assert (exists m, m |~> 0; F1 :: B; M) as Hyp.
+            rewrite meq_swap_cons in H4.
+            eapply height_preserving_weakning_sig3 with (D:=[F1]) in Hn1.
+            rewrite union_comm_app in Hn1.
+            
+            refine (H0 _ _ _ _ _ _); 
+              [ | 
+                change (0%nat) with (0+0);
+                refine (sig3_ccut _ _ _ Hn1 H4);
+                auto]; resolve_max.
+            destruct Hyp as [t Ht];
+              eexists;
+              refine (sig3_quest _ Ht); auto; resolve_rewrite.
+          }
+          2: {
+            assert (exists m, m |~> 0; B; [F1]) as Hyp.
+            refine (H0 _ _ _ _ _ _); 
+              [ | 
+                change (0%nat) with (0+0);
+                refine (sig3_ccut _ _ _ Hn1 H4);
+                auto]; resolve_max.
+            destruct Hyp as [t Ht];
+              eexists;
+              refine (sig3_bang _ Ht); auto; resolve_rewrite.
+          }
           
           destruct (eq_dec F1 F0°); subst.
           assert (exists m, m |~> 0; B; F0° :: L) as Hyp. 
@@ -606,11 +608,11 @@ Proof.
           
           refine (H _ _ _ _ _ _ _); 
             [ | change (0%nat) with (0+0)].
-          Focus 2.
-          refine (sig3_cut _ _ _ H2 Ht); auto. 
+          
+          2: { refine (sig3_cut _ _ _ H2 Ht); auto. }
           inversion Hw. 
           resolve_max.
-
+          
           simpl_cases2.
           assert (exists m, m |~> 0; B; F1 :: L) as Hyp.
           rewrite H4 in H5.
