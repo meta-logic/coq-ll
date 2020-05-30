@@ -299,7 +299,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0 ; B; x ++ M2) as Hyp. 
             rewrite H1 in H2.
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H2 Hn2); 
                   auto; try resolve_rewrite]; resolve_max.
             
@@ -313,7 +313,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite H1 in H2; 
               rewrite union_rotate_cons in H2.
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H2 Hn2); 
                   auto; try resolve_rewrite]; resolve_max.
             
@@ -330,7 +330,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite HL1 in H4;
               rewrite meq_swap_cons in H4.
             refine (H0 _ _ _ _ _ _);
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H4 Hn2); 
                   auto; try resolve_rewrite].
             inversion Hh.  resolve_max.
@@ -343,7 +343,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite HL2 in H6;
               rewrite meq_swap_cons in H6.
             refine (H0 _ _ _ _ _ _);
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H6 Hn2); 
                   auto; try resolve_rewrite].
             inversion Hh.  resolve_max.
@@ -357,7 +357,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite H1 in H2;
               rewrite meq_swap_cons in H2.  
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H2 Hn2); 
                   auto; try resolve_rewrite]; resolve_max.
             
@@ -372,7 +372,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite H1 in H2; 
               rewrite meq_swap_cons in H2.  
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H2 Hn2); 
                   auto; try resolve_rewrite]; resolve_max.
             
@@ -388,7 +388,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite H2 in H4; 
               rewrite meq_swap_cons in H4;
               refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H4 Hn2); 
                   auto; try resolve_rewrite];resolve_max.
             inversion Hh;  resolve_max.
@@ -396,7 +396,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0 ; B; G :: (x ++ M2)) as Hyp2.
             rewrite H2 in H6; rewrite meq_swap_cons in H6;
               refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H6 Hn2); 
                   auto; try resolve_rewrite];resolve_max.
             inversion Hh;  resolve_max.
@@ -411,7 +411,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite meq_swap_cons in H2.
             rewrite H2 in H4.
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H4 Hn2); 
                   auto; try resolve_rewrite];resolve_max.
             
@@ -428,7 +428,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite <- app_comm_cons in Hn2.
             rewrite union_comm in Hn2.
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0); 
+              [ | change (0%nat) with (plus 0 0); 
                   refine (sig3_ccut _ _ _ H2 Hn2); 
                   auto; try resolve_rewrite]; resolve_max.
             destruct Hyp as [t Ht];
@@ -448,7 +448,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m : nat, m |~> 0; B; M) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -457,7 +457,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; F0 :: G :: M) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -466,13 +466,13 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; F0 :: M) as Hyp1.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H5);
                 auto]; resolve_max.
             assert (exists m, m |~> 0; B; G :: N) as Hyp2.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H7);
                 auto]; resolve_max.        
             destruct Hyp1 as [t1 Ht1];
@@ -482,7 +482,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; F0 :: M) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -491,7 +491,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; G :: M) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -500,13 +500,13 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; F0 :: M) as Hyp1.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H5);
                 auto]; resolve_max.
             assert (exists m, m |~> 0; B; G :: M) as Hyp2.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H7);
                 auto]; resolve_max.        
             destruct Hyp1 as [t1 Ht1];
@@ -522,7 +522,7 @@ Module CElimination (DT : Eqset_dec_pol).
             
               refine (H0 _ _ _ _ _ _); 
                 [ | 
-                  change (0%nat) with (0+0);
+                  change (0%nat) with (plus 0 0);
                   refine (sig3_ccut _ _ _ Hn1 H4);
                   auto]; resolve_max.
               destruct Hyp as [t Ht];
@@ -534,7 +534,7 @@ Module CElimination (DT : Eqset_dec_pol).
               assert (exists m, m |~> 0; B; [F0]) as Hyp.
               refine (H0 _ _ _ _ _ _); 
                 [ | 
-                  change (0%nat) with (0+0);
+                  change (0%nat) with (plus 0 0);
                   refine (sig3_ccut _ _ _ Hn1 H4);
                   auto]; resolve_max.
               destruct Hyp as [t Ht];
@@ -546,14 +546,14 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; F° :: L) as Hyp. 
             rewrite H4 in H5.     
             refine (H0 _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0);
+              [ | change (0%nat) with (plus 0 0);
                   refine (sig3_ccut _ _ _ Hn1 H5); 
                   auto; resolve_rewrite]; resolve_max.
             
             destruct Hyp as [t Ht].
             
             refine (H _ _ _ _ _ _ _); 
-              [ | change (0%nat) with (0+0)].
+              [ | change (0%nat) with (plus 0 0)].
             2:{  refine (sig3_cut _ _ _ H2 Ht); auto. }
             inversion Hw.  unfold Lexp_weight; auto.
             apply not_eqLExp_sym in n1.
@@ -562,7 +562,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite H4 in H5.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H5);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -572,7 +572,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (exists m, m |~> 0; B; Subst FX t :: M) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [p Hp];
@@ -584,7 +584,7 @@ Module CElimination (DT : Eqset_dec_pol).
             assert (n0 |~> 0; F° :: B; Subst FX y :: M) by auto.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H5);
                 auto]; resolve_max.
             apply fx_swap_sig3h in Hyp.   
@@ -598,7 +598,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite meq_swap_cons in H2.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ H2 Hn2) ;
                 auto]; resolve_max.
             destruct Hyp as [p Hp];
@@ -613,7 +613,7 @@ Module CElimination (DT : Eqset_dec_pol).
             rewrite meq_swap_cons in H5.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ H5 Hn2) ;
                 auto]; resolve_max.
             apply fx_swap_sig3h in Hyp.   
@@ -638,14 +638,14 @@ Module CElimination (DT : Eqset_dec_pol).
       ++ (* TENSOR *) 
         cut_free.
         eexists.
-        change (0%nat) with (0+0).
+        change (0%nat) with (plus 0 0).
         eapply sig3_tensor;eauto.
       ++ (* OPLUS F *)  eexists. eapply sig3_plus1; eauto.
       ++ (* OPLUS G *)  eexists. eapply sig3_plus2; eauto.
       ++ (* WITH *)
         cut_free.
         eexists.
-        change (0%nat) with (0+0).
+        change (0%nat) with (plus 0 0).
         eapply sig3_with;eauto.
       ++ (* COPY *) eexists. eapply sig3_copy; eauto.
       ++ (* QUEST *) eexists. eapply sig3_quest; eauto.
@@ -670,7 +670,7 @@ Module CElimination (DT : Eqset_dec_pol).
         (* TENSOR *)
         apply H in H4;auto. destruct H4.
         apply H in H5;auto. destruct H5.
-        change (0%nat) with (0+0).        
+        change (0%nat) with (plus 0 0).        
         eexists.
         eapply sig3_tensor;eauto.
       ++ (* PLUS1 *)
@@ -687,7 +687,7 @@ Module CElimination (DT : Eqset_dec_pol).
         apply H in H4;auto.  destruct H4.
         apply H in H5;auto.  destruct H5.
 
-        change (0%nat) with (0+0).        
+        change (0%nat) with (plus 0 0).        
         eexists.
         eapply sig3_with;eauto.
       ++ (* copy *)

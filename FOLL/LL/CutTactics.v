@@ -24,18 +24,18 @@ Module CTactics (DT : Eqset_dec_pol).
   
   Ltac aux_bases :=
     match goal with
-    | [ Hcut : 0%nat = ?n1 + ?n2 |- _ ] => 
+    | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
       refine (plus_is_O _ _ (symmetry Hcut))
-    | [ Hcut : ?n1 + ?n2 = 0%nat |- _ ] => 
+    | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
       refine (plus_is_O _ _ Hcut)     
     end.
 
   Ltac simpl_bases :=
     match goal with
-    | [ Hcut : 0%nat = ?n1 + ?n2 |- _ ] => 
+    | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
       assert (n1 = 0%nat /\ n2 = 0%nat) as n1n2 by aux_bases;
       destruct n1n2 as [n1_0 n2_0]; subst
-    | [ Hcut : ?n1 + ?n2 = 0%nat |- _ ] => 
+    | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
       assert (n1 = 0%nat /\ n2 = 0%nat) as n1n2 by aux_bases;
       destruct n1n2 as [n1_0 n2_0]; subst
     end.
@@ -43,8 +43,8 @@ Module CTactics (DT : Eqset_dec_pol).
   Ltac cut_free :=
     simpl_bases;
     match goal with
-    | [ H: 0%nat = 0 + 0 |- _ ] => clear H
-    | [ H: 0 + 0 = 0%nat |- _ ] => clear H
+    | [ H: 0%nat = plus 0 0 |- _ ] => clear H
+    | [ H: plus 0 0 = 0%nat |- _ ] => clear H
     end.
   
   Ltac simpl_cases0 := 
@@ -244,7 +244,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -257,7 +257,7 @@ match goal with
     assert (exists m, m |~> 0 ; B; T ++ M2) as Hyp.
     rewrite PM in H.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0);
+      [ | change (0%nat) with (plus 0 0);
           refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite].
     resolve_max.
     destruct Hyp as [t Ht];
@@ -271,7 +271,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -284,7 +284,7 @@ match goal with
     assert (exists m, m |~> 0 ; B; T ++ M2) as Hyp.
     rewrite PM in H.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0);
+      [ | change (0%nat) with (plus 0 0);
           refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite].
     resolve_max.
     destruct Hyp as [t Ht];
@@ -298,7 +298,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -323,7 +323,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -337,7 +337,7 @@ match goal with
     rewrite PM in H.
     rewrite union_rotate_cons in H.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -351,7 +351,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -365,7 +365,7 @@ match goal with
     rewrite PM in H.
     rewrite union_rotate_cons in H.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -379,7 +379,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -400,7 +400,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -415,7 +415,7 @@ match goal with
     rewrite PM in H.
     rewrite meq_swap in H; auto.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); 
+      [ | change (0%nat) with (plus 0 0); 
           refine (sig3_cut _ _ _ H Hn2); auto; 
           resolve_rewrite];
       resolve_max.
@@ -432,7 +432,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -448,7 +448,7 @@ match goal with
     rewrite meq_swap in H; auto.
 
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); 
+      [ | change (0%nat) with (plus 0 0); 
           refine (sig3_cut _ _ _ H Hn2); auto; 
           resolve_rewrite];
       resolve_max.
@@ -465,7 +465,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -486,7 +486,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -502,7 +502,7 @@ match goal with
     rewrite meq_swap in H; auto.
 
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); 
           auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
@@ -518,7 +518,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -534,7 +534,7 @@ match goal with
     rewrite meq_swap in H; auto.
 
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); 
           auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
@@ -550,7 +550,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -726,7 +726,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -740,7 +740,7 @@ match goal with
                                                             eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn2;
                                                             rewrite union_comm in Hn2.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -754,7 +754,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -769,7 +769,7 @@ match goal with
       eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn2;
       rewrite union_comm in Hn2.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -783,7 +783,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -805,7 +805,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     B =mul= F :: B0 ->
@@ -819,7 +819,7 @@ match goal with
     rewrite meq_swap_cons in PP.
     rewrite PP in H.  
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -834,7 +834,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     B =mul= F :: B0 ->
@@ -848,7 +848,7 @@ match goal with
     rewrite meq_swap_cons in PP.
     rewrite PP in H.  
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max.
     destruct Hyp as [t Ht];
       eexists;
@@ -862,7 +862,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     B =mul= F :: B0 ->
@@ -883,7 +883,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h =  max n2 n1 + n3 ->
+    h =  plus (max n2 n1) n3 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M ++ N =mul= a :: T ->
@@ -902,7 +902,7 @@ match goal with
     rewrite meq_swap_cons in H1.
 
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
           auto; try resolve_rewrite];
       resolve_max. rewrite Hh. resolve_max. 
     destruct Hyp as [t Ht];
@@ -914,7 +914,7 @@ match goal with
     rewrite HL2 in H2. 
     rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
           auto; try resolve_rewrite];
       resolve_max. rewrite Hh. resolve_max. 
     destruct Hyp as [t Ht];
@@ -928,7 +928,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = max n2 n1 + n3 ->
+    h = plus (max n2 n1) n3 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M ++ N =mul= a :: T ->
@@ -947,7 +947,7 @@ match goal with
     rewrite meq_swap_cons in H1.
 
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
           auto; try resolve_rewrite];
       resolve_max. rewrite Hh. resolve_max.
     destruct Hyp as [t Ht];
@@ -959,7 +959,7 @@ match goal with
     rewrite HL2 in H2. 
     rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
           auto; try resolve_rewrite];
       resolve_max.  rewrite Hh. resolve_max.
     destruct Hyp as [t Ht];
@@ -973,7 +973,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = max n2 n1 + n3 ->
+    h = plus (max n2 n1) n3 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M ++ N =mul= a :: T ->
@@ -995,7 +995,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = max n2 n1 + n3 ->
+    h = plus (max n2 n1) n3 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1010,7 +1010,7 @@ match goal with
     rewrite PM in H1; 
       rewrite meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
           try resolve_rewrite; perm_simplify];
       resolve_max. 
     rewrite Hh. resolve_max. 
@@ -1018,7 +1018,7 @@ match goal with
     assert (exists m, m |~> 0 ; B; G :: (M2 ++ T)) as Hyp2.        
     rewrite PM in H2; rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
           try resolve_rewrite; perm_simplify];
       resolve_max.
     rewrite Hh. resolve_max. 
@@ -1037,7 +1037,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = max n2 n1 + n3 ->
+    h = plus (max n2 n1) n3 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1053,7 +1053,7 @@ match goal with
     rewrite PM in H1; 
       rewrite  meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
           try resolve_rewrite; perm_simplify];
       resolve_max. rewrite Hh. resolve_max.
     
@@ -1061,7 +1061,7 @@ match goal with
     rewrite PM in H2; 
       rewrite  meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
           try resolve_rewrite; perm_simplify];
       resolve_max. rewrite Hh. resolve_max.
 
@@ -1079,7 +1079,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = max n2 n1 + n3 ->
+    h = plus (max n2 n1) n3 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1101,7 +1101,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1+n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1115,7 +1115,7 @@ match goal with
     rewrite PM in H.
     rewrite meq_swap_cons in H.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max. 
     destruct Hyp as [p Hp];
       eexists;
@@ -1129,7 +1129,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1+n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1143,7 +1143,7 @@ match goal with
     rewrite PM in H.
     rewrite meq_swap_cons in H.
     refine (HI _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
       resolve_max. 
     destruct Hyp as [p Hp];
       eexists;
@@ -1156,7 +1156,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1+n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1177,7 +1177,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     0%nat = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1194,7 +1194,7 @@ match goal with
     rewrite union_comm.
     rewrite <- PM. auto.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0);
+      [ | change (0%nat) with (plus 0 0);
           refine (sig3_cut _ _ _ Hy Hn2); auto; try resolve_rewrite].
     resolve_max. eauto.
     destruct Hyp as [p Hp];
@@ -1209,7 +1209,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     S w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->
@@ -1226,7 +1226,7 @@ match goal with
     rewrite union_comm.
     rewrite <- PM. auto.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0);
+      [ | change (0%nat) with (plus 0 0);
           refine (sig3_cut _ _ _ Hy Hn2); auto; try resolve_rewrite].
     resolve_max. eauto.
     destruct Hyp as [p Hp];
@@ -1241,7 +1241,7 @@ match goal with
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-    h = n1 + n2 ->
+    h = plus n1 n2 ->
     w = Lexp_weight a ->
     L =mul= M1 ++ M2 -> 
     M =mul= a :: T ->

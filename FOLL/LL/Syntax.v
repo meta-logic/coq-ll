@@ -73,7 +73,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | top | bot | zero | one  (* constants *)
     | tensor (F G : lexp)
     | par    (F G : lexp)
-    | plus   (F G : lexp)
+    | oplus   (F G : lexp)
     | witH   (F G : lexp)
     | bang   (F : lexp)
     | quest  (F : lexp) 
@@ -87,7 +87,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   Arguments a0 [T]. Arguments a1 [T]. Arguments a2 [T]. 
   Arguments atom [T]. Arguments perp [T].
   Arguments top [T] . Arguments one [T]. Arguments bot [T]. Arguments zero [T].
-  Arguments tensor [T]. Arguments par [T]. Arguments plus [T]. Arguments witH [T].
+  Arguments tensor [T]. Arguments par [T]. Arguments oplus [T]. Arguments witH [T].
   Arguments bang [T]. Arguments quest [T].
   Arguments ex [T]. Arguments fx [T].
   (*****************************************)
@@ -117,7 +117,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   Definition Zero   :Lexp := fun _ => zero .
   Definition Tensor  (F G: Lexp) :Lexp :=  fun _ => tensor (F _) (G _).
   Definition Par  (F G: Lexp) :Lexp :=  fun _  => par (F _) (G _).
-  Definition Plus  (F G: Lexp) :Lexp :=  fun _ => plus (F _) (G _).
+  Definition Plus  (F G: Lexp) :Lexp :=  fun _ => oplus (F _) (G _).
   Definition With  (F G: Lexp) :Lexp :=  fun _ => witH (F _) (G _).
   Definition Bang  (F: Lexp) :Lexp :=  fun _ => bang (F _ ).
   Definition Quest  (F: Lexp) :Lexp :=  fun _ => quest (F _ ).
@@ -203,8 +203,8 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | top => zero  
       | tensor F G => par (dual_LExp F) (dual_LExp G)
       | par F G    => tensor (dual_LExp F) (dual_LExp G)
-      | plus F G => witH (dual_LExp F) (dual_LExp G)
-      | witH F G    => plus (dual_LExp F) (dual_LExp G)
+      | oplus F G => witH (dual_LExp F) (dual_LExp G)
+      | witH F G    => oplus (dual_LExp F) (dual_LExp G)
       | bang F   => quest (dual_LExp F) 
       | quest F  => bang (dual_LExp  F)
       | ex X => fx (fun x => dual_LExp (X x))
@@ -341,7 +341,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | one => one
       | tensor F G => tensor (flatten F)  (flatten G)
       | par F G => par (flatten F)  (flatten G)
-      | plus F G => plus (flatten F)  (flatten G)
+      | oplus F G => oplus (flatten F)  (flatten G)
       | witH F G => witH (flatten F)  (flatten G)
       | bang F => bang (flatten F)  
       | quest F => quest (flatten F)  
@@ -573,7 +573,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Lemma EqPar :  forall F G, (fun T : Type => par (F T)  (G T)) = Par F G.
     Proof. intuition.  Qed.
 
-    Lemma EqPlus :  forall F G, (fun T : Type => plus (F T)  (G T)) = Plus F G.
+    Lemma EqPlus :  forall F G, (fun T : Type => oplus (F T)  (G T)) = Plus F G.
     Proof. intuition.  Qed.
 
     Lemma EqWith :  forall F G, (fun T : Type => witH (F T)  (G T)) = With F G.
@@ -677,7 +677,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | one | bot | zero | top => 0
       | tensor X Y => 1 + (lexp_weight X) + (lexp_weight Y)
       | par X Y => 1 + (lexp_weight X) + (lexp_weight Y)
-      | plus X Y => 1 + (lexp_weight X) + (lexp_weight Y)
+      | oplus X Y => 1 + (lexp_weight X) + (lexp_weight Y)
       | witH X Y  => 1 + (lexp_weight X) + (lexp_weight Y)
       | bang X => 1 + lexp_weight X
       | quest X  => 1 + lexp_weight X
@@ -777,7 +777,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | eq_one : EqualUptoAtoms one one
     | eq_tensor : forall F G F' G', EqualUptoAtoms F F' -> EqualUptoAtoms G G' -> EqualUptoAtoms (tensor F G) (tensor F' G')
     | eq_par : forall F G F' G', EqualUptoAtoms F F' -> EqualUptoAtoms G G' -> EqualUptoAtoms (par F G) (par F' G')
-    | eq_plus : forall F G F' G', EqualUptoAtoms F F' -> EqualUptoAtoms G G' -> EqualUptoAtoms (plus F G) (plus F' G')
+    | eq_plus : forall F G F' G', EqualUptoAtoms F F' -> EqualUptoAtoms G G' -> EqualUptoAtoms (oplus F G) (oplus F' G')
     | eq_with : forall F G F' G', EqualUptoAtoms F F' -> EqualUptoAtoms G G' -> EqualUptoAtoms (witH F G) (witH F' G')
     | eq_bang : forall F F', EqualUptoAtoms F F' -> EqualUptoAtoms (bang F) (bang F')
     | eq_quest : forall F F', EqualUptoAtoms F F' -> EqualUptoAtoms (quest F) (quest F')
@@ -818,7 +818,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | one => false
       | tensor _ _ => false
       | par _ _ => true
-      | plus _ _ => false
+      | oplus _ _ => false
       | witH _ _ => true
       | bang _ => false
       | quest _ => true
@@ -886,7 +886,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | atom _ | perp _ | one | bot | zero | top => 1
       | tensor X Y => 1 + (exp_weight X) + (exp_weight Y)
       | par X Y => 1 + (exp_weight X) + (exp_weight Y)
-      | plus X Y => 1 + (exp_weight X) + (exp_weight Y)
+      | oplus X Y => 1 + (exp_weight X) + (exp_weight Y)
       | witH X Y  => 1 + (exp_weight X) + (exp_weight Y)
       | bang X => 1 + exp_weight X
       | quest X  => 1 + exp_weight X
@@ -1224,7 +1224,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | PPZero :  posOrNegAtom zero
     | PPOne :  posOrNegAtom one
     | PPTensor : forall F G,  posOrNegAtom ( tensor F G)
-    | PPPlus : forall F G,  posOrNegAtom ( plus F  G)
+    | PPPlus : forall F G,  posOrNegAtom ( oplus F  G)
     | PPBang : forall F,  posOrNegAtom ( bang F )
     | PPExists : forall FX,  posOrNegAtom ( ex FX).
     Hint Constructors posOrNegAtom : core .
@@ -1236,7 +1236,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     | PFZero :  posFormula zero
     | PFOne :  posFormula one
     | PFTensor : forall F G,  posFormula ( tensor F G)
-    | PFPlus : forall F G,  posFormula ( plus F  G)
+    | PFPlus : forall F G,  posFormula ( oplus F  G)
     | PFBang : forall F,  posFormula ( bang F )
     | PFExists : forall FX,  posFormula ( ex FX).
     Hint Constructors posFormula : core .
@@ -1623,7 +1623,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | [H : context[fun _ : Type => tensor _ _] |- _ ] => rewrite EqTensor in H 
       | [H : context[fun _ : Type => par _ _] |- _ ] => rewrite EqPar in H 
       | [H : context[fun _ : Type => witH _ _] |- _ ] => rewrite EqWith in H 
-      | [H : context[fun _ : Type => plus _ _] |- _ ] => rewrite EqPlus in H 
+      | [H : context[fun _ : Type => oplus _ _] |- _ ] => rewrite EqPlus in H 
       | [H : context[fun _ : Type => quest _] |- _ ]  => rewrite EqQuest in H 
       | [H : context[fun _ : Type => bang _] |- _ ] => rewrite EqBang in H 
       | [H : context[fun _ : Type => ex _] |- _ ] => rewrite EqEx in H 
@@ -1648,7 +1648,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       | [ |- context[fun _ : Type => tensor _ _]] => rewrite EqTensor
       | [ |- context[fun _ : Type => par _ _] ] => rewrite EqPar
       | [ |- context[fun _ : Type => witH _ _]] => rewrite EqWith
-      | [ |- context[fun _ : Type => plus _ _]] => rewrite EqPlus
+      | [ |- context[fun _ : Type => oplus _ _]] => rewrite EqPlus
       | [ |- context[fun _ : Type => quest _]]  => rewrite EqQuest
       | [ |- context[fun _ : Type => bang _]] => rewrite EqBang
       | [ |- context[fun _ : Type => ex _] ] => rewrite EqEx

@@ -114,14 +114,14 @@ Fixpoint L_weight (L: list lexp) : nat :=
   | H :: L' => (exp_weight H) + (L_weight L')
   end.
 
-Theorem exp_weight0LF : forall l L, 0%nat = exp_weight l + L_weight L -> False.
+Theorem exp_weight0LF : forall l L, 0%nat = plus (exp_weight l) (L_weight L) -> False.
 Proof.
   intros.
   assert(exp_weight l > 0%nat) by (apply exp_weight0).
   omega.
 Qed.
 
-Theorem L_weightApp : forall L M, L_weight (L ++M) = L_weight L + L_weight M.
+Theorem L_weightApp : forall L M, L_weight (L ++M) = plus (L_weight L) (L_weight M).
 Proof.
   intros.
   induction L; auto.
@@ -440,8 +440,8 @@ Qed.
 Lemma plus_le_reg_r: forall n m p : nat, n + p <= m + p -> n <= m.
 Proof.
   intros.
-  assert (n+p = p + n) by (apply plus_comm).
-  assert (m+p = p + m) by (apply plus_comm).
+  assert (plus n p = plus p n) by (apply plus_comm).
+  assert (plus m p = plus p m) by (apply plus_comm).
   rewrite H0 in H. rewrite H1 in H.
   eapply plus_le_reg_l in H.
   assumption.

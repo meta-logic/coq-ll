@@ -62,7 +62,7 @@ Proof.
       simpl. eapply tri_bot ;auto.
       eassumption.
     ++ (* PAR *)
-      apply IH  with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L) in H4;auto.
+      apply IH  with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L)) in H4;auto.
       destruct H4.
       eexists.
       simpl. eapply tri_par;auto.
@@ -70,8 +70,8 @@ Proof.
       simpl.
       apply plus_assoc_reverse.
     ++ (* WITH *)
-      apply IH with (L:= l1 :: L) (m:= exp_weight l1 + L_weight L) in H5;auto.
-      apply IH with (L:= l2 :: L) (m:= exp_weight l2 + L_weight L) in H7;auto.
+      apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
+      apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
       destruct H5. destruct H7.
       eexists.
       simpl.
@@ -150,7 +150,7 @@ Proof.
       inversion H'.
       subst.
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: l2 :: L) ++ [F & G] ++ L')) as Hp.
-      eapply IH with (m:= exp_weight l1 + exp_weight l2 + L_weight L ) ;eauto.
+      eapply IH with (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L) ) ;eauto.
       simpl. omega.
       
       destruct Hp.
@@ -177,10 +177,10 @@ Proof.
       subst.
       
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: L) ++ [F & G] ++ L')) as Hp1.
-      eapply IH with (m:= exp_weight l1 + L_weight L ) ;eauto.
+      eapply IH with (m:= plus (exp_weight l1) (L_weight L) ) ;eauto.
       simpl. omega.
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l2 :: L) ++ [F & G] ++ L')) as Hp2.
-      eapply IH with (m:= exp_weight l2 + L_weight L ) ;eauto.
+      eapply IH with (m:= plus (exp_weight l2) (L_weight L) ) ;eauto.
       simpl. omega.
       
       destruct Hp1.
@@ -255,7 +255,7 @@ Proof.
       simpl. eapply tri_bot ;auto.
       eassumption.
     ++ (* PAR *)
-      apply IH  with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L) in H4;auto.
+      apply IH  with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L)) in H4;auto.
       destruct H4.
       eexists.
       simpl. eapply tri_par;auto.
@@ -263,8 +263,8 @@ Proof.
       simpl.
       apply plus_assoc_reverse.
     ++ (* WITH *)
-      apply IH with (L:= l1 :: L) (m:= exp_weight l1 + L_weight L) in H5;auto.
-      apply IH with (L:= l2 :: L) (m:= exp_weight l2 + L_weight L) in H7;auto.
+      apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
+      apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
       destruct H5. destruct H7.
       eexists.
       simpl.
@@ -338,7 +338,7 @@ Proof.
       
     ++ (* PAR *)
       inversion H1;subst.
-      apply IH  with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L) in H6;auto.
+      apply IH  with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L)) in H6;auto.
       destruct H6.
       eexists.
       simpl. eapply tri_par;auto;eassumption.
@@ -354,8 +354,8 @@ Proof.
       eexists; simpl; eapply tri_store;auto;eassumption.
     ++ (* WITH *)
       inversion H1;subst.
-      apply IH with (L:= l1 :: L) (m:= exp_weight l1 + L_weight L) in H7;auto.
-      apply IH with (L:= l2 :: L) (m:= exp_weight l2 + L_weight L) in H9;auto.
+      apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H7;auto.
+      apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H9;auto.
       destruct H7. destruct H9.
       eexists.
       simpl.
@@ -414,7 +414,7 @@ Proof.
       simpl. eapply tri_bot ;auto.
       eassumption.
     ++ (* PAR *)
-      apply IH  with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L) in H4;auto.
+      apply IH  with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L)) in H4;auto.
       destruct H4.
       eexists.
       simpl. eapply tri_par;auto.
@@ -422,8 +422,8 @@ Proof.
       simpl.
       apply plus_assoc_reverse.
     ++ (* WITH *)
-      apply IH with (L:= l1 :: L) (m:= exp_weight l1 + L_weight L) in H5;auto.
-      apply IH with (L:= l2 :: L) (m:= exp_weight l2 + L_weight L) in H7;auto.
+      apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
+      apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
       destruct H5. destruct H7.
       eexists.
       simpl.
@@ -499,7 +499,7 @@ Proof.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* Par *)
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: l2  :: L) ++ [⊤] ++ L')).
-      apply IH with (m := exp_weight l1 + exp_weight l2 + L_weight L);subst;auto.
+      apply IH with (m := plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L));subst;auto.
       simpl. omega.
       destruct H.
       eexists. simpl. eapply tri_par;auto. eassumption.
@@ -511,10 +511,10 @@ Proof.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* with *)
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l1 ::L) ++ [⊤] ++ L')).
-      apply IH with (m := exp_weight l1 + L_weight L);auto.
+      apply IH with (m := plus (exp_weight l1) (L_weight L));auto.
       omega.
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l2 ::L) ++ [⊤] ++ L')).
-      apply IH with (m := exp_weight l2 + L_weight L);auto.
+      apply IH with (m := plus (exp_weight l2) (L_weight L));auto.
       omega.
       destruct H. destruct H0.
       eexists. simpl. eapply tri_with;auto;eassumption.
@@ -598,7 +598,7 @@ Proof.
       inversion Heqw. subst.
       simpl in H.
       inversion H;firstorder; subst.
-      apply IH with (L:= l1 :: l2 :: L) (m:= exp_weight l1 + exp_weight l2 + L_weight L)in H4 ; auto.
+      apply IH with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L))in H4 ; auto.
       destruct H4.
 
       assert( F :: (l1 :: l2 :: L) ++ L' = [F] ++ [l1 ; l2] ++ (L ++ L'));auto.
@@ -621,8 +621,8 @@ Proof.
       inversion Heqw. subst.
       simpl in H.
       inversion H;firstorder; subst.
-      apply IH with (L:= l1 :: L) (m:= exp_weight l1 + L_weight L)in H5 ;auto.
-      apply IH with (L:= l2 :: L) (m:= exp_weight l2 + L_weight L)in H7 ;auto.
+      apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L))in H5 ;auto.
+      apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L))in H7 ;auto.
       
       destruct H5.
       destruct H7.
@@ -907,13 +907,13 @@ Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; 
       destruct H5 as [n'  [IHn IHd]].
       exists (S n');split;auto. omega. simpl. eapply tri_bot;auto.
     ++  (* PAR *)
-      apply IH with (m:= exp_weight F0 + exp_weight G + L_weight L) in H5;auto.
+      apply IH with (m:= plus (plus (exp_weight F0) (exp_weight G)) (L_weight L)) in H5;auto.
       destruct H5 as [n'  [IHn IHd]].
       exists (S n');split;auto. omega. simpl. eapply tri_par;auto.
       simpl. omega.
     ++ (* with *)
-      apply IH with (m:= exp_weight F0 + L_weight L) in H6;auto.
-      apply IH with (m:= exp_weight G + L_weight L) in H7;auto.
+      apply IH with (m:= plus (exp_weight F0) (L_weight L)) in H6;auto.
+      apply IH with (m:= plus (exp_weight G) (L_weight L)) in H7;auto.
       destruct H6 as [n'  [IHn IHd]].
       destruct H7 as [m'  [IHn' IHd']].
       simpl.

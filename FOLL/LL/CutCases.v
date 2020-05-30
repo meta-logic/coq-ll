@@ -34,7 +34,7 @@ Module CCases (DT : Eqset_dec_pol).
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m, m |~> 0; B; L) ->
-    S h = n1 + n2 -> 0%nat = Lexp_weight (v ⁺) -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> 0%nat = Lexp_weight (v ⁺) -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; v ⁺ :: M1 ->
                  n2 |~> 0; B; v ⁻ :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -107,7 +107,7 @@ Module CCases (DT : Eqset_dec_pol).
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> 
                            exists m, m |~> 0; B; L) ->
-    S h = n1 + n2 -> 0%nat = Lexp_weight (⊤) -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> 0%nat = Lexp_weight (⊤) -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; ⊤ :: M1 ->
                  n2 |~> 0; B; 0 :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -186,7 +186,7 @@ Module CCases (DT : Eqset_dec_pol).
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; 0; m; B; L -> exists m, m |~> 0; B; L) ->
-    S h = n1 + n2 -> 0%nat = Lexp_weight (⊥) -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> 0%nat = Lexp_weight (⊥) -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; ⊥ :: M1 ->
                  n2 |~> 0; B; 1 :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -259,7 +259,7 @@ Module CCases (DT : Eqset_dec_pol).
 
   Lemma tensor_par_principal n m n0 B L F G N M M1 M2:     
     (forall m : nat,
-        m <= Lexp_weight F + Lexp_weight G ->
+        m <= plus (Lexp_weight F) (Lexp_weight G) ->
         forall (h n : nat) (L B : Multiset),
           n ~> 0; m; h; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
     L =mul= M1 ++ M2 ->
@@ -268,18 +268,18 @@ Module CCases (DT : Eqset_dec_pol).
                                          M1 =mul= M ++ N ->
                                          m |~> 0; B; F :: M ->
                                                      n |~> 0; B; G :: N ->
-                                                                 n0 |~> 0; B; F° :: G° :: M2 -> exists m0 : nat, m0 |~> 0 + 0; B; L.
+                                                                 n0 |~> 0; B; F° :: G° :: M2 -> exists m0 : nat, m0 |~> plus 0 0; B; L.
   Proof.
     intros.  
     rewrite meq_swap_cons in H6.
     assert (exists m, m |~> 0 ; B; F° :: (N ++ M2)) as Hyp.
     refine (H _ _ _ _ _ _ _);
-      [|change (0%nat) with (0+0); 
+      [|change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H5 H6); auto]; resolve_max.
     destruct Hyp as [p Hp].
     
     refine (H _ _ _ _ _ _ _);
-      [|change (0%nat) with (0+0); 
+      [|change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H4 Hp); auto]; resolve_max.
     rewrite H0, H3.
     solve_permutation.
@@ -289,7 +289,7 @@ Module CCases (DT : Eqset_dec_pol).
 
   Lemma with_plus1_principal n m n0 B L F G M1 M2:     
     (forall m : nat,
-        m <= Lexp_weight F + Lexp_weight G ->
+        m <= plus (Lexp_weight F) (Lexp_weight G) ->
         forall (h n : nat) (L B : Multiset),
           n ~> 0; m; h; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
     L =mul= M1 ++ M2 ->
@@ -297,11 +297,11 @@ Module CCases (DT : Eqset_dec_pol).
                           S n0 |~> 0; B; F° ⊕ G° :: M2 ->
                                          m |~> 0; B; F :: M1 ->
                                                      n |~> 0; B; G :: M1 ->
-                                                                 n0 |~> 0; B; F° :: M2 -> exists m0 : nat, m0 |~> 0 + 0; B; L.
+                                                                 n0 |~> 0; B; F° :: M2 -> exists m0 : nat, m0 |~> plus 0 0; B; L.
   Proof.
     intros.
     refine (H _ _ _ _ _ _ _);
-      [|change (0%nat) with (0+0); 
+      [|change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H3 H5); auto]; resolve_max.
   Qed.
 
@@ -309,7 +309,7 @@ Module CCases (DT : Eqset_dec_pol).
 
   Lemma with_plus2_principal n m n0 B L F G M1 M2:     
     (forall m : nat,
-        m <= Lexp_weight F + Lexp_weight G ->
+        m <= plus (Lexp_weight F) (Lexp_weight G) ->
         forall (h n : nat) (L B : Multiset),
           n ~> 0; m; h; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
     L =mul= M1 ++ M2 ->
@@ -317,11 +317,11 @@ Module CCases (DT : Eqset_dec_pol).
                           S n0 |~> 0; B; F° ⊕ G° :: M2 ->
                                          m |~> 0; B; F :: M1 ->
                                                      n |~> 0; B; G :: M1 ->
-                                                                 n0 |~> 0; B; G° :: M2 -> exists m0 : nat, m0 |~> 0 + 0; B; L.
+                                                                 n0 |~> 0; B; G° :: M2 -> exists m0 : nat, m0 |~> plus 0 0; B; L.
   Proof.
     intros.
     refine (H _ _ _ _ _ _ _);
-      [|change (0%nat) with (0+0); 
+      [|change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H4 H5); auto]; resolve_max.
   Qed.
   
@@ -339,7 +339,7 @@ Module CCases (DT : Eqset_dec_pol).
   Proof.
     intros.
     refine (H _ _ _ _ _ _);
-      [|change (0%nat) with (0+0); 
+      [|change (0%nat) with (plus 0 0); 
         refine (sig3_ccut _ _ _ H0 H3); auto]; resolve_max. 
   Qed.     
 
@@ -354,8 +354,8 @@ Module CCases (DT : Eqset_dec_pol).
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
-    w = Lexp_weight F + Lexp_weight G ->
-    S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+    w = plus (Lexp_weight F) (Lexp_weight G) ->
+    S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; (F ** G) :: M1 ->
                  n2 |~> 0; B; (F° $ G°) :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -477,8 +477,8 @@ Module CCases (DT : Eqset_dec_pol).
         m <= h ->
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
-    w = Lexp_weight F + Lexp_weight G ->
-    S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+    w = plus (Lexp_weight F) (Lexp_weight G) ->
+    S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; (F & G) :: M1 ->
                  n2 |~> 0; B; (F° ⊕ G°) :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -613,7 +613,7 @@ Module CCases (DT : Eqset_dec_pol).
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
     w = Lexp_weight F ->
-    S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; (! F) :: M1 ->
                  n2 |~> 0; B; (? F°) :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -735,7 +735,7 @@ Module CCases (DT : Eqset_dec_pol).
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
     S w = Lexp_weight (E{ FX}) ->
-    S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; E{ FX} :: M1 ->
                  n2 |~> 0; B; (E{ FX})° :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -819,7 +819,7 @@ Module CCases (DT : Eqset_dec_pol).
             eapply H.
             
             2:{
-            change (0%nat) with (0+0).
+            change (0%nat) with (plus 0 0).
             refine (sig3_cut _ _ P H4 H2); auto.
             }
             eapply WeightEF; eauto.       
@@ -848,7 +848,7 @@ Module CCases (DT : Eqset_dec_pol).
         forall (n : nat) (L B : Multiset),
           n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
     S w = Lexp_weight (F{ FX}) ->
-    S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+    S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
     n1 |~> 0; B; F{ FX} :: M1 ->
                  n2 |~> 0; B; (F{ FX})° :: M2 ->
                               exists m, m |~> 0 ; B; L.
@@ -920,7 +920,7 @@ Module CCases (DT : Eqset_dec_pol).
              eapply H.
              
              2: {
-               change (0%nat) with (0+0).
+               change (0%nat) with (plus 0 0).
                refine (sig3_cut _ _ P H5 H4); auto.
                }
              eapply WeightFE; eauto.

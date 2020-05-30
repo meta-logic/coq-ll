@@ -1286,11 +1286,11 @@ Module InvTensor.
 
 
 
-  Definition RUp (nm:nat) := forall B L L' F G M M' n m, nm = n + m -> 
+  Definition RUp (nm:nat) := forall B L L' F G M M' n m, nm = plus n m -> 
                                                          lexpPos M -> lexpPos M' ->
                                                          n |-F- B;M ; UP ( L ++ [F]) -> m |-F- B;M' ; UP (L' ++ [G]) -> exists m, m|-F- B ; M ++ M' ++ [F ** G] ; UP (L ++ L').
 
-  Definition RDown (nm:nat) := forall B  F G M M' n m H, nm = n + m ->
+  Definition RDown (nm:nat) := forall B  F G M M' n m H, nm = plus n m ->
                                                          lexpPos M -> lexpPos M' ->
                                                          PosOrPosAtom F -> 
                                                          n |-F- B;M ++ [F] ; DW H -> m |-F- B;M' ; UP ([G]) -> exists m, m|-F- B ; M ++ M' ++ [F ** G] ; DW H.
@@ -1359,7 +1359,7 @@ Module InvTensor.
       n1 |-F- B ; M1; UP [F] ->
                       n2 |-F- B ; M2; UP [G] ->
                                       PosOrPosAtom F -> NotPosOrPosAtom G ->
-                                      S n = n1 + n2 ->
+                                      S n = plus n1 n2 ->
                                       lexpPos M1 -> lexpPos M2 ->
                                       exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP [].
     intros n n1 n2 B M1 M2 F G IH HD1 HD2 HF HG Hnm  HM1pos HM2pos.
@@ -1384,7 +1384,7 @@ Module InvTensor.
       ++ destruct Heq as [M2'].
          destruct H3.
          
-         assert (Hn: S (n1 + n2) <= n ) by omega.
+         assert (Hn: S (plus n1 n2) <= n ) by omega.
          generalize (IH (S (n1+ n2)) Hn) as IH';intros.
          destruct IH' as [HRU HRD].
          simpl in HRD.
@@ -1404,7 +1404,7 @@ Module InvTensor.
          eapply tri_dec1 with (F:=F0);eauto.
          rewrite app_assoc. eassumption.
     + (* Decision on B *)
-      assert (Hn: S (n1 + n2) <= n ) by omega.
+      assert (Hn: S (plus n1 n2) <= n ) by omega.
       generalize (IH (S (n1+ n2)) Hn) as IH';intros.
       destruct IH' as [HRU HRD].
       simpl in HRD.
@@ -1427,7 +1427,7 @@ Module InvTensor.
       n1 |-F- B ; M1; UP [F] ->
                       n2 |-F- B ; M2; UP [G] ->
                                       PosOrPosAtom F -> PosOrPosAtom G ->
-                                      S n = n1 + n2 ->
+                                      S n = plus n1 n2 ->
                                       lexpPos M1 -> lexpPos M2 ->
                                       exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP [].
     intros n n1 n2 B M1 M2 F G IH HD1 HD2 HF HG Hnm  HM1pos HM2pos.
@@ -1562,7 +1562,7 @@ Module InvTensor.
       n1 |-F- B; M1; UP (L1 ++ [F]) ->
                      n2 |-F- B; M2; UP ((l :: L2) ++ [G])->
                                     (forall m : nat, m <= n -> RInd m) ->
-                                    S n = n1 + n2 ->
+                                    S n = plus n1 n2 ->
                                     lexpPos M1 ->
                                     lexpPos M2 ->
                                     exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP (L1 ++ l :: L2).
@@ -1573,8 +1573,8 @@ Module InvTensor.
     ++ (* top *)
       apply EquivAuxTop.
     ++ (* bottom *)
-      assert (Hn: (n0 + n1) <= n ) by omega.
-      generalize (IH (n0 + n1) Hn) as IH';intros.
+      assert (Hn: (plus n0 n1) <= n ) by omega.
+      generalize (IH (plus n0 n1) Hn) as IH';intros.
       destruct IH' as [HRU HRD].
       clear HRD.
       unfold RUp in HRU .
@@ -1585,8 +1585,8 @@ Module InvTensor.
       rewrite <- app_assoc.
       eapply EquivAuxBot ;eassumption.
     ++ (* par *)
-      assert (Hn: (n0 + n1) <= n ) by omega.
-      generalize (IH (n0 + n1) Hn) as IH';intros.
+      assert (Hn: (plus n0 n1) <= n ) by omega.
+      generalize (IH (plus n0 n1) Hn) as IH';intros.
       destruct IH' as [HRU HRD].
       clear HRD.
       unfold RUp in HRU .
@@ -1597,19 +1597,19 @@ Module InvTensor.
       rewrite <- app_assoc.
       eapply EquivAuxPar with(F:=F0) (G:=G0); eassumption.
     ++ (* with *)
-      assert (Hn: (n0 + n1) <= n ) by (
+      assert (Hn: (plus n0 n1) <= n ) by (
                                        rewrite <- Nat.add_succ_comm in Hnm; inversion Hnm;
                                        rewrite plus_comm;
                                        apply plus_le_compat_l ;apply  Max.le_max_l).
 
       
-      assert (Hn': (m + n1) <= n ) by (
+      assert (Hn': (plus m n1) <= n ) by (
                                        rewrite <- Nat.add_succ_comm in Hnm; inversion Hnm;
                                        rewrite plus_comm;
                                        apply plus_le_compat_l ;apply  Max.le_max_r).
       
-      generalize (IH (n0 + n1) Hn) as IH';intros.
-      generalize (IH (m + n1) Hn') as IH'';intros.
+      generalize (IH (plus n0 n1) Hn) as IH';intros.
+      generalize (IH (plus m n1) Hn') as IH'';intros.
       
       destruct IH' as [HRU HRD];clear HRD.
       destruct IH'' as [HRU' HRD'];clear HRD'.
@@ -1632,8 +1632,8 @@ Module InvTensor.
       eapply EquivAuxWith;eassumption.
       
     ++ (* quest *)
-      assert (Hn: (n0 + n1) <= n ) by omega.
-      generalize (IH (n0 + n1) Hn) as IH';intros.
+      assert (Hn: (plus n0 n1) <= n ) by omega.
+      generalize (IH (plus n0 n1) Hn) as IH';intros.
       destruct IH' as [HRU HRD].
       clear HRD.
       unfold RUp in HRU .
@@ -1647,8 +1647,8 @@ Module InvTensor.
       rewrite <- app_assoc.
       eapply EquivAuxQuest; eassumption.
     ++ (* Store *)
-      assert (Hn: (n0 + n1) <= n ) by omega.
-      generalize (IH (n0 + n1) Hn) as IH';intros.
+      assert (Hn: (plus n0 n1) <= n ) by omega.
+      generalize (IH (plus n0 n1) Hn) as IH';intros.
       destruct IH' as [HRU HRD].
       clear HRD.
       unfold RUp in HRU .
@@ -1740,8 +1740,8 @@ Module InvTensor.
         apply UpExtension in H4.
         destruct H4 as [n'  [IHn IHd]].
         inversion IHd;subst.
-        assert(Hnm: n0 + n2 <= S n + n2 ) by omega.
-        generalize(IH (n0 + n2) Hnm);intros.
+        assert(Hnm: plus n0 n2 <= plus (S n) n2 ) by omega.
+        generalize(IH (plus n0 n2) Hnm);intros.
         
         destruct H.
         unfold RUp in H.
@@ -1769,8 +1769,8 @@ Module InvTensor.
         simpl in IHd.
         inversion IHd;subst.
         
-        assert(Hnm: n0 + n2 <= S n + n2 ) by omega.
-        generalize(IH (n0 + n2) Hnm);intros.
+        assert(Hnm: plus n0 n2 <= plus (S n) n2 ) by omega.
+        generalize(IH (plus n0 n2) Hnm);intros.
         
         destruct H.
         
@@ -1793,8 +1793,8 @@ Module InvTensor.
         simpl in IHd.
         inversion IHd;subst.
         
-        assert(Hnm: n0 + n2 <= S n + n2 ) by omega.
-        generalize(IH (n0 + n2) Hnm);intros.
+        assert(Hnm: plus n0 n2 <= plus (S n) n2 ) by omega.
+        generalize(IH (plus n0 n2) Hnm);intros.
         
         destruct H.
         
@@ -1817,15 +1817,15 @@ Module InvTensor.
         inversion IHd;subst.
         
         
-        assert(Hnm0: (Init.Nat.max n0  m) + n2 <= S n + n2 ) by omega.
-        assert(Hnm1:  n0 + n2 <= S n + n2 ) by (
+        assert(Hnm0: (Init.Nat.max n0  m) + n2 <= plus (S n) n2 ) by omega.
+        assert(Hnm1:  plus n0 n2 <= plus (S n) n2 ) by (
                                                 apply plus_le_reg_r in Hnm0;
                                                 apply plus_le_compat_r;
                                                 assert (n0 <= Init.Nat.max n0 m) by apply Max.le_max_l;
                                                 omega).
         
         
-        assert(Hnm2:  m + n2 <= S n + n2 ) by (
+        assert(Hnm2:  plus m n2 <= plus (S n) n2 ) by (
                                                apply plus_le_reg_r in Hnm0;
                                                apply plus_le_compat_r;
                                                assert (m <= Init.Nat.max n0 m) by apply Max.le_max_r;
@@ -1833,8 +1833,8 @@ Module InvTensor.
 
         
         
-        generalize(IH (n0 + n2) Hnm1);intros.
-        generalize(IH (m + n2) Hnm2);intros.
+        generalize(IH (plus n0 n2) Hnm1);intros.
+        generalize(IH (plus m n2) Hnm2);intros.
         
         destruct H.
         destruct H1.
@@ -1862,8 +1862,8 @@ Module InvTensor.
         simpl in IHd.
         inversion IHd;subst.
         
-        assert(Hnm: n0 + n2 <= S n + n2 ) by omega.
-        generalize(IH (n0 + n2) Hnm);intros.
+        assert(Hnm: plus n0 n2 <= plus (S n) n2 ) by omega.
+        generalize(IH (plus n0 n2) Hnm);intros.
         
         destruct H.
         
@@ -1926,7 +1926,7 @@ Module InvTensor.
           eapply TriExchange with (M' := L1 ++ [F]) in H6;auto .
           assert(Hn1: (S m) + n2 <= S(Init.Nat.max n m) + n2) by(
                                                                   apply le_n_S;apply plus_le_compat;auto).
-          generalize(IH (S m + n2) Hn1);intros.
+          generalize(IH (plus (S m) n2) Hn1);intros.
           destruct H0.
           assert(exists m0 : nat, m0 |-F- B; L1 ++ M' ++ [F ** G]; DW G0).
           apply H1 with   (n :=m) (m0:=n2) ;eauto. omega.
@@ -1956,7 +1956,7 @@ Module InvTensor.
           eapply TriExchange with (M' := L2 ++ [F]) in H5;auto .
           assert(Hn1: (S n) + n2 <= S(Init.Nat.max n m) + n2) by(
                                                                   apply le_n_S;apply plus_le_compat;auto).
-          generalize(IH (S n + n2) Hn1);intros.
+          generalize(IH (plus (S n) n2) Hn1);intros.
           destruct H0.
           assert(exists m0 : nat, m0 |-F- B; L2 ++ M' ++ [F ** G]; DW F0).
           apply H1 with   (n0 :=n) (m:=n2) ;eauto. omega.
@@ -1982,7 +1982,7 @@ Module InvTensor.
             
       ++ (* Oplus *)
         inversion HD1;subst.
-        generalize(IH (S n + n2) ( le_n (S n + n2)));intros.
+        generalize(IH (plus (S n) n2) ( le_n (plus (S n) n2)));intros.
         destruct H.
         assert(exists m0 : nat, m0 |-F- B; M ++ M' ++ [F ** G]; DW F0).
         apply H0 with (n0 :=n) (m:=n2);auto.
@@ -1992,7 +1992,7 @@ Module InvTensor.
         eapply tri_plus1;eauto.
 
         (* Symmetric for G0 *)
-        generalize(IH (S n + n2) ( le_n (S n + n2)));intros.
+        generalize(IH (plus (S n) n2) ( le_n (plus (S n) n2)));intros.
         destruct H.
         assert(exists m0 : nat, m0 |-F- B; M ++ M' ++ [F ** G]; DW G0).
         apply H0 with (n0 :=n) (m:=n2);auto.
@@ -2033,7 +2033,7 @@ Export InvTensor.
 Theorem InvTensor : forall B L L' F G M M' n m, lexpPos M -> lexpPos M' -> n |-F- B;M ; UP ( L ++ [F]) -> m |-F- B;M' ; UP (L' ++ [G]) -> exists m, m|-F- B ; M ++ M' ++ [F ** G] ; UP (L ++ L').
   intros.
   assert(HRn:  forall n, RUp n) by (apply InvTensor').
-  generalize (HRn (n+m));intros.
+  generalize (HRn (plus n m));intros.
   unfold RUp in H3.
   apply H3  with (n0:=n) (m0:=m) ;auto.
 Qed.

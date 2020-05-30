@@ -16,7 +16,7 @@ Lemma aux_CUT_ap n1 n2 h B L M1 M2 v:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m, m |~> 0; B; L) ->
-  S h = n1 + n2 -> 0%nat = lexp_weight (v ⁺) -> L =mul= M1 ++ M2 ->
+  S h = plus n1 n2 -> 0%nat = lexp_weight (v ⁺) -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; v ⁺ :: M1 ->
                n2 |~> 0; B; v ⁻ :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -70,7 +70,7 @@ Lemma aux_CUT_tz n1 n2 h B L M1 M2:
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> 
                          exists m, m |~> 0; B; L) ->
-  S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+  S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; ⊤ :: M1 ->
                n2 |~> 0; B; 0 :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -124,7 +124,7 @@ Lemma aux_CUT_bo n1 n2 h B L M1 M2:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m, m |~> 0; B; L) ->
-  S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+  S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; ⊥ :: M1 ->
                n2 |~> 0; B; 1 :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -187,8 +187,8 @@ Lemma aux_CUT_tp n1 n2 w h B L F G M1 M2:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
-  w = lexp_weight F + lexp_weight G ->
-  S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+  w = plus (lexp_weight F) (lexp_weight G) ->
+  S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; (F ** G) :: M1 ->
                n2 |~> 0; B; (F° $ G°) :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -229,12 +229,12 @@ Proof.
               rewrite meq_swap_cons in H4.
               assert (exists m, m |~> 0 ; B; F° :: (N ++ M0)) as Hyp.
               refine (H _ _ _ _ _ _ _);
-                [|change (0%nat) with (0+0); 
+                [|change (0%nat) with (plus 0 0); 
                   refine (sig3_cut _ _ _ H5 H4); auto]; resolve_max.
               
               destruct Hyp as [p Hp].
               refine (H _ _ _ _ _ _ _);
-                [|change (0%nat) with (0+0); 
+                [|change (0%nat) with (plus 0 0); 
                   refine (sig3_cut _ _ _ H3 Hp); auto]. 
               resolve_max.
               rewrite P, H1, H2.
@@ -245,7 +245,7 @@ Proof.
                 rewrite H1 in H4. 
               rewrite union_rotate_cons in H4. 
               refine (H0 _ _ _ _ _ _); 
-                [ | change (0%nat) with (0+0); 
+                [ | change (0%nat) with (plus 0 0); 
                     refine (sig3_cut _ _ _ Hn1 H4); 
                     auto]. resolve_max.
               solve_permutation.
@@ -293,8 +293,8 @@ Lemma aux_CUT_pw n1 n2 w h B L F G M1 M2:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
-  w = lexp_weight F + lexp_weight G ->
-  S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+  w = plus (lexp_weight F) (lexp_weight G) ->
+  S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; (F & G) :: M1 ->
                n2 |~> 0; B; (F° ⊕ G°) :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -342,7 +342,7 @@ Proof.
             *
               simpl_cases4. (* Plus1 é principal em Hn2 *)
               refine (H _ _ _ _ _ _ _);
-                [|change (0%nat) with (0+0); 
+                [|change (0%nat) with (plus 0 0); 
                   refine (sig3_cut _ _ _ H3 H4); 
                   auto; resolve_rewrite ]; resolve_max.
             * symmetry in H1. simpl_cases2.
@@ -356,7 +356,7 @@ Proof.
             *
               simpl_cases4. (* Plus2 é principal em Hn2 *)
               refine (H _ _ _ _ _ _ _);
-                [|change (0%nat) with (0+0); 
+                [|change (0%nat) with (plus 0 0); 
                   refine (sig3_cut _ _ _ H5 H4); 
                   auto; resolve_rewrite ]; resolve_max.
             * symmetry in H1. simpl_cases2.
@@ -388,7 +388,7 @@ Lemma aux_CUT_bq n1 n2 w h B L F M1 M2:
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m, m |~> 0; B; L) ->
   w = lexp_weight F ->
-  S h = n1 + n2 -> L =mul= M1 ++ M2 ->
+  S h = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0; B; (! F) :: M1 ->
                n2 |~> 0; B; (? F°) :: M2 ->
                             exists m, m |~> 0 ; B; L.
@@ -409,7 +409,7 @@ Proof.
     rewrite HL1 in H3.
     rewrite meq_swap_cons in H3.
     refine (H0 _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H3 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H3 Hn2); 
           auto; try resolve_rewrite]; resolve_max.
     
     destruct Hyp as [t Ht];
@@ -420,7 +420,7 @@ Proof.
     rewrite HL2 in H5;
       rewrite meq_swap_cons in H5.
     refine (H0 _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H5 Hn2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H5 Hn2); 
           auto; try resolve_rewrite]; resolve_max.
     
     destruct Hyp as [t Ht];
@@ -435,7 +435,7 @@ Proof.
     rewrite H1 in H3; 
       rewrite meq_swap_cons in H3.
     refine (H0 _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); 
+      [ | change (0%nat) with (plus 0 0); 
           refine (sig3_cut _ _ _ H3 Hn2); auto; 
           try resolve_rewrite; perm_simplify]; resolve_max.
     
@@ -443,7 +443,7 @@ Proof.
     rewrite H1 in H5; 
       rewrite meq_swap_cons in H5.
     refine (H0 _ _ _ _ _ _); 
-      [ | change (0%nat) with (0+0); 
+      [ | change (0%nat) with (plus 0 0); 
           refine (sig3_cut _ _ _ H5 Hn2); auto;
           try resolve_rewrite; perm_simplify]; resolve_max.
 
@@ -483,8 +483,8 @@ Proof.
         rewrite <- Te in *; rewrite qst_eq in Te.
         rewrite <- Te in *. clear Te. 
         + simpl_cases4. (* Quest é principal em Hn2 *)
-          eapply H0 with (m:=S n + n0); resolve_max.    
-          change (0%nat) with (0+0);
+          eapply H0 with (m:=plus (S n)  n0); resolve_max.    
+          change (0%nat) with (plus 0 0);
             refine (sig3_ccut _ _ _ Hn1 H5); eauto.
         + symmetry in H1. simpl_cases2.
           assert (exists m, m |~> 0 ; F1 :: B ; x) as Hyp.
@@ -492,7 +492,7 @@ Proof.
             rewrite union_comm_app in Hn1. simpl in Hn1.
           rewrite H3 in H5.
           refine (H0 _ _ _ _ _ _); 
-            [|change (0%nat) with (0+0); 
+            [|change (0%nat) with (plus 0 0); 
               refine (sig3_cut _ _ _ Hn1 H5); 
               auto; try resolve_rewrite]; resolve_max.
           destruct Hyp as [t Ht];

@@ -75,7 +75,7 @@ Qed.
 Arguments bo_cut_free [B L M1 M2].
 
 Theorem cut_aux B L M1 M2 F n1 n2 : 
-  0%nat = lexp_weight F -> 0%nat = n1 + n2 -> L =mul= M1 ++ M2 ->
+  0%nat = lexp_weight F -> 0%nat = plus n1 n2 -> L =mul= M1 ++ M2 ->
   n1 |~> 0 ; B ; F :: M1 -> n2 |~> 0 ; B ; F° :: M2 -> 
                                            exists m, m |~> 0 ; B ; L.
 Proof.
@@ -353,7 +353,7 @@ Proof.
           assert (exists m, m |~> 0 ; B; x ++ M2) as Hyp. 
           rewrite H1 in H2.
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H2 Hn2); 
                 auto; try resolve_rewrite]; resolve_max.
           
@@ -367,7 +367,7 @@ Proof.
           rewrite H1 in H2; 
             rewrite union_rotate_cons in H2.
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H2 Hn2); 
                 auto; try resolve_rewrite]; resolve_max.
           
@@ -384,7 +384,7 @@ Proof.
           rewrite HL1 in H4;
             rewrite meq_swap_cons in H4.
           refine (H0 _ _ _ _ _ _);
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H4 Hn2); 
                 auto; try resolve_rewrite].
           inversion Hh.  resolve_max.
@@ -397,7 +397,7 @@ Proof.
           rewrite HL2 in H6;
             rewrite meq_swap_cons in H6.
           refine (H0 _ _ _ _ _ _);
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H6 Hn2); 
                 auto; try resolve_rewrite].
           inversion Hh.  resolve_max.
@@ -411,7 +411,7 @@ Proof.
           rewrite H1 in H2;
             rewrite meq_swap_cons in H2.  
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H2 Hn2); 
                 auto; try resolve_rewrite]; resolve_max.
           
@@ -426,7 +426,7 @@ Proof.
           rewrite H1 in H2; 
             rewrite meq_swap_cons in H2.  
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H2 Hn2); 
                 auto; try resolve_rewrite]; resolve_max.
           
@@ -442,7 +442,7 @@ Proof.
           rewrite H2 in H4; 
             rewrite meq_swap_cons in H4;
             refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H4 Hn2); 
                 auto; try resolve_rewrite];resolve_max.
           inversion Hh;  resolve_max.
@@ -450,7 +450,7 @@ Proof.
           assert (exists m, m |~> 0 ; B; G :: (x ++ M2)) as Hyp2.
           rewrite H2 in H6; rewrite meq_swap_cons in H6;
             refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H6 Hn2); 
                 auto; try resolve_rewrite];resolve_max.
           inversion Hh;  resolve_max.
@@ -465,7 +465,7 @@ Proof.
           rewrite meq_swap_cons in H2.
           rewrite H2 in H4.
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H4 Hn2); 
                 auto; try resolve_rewrite];resolve_max.
           
@@ -482,7 +482,7 @@ Proof.
           rewrite <- app_comm_cons in Hn2.
           rewrite union_comm_app in Hn2.
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0); 
+            [ | change (0%nat) with (plus 0 0); 
                 refine (sig3_ccut _ _ _ H2 Hn2); 
                 auto; try resolve_rewrite]; resolve_max.
           destruct Hyp as [t Ht];
@@ -503,7 +503,7 @@ Proof.
           assert (exists m : nat, m |~> 0; B; M) as Hyp.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H4);
               auto]; resolve_max.
           destruct Hyp as [t Ht];
@@ -512,7 +512,7 @@ Proof.
           assert (exists m, m |~> 0; B; F1 :: G :: M) as Hyp.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H4);
               auto]; resolve_max.
           destruct Hyp as [t Ht];
@@ -521,13 +521,13 @@ Proof.
           assert (exists m, m |~> 0; B; F1 :: M) as Hyp1.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H5);
               auto]; resolve_max.
           assert (exists m, m |~> 0; B; G :: N) as Hyp2.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H7);
               auto]; resolve_max.        
           destruct Hyp1 as [t1 Ht1];
@@ -537,7 +537,7 @@ Proof.
           assert (exists m, m |~> 0; B; F1 :: M) as Hyp.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H4);
               auto]; resolve_max.
           destruct Hyp as [t Ht];
@@ -546,7 +546,7 @@ Proof.
           assert (exists m, m |~> 0; B; G :: M) as Hyp.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H4);
               auto]; resolve_max.
           destruct Hyp as [t Ht];
@@ -555,13 +555,13 @@ Proof.
           assert (exists m, m |~> 0; B; F1 :: M) as Hyp1.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H5);
               auto]; resolve_max.
           assert (exists m, m |~> 0; B; G :: M) as Hyp2.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H7);
               auto]; resolve_max.        
           destruct Hyp1 as [t1 Ht1];
@@ -577,7 +577,7 @@ Proof.
             
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -588,7 +588,7 @@ Proof.
             assert (exists m, m |~> 0; B; [F1]) as Hyp.
             refine (H0 _ _ _ _ _ _); 
               [ | 
-                change (0%nat) with (0+0);
+                change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H4);
                 auto]; resolve_max.
             destruct Hyp as [t Ht];
@@ -600,14 +600,14 @@ Proof.
           assert (exists m, m |~> 0; B; F0° :: L) as Hyp. 
           rewrite H4 in H5.     
           refine (H0 _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0);
+            [ | change (0%nat) with (plus 0 0);
                 refine (sig3_ccut _ _ _ Hn1 H5); 
                 auto; resolve_rewrite]; resolve_max.
           
           destruct Hyp as [t Ht].
           
           refine (H _ _ _ _ _ _ _); 
-            [ | change (0%nat) with (0+0)].
+            [ | change (0%nat) with (plus 0 0)].
           
           2: { refine (sig3_cut _ _ _ H2 Ht); auto. }
           inversion Hw. 
@@ -618,7 +618,7 @@ Proof.
           rewrite H4 in H5.
           refine (H0 _ _ _ _ _ _); 
             [ | 
-              change (0%nat) with (0+0);
+              change (0%nat) with (plus 0 0);
               refine (sig3_ccut _ _ _ Hn1 H5);
               auto]; resolve_max.
           destruct Hyp as [t Ht];
@@ -679,7 +679,7 @@ Proof.
       apply H in H4;auto. destruct H4.
       apply H in H5;auto. destruct H5.
 
-      assert(S(Init.Nat.max x0 x) |~> (0+0); B; (F ** G) :: (M ++ N)).
+      assert(S(Init.Nat.max x0 x) |~> (plus 0 0); B; (F ** G) :: (M ++ N)).
       refine(sig3_tensor _ _ _ );eauto.
       
       eexists.

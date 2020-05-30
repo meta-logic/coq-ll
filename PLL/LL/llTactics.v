@@ -17,18 +17,18 @@ Hint Resolve Max.le_max_r Max.le_max_l :core.
 
 Ltac aux_bases :=
   match goal with
-  | [ Hcut : 0%nat = ?n1 + ?n2 |- _ ] => 
+  | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
     refine (plus_is_O _ _ (symmetry Hcut))
-  | [ Hcut : ?n1 + ?n2 = 0%nat |- _ ] => 
+  | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
     refine (plus_is_O _ _ Hcut)     
   end.
 
 Ltac simpl_bases :=
   match goal with
-  | [ Hcut : 0%nat = ?n1 + ?n2 |- _ ] => 
+  | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
     assert (n1 = 0%nat /\ n2 = 0%nat) as n1n2 by aux_bases;
     destruct n1n2 as [n1_0 n2_0]; subst
-  | [ Hcut : ?n1 + ?n2 = 0%nat |- _ ] => 
+  | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
     assert (n1 = 0%nat /\ n2 = 0%nat) as n1n2 by aux_bases;
     destruct n1n2 as [n1_0 n2_0]; subst
   end.
@@ -36,8 +36,8 @@ Ltac simpl_bases :=
 Ltac cut_free :=
   simpl_bases;
   match goal with
-  | [ H: 0%nat = 0 + 0 |- _ ] => clear H
-  | [ H: 0 + 0 = 0%nat |- _ ] => clear H
+  | [ H: 0%nat = plus 0 0 |- _ ] => clear H
+  | [ H: plus 0 0 = 0%nat |- _ ] => clear H
   end.
 
 Ltac simpl_cases0 := 
@@ -263,7 +263,7 @@ Lemma tab_bot_left L B M1 M2 M T h w n1 n2 a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -276,7 +276,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; T ++ M2) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -290,7 +290,7 @@ Lemma tab_bot_left_zero L B M1 M2 M T h n1 n2 a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -303,7 +303,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; T ++ M2) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -330,7 +330,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; M1 ++ T) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -356,7 +356,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; M1 ++ T) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -382,7 +382,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; M1 ++ T) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -409,7 +409,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; M1 ++ T) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0);
+    [ | change (0%nat) with (plus 0 0);
         refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite].
   resolve_max.
   destruct Hyp as [t Ht];
@@ -436,7 +436,7 @@ Proof.
   assert (exists m, m |~> 0 ; B; M1 ++ T) as Hyp.
   rewrite PM in H.
   refine (HI _ _ _ _ _ _);
-   [ | change (0%nat) with (0+0);
+   [ | change (0%nat) with (plus 0 0);
        refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite].
    resolve_max.
     destruct Hyp as [t Ht];
@@ -473,7 +473,7 @@ Lemma tab_par_left_zero L B M1 M2 M T h  n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -487,7 +487,7 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -500,7 +500,7 @@ Lemma tab_par_left L B M1 M2 M T h w n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -514,7 +514,7 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -546,7 +546,7 @@ Proof.
   rewrite PM in H.
   rewrite <- union_assoc_app in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max.
   app_normalize_aux.
   rewrite <- (my_p _ _ _ M1).
@@ -578,7 +578,7 @@ Proof.
   rewrite PM in H;
   try rewrite union_assoc_app in H. 
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
   eexists;
@@ -606,7 +606,7 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite]. 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite]. 
   resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
     eexists;
@@ -633,7 +633,7 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
     eexists;
@@ -660,7 +660,7 @@ Proof.
   rewrite PM in H.
   rewrite union_rotate_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max.  solve_permutation.
   destruct Hyp as [t Ht];
     eexists;
@@ -694,7 +694,7 @@ Lemma tab_plus1_left_zero L B M1 M2 M T h n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -710,7 +710,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H Hn2); auto; 
         resolve_rewrite];
     resolve_max.
@@ -727,7 +727,7 @@ Lemma tab_plus1_left L B M1 M2 M T h w n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -743,7 +743,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ H Hn2); auto; 
         resolve_rewrite];
     resolve_max.
@@ -776,7 +776,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max.
@@ -809,7 +809,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max.
@@ -841,7 +841,7 @@ Proof.
   rewrite PM in H;
   try rewrite union_assoc_app in H. 
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); 
+     [ | change (0%nat) with (plus 0 0); 
          refine (sig3_cut _ _ _ Hn1 H); auto; 
          resolve_rewrite];
      resolve_max.
@@ -872,7 +872,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max.
@@ -906,7 +906,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max.
@@ -945,7 +945,7 @@ Lemma tab_plus2_left_zero L B M1 M2 M T h n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -961,7 +961,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -977,7 +977,7 @@ Lemma tab_plus2_left L B M1 M2 M T h w n1 n2 F G a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -993,7 +993,7 @@ Proof.
   rewrite meq_swap in H; auto.
 
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -1023,7 +1023,7 @@ Proof.
   rewrite PM in H.
   rewrite meq_swap_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max. solve_permutation.
@@ -1052,7 +1052,7 @@ Proof.
   rewrite PM in H.
   rewrite meq_swap_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max. solve_permutation.
@@ -1082,7 +1082,7 @@ Proof.
   rewrite PM in H;
   try rewrite union_assoc_app in H. 
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); 
+     [ | change (0%nat) with (plus 0 0); 
          refine (sig3_cut _ _ _ Hn1 H); auto; 
          resolve_rewrite];
      resolve_max.
@@ -1110,7 +1110,7 @@ Proof.
   rewrite PM in H.
   rewrite meq_swap_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max. solve_permutation.
@@ -1139,7 +1139,7 @@ Proof.
   rewrite PM in H.
   rewrite meq_swap_cons in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); auto; 
         resolve_rewrite];
     resolve_max. solve_permutation.
@@ -1175,7 +1175,7 @@ Lemma tab_quest_left_zero L B M1 M2 M T h n1 n2 F a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -1190,7 +1190,7 @@ Proof.
     eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn2;
     rewrite union_comm_app in Hn2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1204,7 +1204,7 @@ Lemma tab_quest_left L B M1 M2 M T h w n1 n2 F a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M =mul= a :: T ->
@@ -1219,7 +1219,7 @@ Proof.
     eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn2;
     rewrite union_comm_app in Hn2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1248,7 +1248,7 @@ Proof.
     eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn1;
     rewrite union_comm_app in Hn1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1276,7 +1276,7 @@ Proof.
     eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn1;
     rewrite union_comm_app in Hn1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1304,7 +1304,7 @@ Proof.
   eapply height_preserving_weakning_sig3 with (D:={{F}}) in Hn1;
   rewrite union_comm in Hn1.
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
   eexists;
@@ -1331,7 +1331,7 @@ Proof.
     eapply height_preserving_weakning_sig3 with (D:=[F]) in Hn1;
     rewrite union_comm_app in Hn1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1360,7 +1360,7 @@ Proof.
   eapply height_preserving_weakning_sig3 with (D:={{F}}) in Hn1;
   rewrite union_comm in Hn1.
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
   eexists;
@@ -1393,7 +1393,7 @@ Lemma tab_copy_left_zero L L0 B B0 M1 M2 h n1 n2 F a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; 0; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   0%nat = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   B =mul= F :: B0 ->
@@ -1407,7 +1407,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.  
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1422,7 +1422,7 @@ Lemma tab_copy_left L L0 B B0 M1 M2 h w n1 n2 F a:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; S w; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = n1 + n2 ->
+  h = plus n1 n2 ->
   S w = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   B =mul= F :: B0 ->
@@ -1436,7 +1436,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.  
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H Hn2); auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
     eexists;
@@ -1464,7 +1464,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); 
         auto; try resolve_rewrite];
     resolve_max.
@@ -1493,7 +1493,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); 
         auto; try resolve_rewrite];
     resolve_max.
@@ -1520,7 +1520,7 @@ Proof.
   assert (exists m, m |~> 0 ; B ; {{F}} U L) as Hyp.
  rewrite union_perm_left in H.
       refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
   eexists;
@@ -1547,7 +1547,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); 
         auto; try resolve_rewrite];
     resolve_max.
@@ -1576,7 +1576,7 @@ Proof.
   rewrite meq_swap_cons in PP.
   rewrite PP in H.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); 
+    [ | change (0%nat) with (plus 0 0); 
         refine (sig3_cut _ _ _ Hn1 H); 
         auto; try resolve_rewrite];
     resolve_max.
@@ -1640,7 +1640,7 @@ Proof.
   rewrite meq_swap_cons in H1.
 
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -1652,7 +1652,7 @@ Proof.
   rewrite HL2 in H2. 
   rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -1684,7 +1684,7 @@ Proof.
   rewrite meq_swap_cons in H1.
 
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -1696,7 +1696,7 @@ Proof.
   rewrite HL2 in H2. 
   rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
         auto; try resolve_rewrite];
     resolve_max.
   destruct Hyp as [t Ht];
@@ -1727,7 +1727,7 @@ Proof.
   rewrite HL1 in H1;
      rewrite union_perm_left in H1.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -1739,7 +1739,7 @@ Proof.
   rewrite HL2 in H2;
      rewrite union_perm_left in H2.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -1769,7 +1769,7 @@ Proof.
   rewrite HL1 in H1;
      rewrite union_perm_left in H1.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -1781,7 +1781,7 @@ Proof.
   rewrite HL2 in H2;
      rewrite union_perm_left in H2.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -1795,7 +1795,7 @@ Lemma tab_tensor_right_zero L B M1 M2 M N T h n1 n2 n3 F G a x:
       m <= h ->
       forall (n : nat) (L B : Multiset),
         n ~> 0; x; m; B; L -> exists m0 : nat, m0 |~> 0; B; L) ->
-  h = (max n2 n1) + n3 ->
+  h = plus (max n2 n1) n3 ->
   x = lexp_weight a ->
   L =mul= M1 ++ M2 -> 
   M ++ N =mul= a° :: T ->
@@ -1815,7 +1815,7 @@ Proof.
     rewrite HL1 in H1. 
     rewrite meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max.
     solve_permutation.
@@ -1828,7 +1828,7 @@ Proof.
     rewrite HL2 in H2;
       rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1842,7 +1842,7 @@ Proof.
     rewrite HL1 in H1;
       rewrite meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1854,7 +1854,7 @@ Proof.
     rewrite HL2 in H2;
       rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1867,7 +1867,7 @@ Proof.
     rewrite HL1 in H1. 
     rewrite meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max.
     solve_permutation.
@@ -1880,7 +1880,7 @@ Proof.
     rewrite HL2 in H2;
       rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1894,7 +1894,7 @@ Proof.
     rewrite HL1 in H1;
       rewrite meq_swap_cons in H1.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1906,7 +1906,7 @@ Proof.
     rewrite HL2 in H2;
       rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _);
-      [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+      [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
           auto; try resolve_rewrite].
     rewrite Hhei; resolve_max. solve_permutation.
     destruct Hyp as [t Ht];
@@ -1936,7 +1936,7 @@ Proof.
   rewrite HL1 in H1. 
   rewrite meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
         auto; try resolve_rewrite].
   resolve_max.
   solve_permutation.
@@ -1949,7 +1949,7 @@ Proof.
   rewrite HL2 in H2;
     rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
         auto; try resolve_rewrite].
   resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
@@ -1981,7 +1981,7 @@ Proof.
   rewrite HL1 in H1;
      rewrite union_perm_left in H1.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -1993,7 +1993,7 @@ Proof.
   rewrite HL2 in H2;
      rewrite union_perm_left in H2.
       refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
        auto; try resolve_rewrite];
      resolve_max.
   destruct Hyp as [t Ht];
@@ -2022,7 +2022,7 @@ Proof.
   rewrite HL1 in H1. 
   rewrite meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
         auto; try resolve_rewrite].
   resolve_max.
   solve_permutation.
@@ -2035,7 +2035,7 @@ Proof.
   rewrite HL2 in H2;
     rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
         auto; try resolve_rewrite].
   resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
@@ -2065,7 +2065,7 @@ Proof.
   rewrite HL1 in H1. 
   rewrite meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); 
         auto; try resolve_rewrite].
   resolve_max.
   solve_permutation.
@@ -2078,7 +2078,7 @@ Proof.
   rewrite HL2 in H2;
     rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _);
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); 
         auto; try resolve_rewrite].
   resolve_max. solve_permutation.
   destruct Hyp as [t Ht];
@@ -2128,14 +2128,14 @@ Proof.
   rewrite PM in H1; 
     rewrite meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
   assert (exists m, m |~> 0 ; B; G :: (M2 ++ T)) as Hyp2.        
   rewrite PM in H2; rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
@@ -2167,14 +2167,14 @@ Proof.
   rewrite PM in H1; 
     rewrite meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
   assert (exists m, m |~> 0 ; B; G :: (M2 ++ T)) as Hyp2.        
   rewrite PM in H2; rewrite meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
@@ -2206,14 +2206,14 @@ Proof.
   rewrite PM in H1; 
   rewrite union_perm_left in H1.
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
      try resolve_rewrite; perm_simplify];
      resolve_max.
        
   assert (exists m, m |~> 0 ; B; {{G}} U (M2 U T)) as Hyp2.        
   rewrite PM in H2; rewrite union_perm_left in H2;
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
      try resolve_rewrite; perm_simplify];
      resolve_max.
 
@@ -2244,14 +2244,14 @@ Proof.
   rewrite PM in H1; 
   rewrite union_perm_left in H1.
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
      try resolve_rewrite; perm_simplify];
      resolve_max.
        
   assert (exists m, m |~> 0 ; B; {{G}} U (M2 U T)) as Hyp2.        
   rewrite PM in H2; rewrite union_perm_left in H2;
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ H2 Hn2); auto;
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
      try resolve_rewrite; perm_simplify];
      resolve_max.
 
@@ -2283,7 +2283,7 @@ Proof.
   rewrite PM in H1; 
     rewrite  meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
@@ -2291,7 +2291,7 @@ Proof.
   rewrite PM in H2; 
     rewrite  meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
@@ -2323,7 +2323,7 @@ Proof.
   rewrite PM in H1; 
     rewrite  meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
@@ -2331,7 +2331,7 @@ Proof.
   rewrite PM in H2; 
     rewrite  meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
@@ -2363,14 +2363,14 @@ Proof.
   rewrite PM in H1; 
   rewrite union_perm_left in H1.
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
      try resolve_rewrite; perm_simplify];
      resolve_max.
        
   assert (exists m, m |~> 0 ; B; {{G}} U (M1 ++ T)) as Hyp2.        
   rewrite PM in H2; rewrite union_perm_left in H2;
   refine (HI _ _ _ _ _ _); 
-     [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); auto;
+     [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); auto;
      try resolve_rewrite; perm_simplify];
      resolve_max.
 
@@ -2402,7 +2402,7 @@ Proof.
   rewrite PM in H1; 
     rewrite  meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
@@ -2410,7 +2410,7 @@ Proof.
   rewrite PM in H2; 
     rewrite  meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
@@ -2442,7 +2442,7 @@ Proof.
   rewrite PM in H1; 
     rewrite  meq_swap_cons in H1.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H1); auto; 
         try resolve_rewrite; perm_simplify];
     resolve_max.
   
@@ -2450,7 +2450,7 @@ Proof.
   rewrite PM in H2; 
     rewrite  meq_swap_cons in H2.
   refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (0+0); refine (sig3_cut _ _ _ Hn1 H2); auto;
+    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H2); auto;
         try resolve_rewrite; perm_simplify];
     resolve_max.
 
