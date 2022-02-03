@@ -28,33 +28,33 @@ Module InvLemmas (DT : Eqset_dec_pol).
 
   (*******************************************************************)
   (* Some automation *)
-  Hint Rewrite Neg2pos Ng_involutive : core .
-  Hint Constructors Asynchronous : core .
-  Hint Constructors IsNegativeAtom : core .
-  Hint Resolve l_nil l_sin l_cos : core .
-  Hint Constructors NotAsynchronous : core .
-  Hint Unfold Release : core .
-  Hint Constructors release : core .
+  #[export] Hint Rewrite Neg2pos Ng_involutive : core .
+  #[export] Hint Constructors Asynchronous : core .
+  #[export] Hint Constructors IsNegativeAtom : core .
+  #[export] Hint Resolve l_nil l_sin l_cos : core .
+  #[export] Hint Constructors NotAsynchronous : core .
+  #[export] Hint Unfold Release : core .
+  #[export] Hint Constructors release : core .
   (* End Automation section *)
   (*************************************************************)
 
 
-  
+
   (* =============================================== *)
   (** Invertibility of Copy *)
   (* =============================================== *)   
   Module InvCopy.
-    
+
     Definition RUp (n:nat) := forall B L  F  M , 
       LexpPos M -> 
       n |-F- B ++ [F] ;M ; UP (L ++ [F])  -> |-F- B ++ [F] ; M ; UP (L ).
-    
+
     Definition RDown (n:nat) := forall B  F  M  H, 
         LexpPos M -> ~ Asynchronous F ->
         n |-F- B ++ [F]; M ++ [F]  ; DW H -> |-F- B ++ [F] ; M  ; DW H.
-    
+
     Definition RInd (n:nat) := RUp n /\ RDown (n -1). 
-    
+
     Lemma RDown0 : RDown 0.
     Proof with solveF.
       unfold RDown.
@@ -709,9 +709,9 @@ Module InvLemmas (DT : Eqset_dec_pol).
             eapply tri_dec1 with (F:=F0) ...
             rewrite Nat.sub_0_r in HDown.
             eapply HDown in H1 ...
-            
+
             eauto.
-            
+
             (* case positive atom *)
             eapply tri_dec1 with (F:= F ⊕ G) ... 
             eapply tri_plus1 ...
@@ -736,7 +736,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
             eapply HDown in H1 ...
             eapply tri_dec2 with (F:=F0) ...
             eassumption.
-            
+
             (* case positive atom *)
             eapply tri_dec1 with (F:= F ⊕ G) ... 
             eapply tri_plus1 ...
@@ -774,7 +774,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
           unfold RUp in HUp'.
           eapply HUp' with (L:= G0::L1) in H5 ...
           NegPhase;eauto.
-          
+
         ++ (* store *)
           unfold RUp in HUp.
           apply HUp with (G:=G) in H5 ...
@@ -922,7 +922,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
       eapply H1 in H;eauto.
     Qed.
 
-    
+
     Lemma OPlusComm : forall B M F G X n, n |-F- B ; M ++ [F ⊕ G] ; X -> n |-F- B ; M ++ [G ⊕ F] ; X.
     Proof with solveF.
       intros.
@@ -995,18 +995,18 @@ Module InvLemmas (DT : Eqset_dec_pol).
 
   (* =============================================== *)
   (** Invertibility of Tensor *)
-  (* =============================================== *)   
+  (* =============================================== *)
   Module InvTensor.
-    
-    Definition RUp (nm:nat) := forall B L M L' M' F G n m, 
+
+    Definition RUp (nm:nat) := forall B L M L' M' F G n m,
       nm = n + m -> LexpPos M -> LexpPos M' ->  n |-F- B ;M ; UP (L ++ [F])  -> m |-F- B ;M' ; UP (L' ++ [G])  -> |-F- B ; M ++ M' ++  [F ** G] ; UP (L ++ L').
 
     Definition RDown (nm:nat) := forall B M M' H F G n m, 
         nm = n + m -> LexpPos M -> LexpPos M' -> PosOrNegAtom F ->
         n |-F- B ; M ++ [F]  ; DW H -> m |-F- B ; M' ; UP [G] -> |-F- B ; M ++ M' ++  [F ** G]  ; DW H.
-    
+
     Definition RInd (n:nat) := RUp n /\ RDown (n -1). 
-    
+
     Lemma RDown0 : RDown 0.
     Proof with solveF.
       unfold RDown.
@@ -1020,7 +1020,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
       assert(False) by (eapply NegPosAtomContradiction;eauto).
       contradiction.
     Qed.
-    
+
     Lemma RUp0 : RUp 0.
     Proof with solveF.
       unfold RUp.
@@ -1094,14 +1094,14 @@ Module InvLemmas (DT : Eqset_dec_pol).
           apply H;auto. rewrite H1 in H4.
           MReplaceIn ( F ** G :: L1) (L1 ++ [F **G]) H4.
           auto.
-          
+
         ++  (* decide 2 *)
           eapply trih_dec2 with (F:=F0) ...
         ++ (* exists *)
           eapply trih_ex with (t:=t) ...
     Qed.
-    
-    
+
+
     Lemma TensorComm' : forall B M F G X , |-F- B ; M ++ [F ** G] ; X -> |-F- B ; M ++ [G ** F] ; X.
     Proof with solveF.
       intros.
@@ -1111,7 +1111,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
       eapply AdequacyTri1;eauto.
     Qed.
 
-    
+
     (* =============================================== *)
     (* PROOF OF RUP *)
     (* Cases when one of the lists is not empty *)
@@ -1124,12 +1124,12 @@ Module InvLemmas (DT : Eqset_dec_pol).
       inversion HD2;subst;NegPhase.
       (* bot *)
       apply EquivUpArrow2 with (L:= L1 ++ L2) (L' := L2 ++ L1);eauto ...
-      assert(HUp : RUp(n' + n)) by (apply IH;omega) ...
-      eapply HUp with(n0:=n') (m:=n) ...
+      assert(HUp : RUp(n' + n)) by (apply IH;lia) ...
+      eapply HUp ...
       (* par *)
       apply EquivUpArrow2 with (L:= L1 ++ F0 :: G0 :: L2) (L' := F0 :: G0 :: L2 ++ L1);eauto ...
-      assert(HUp : RUp(n' + n)) by (apply IH;omega) ...
-      eapply HUp with(n0:=n') (m:=n) ...
+      assert(HUp : RUp(n' + n)) by (apply IH;lia) ...
+      eapply HUp ...
       (* with *)
       rewrite Nat.add_succ_r in HNM;inversion HNM;subst.
       assert(HUp1 : RUp(n' + n)). apply IH. apply Nat.add_le_mono;auto.
@@ -1138,19 +1138,19 @@ Module InvLemmas (DT : Eqset_dec_pol).
       assert(HUp2 : RUp(n' + m)). apply IH. apply Nat.add_le_mono;auto.
       apply EquivUpArrow2 with (L:= L1 ++ G0 :: L2) (L' := G0 :: L2 ++ L1);eauto ...
       (* quest *)
-      assert(HUp : RUp(n' + n)) by (apply IH;omega).
+      assert(HUp : RUp(n' + n)) by (apply IH;lia).
       apply EquivUpArrow2 with (L:= L1 ++ L2) (L' := L2 ++ L1);eauto ...
-      eapply HUp with(n0:=n') (m:=n) ...
+      eapply HUp ...
       eapply TriWeakening ...
       (*  store *)
       apply tri_store ...
       MReplace ( (M1 ++ M2 ++ [F ** G]) ++ [l])  (M1 ++ (M2 ++ [l]) ++ [F ** G] ).
       apply EquivUpArrow2 with (L:= L1 ++ L2) (L' := L2 ++ L1);eauto ...
-      assert(HUp : RUp(n' + n)) by (apply IH;omega); 
-        eapply HUp with(n0:=n') (m:=n) ...
+      assert(HUp : RUp(n' + n)) by (apply IH;lia);
+        eapply HUp ...
       (* forall *)
       generalize (H3 x);intro.
-      assert(HUp : RUp(n' + n)) by (apply IH;omega).
+      assert(HUp : RUp(n' + n)) by (apply IH;lia).
       apply EquivUpArrow2 with (L:= L1 ++ Subst FX x ::L2) (L' := Subst FX x :: L2 ++ L1);eauto ...
     Qed.
 
@@ -1173,54 +1173,54 @@ Module InvLemmas (DT : Eqset_dec_pol).
     Proof with solveF.
       intros nm n m  B M1 M2 F G AF AG IH Hnm HM1 HM2 HD1 HD2.
       apply NotAsynchronousPosAtoms' in AG; destruct AG as [AG | AG].
-      
+
       (* G is a positive atom... then, release works (Lemma  ITCaseAsyncAsync) *)
       eapply ITCaseAsyncAsync;eauto. apply trih_store;auto using IsPositiveAtomNotAssync ... eauto.
-      
+
 
       (* G cannot do release *)
       inversion HD2;subst.
       + (* Case DEC 1*)
         rewrite union_comm in H0;
           simpl_union_context;subst.
-        
+
         (* case focus on F *) 
         eapply tri_dec1 with (F:= F ** F0);solveF;try(solve_permutation);
           eapply tri_tensor with (N:=M1) (M:=M2) ...
         apply tri_rel;auto using AsyncRelease, AsIsPosRelease ... eapply AdequacyTri1;eauto.
         rewrite HeqM; eapply AdequacyTri1;eauto.
-        
+
         (* case focus on other formula *)
         MReplaceIn L' (L1 ++ [G])  H1.
         rewrite H2.
         eapply tri_dec1 with (F:= F0) ...
         (* We use the HI on H1 and HD1 *)
         assert(IH2 : RInd(n + S n0)) by(  apply IH;auto); destruct IH2 as [HUp HDw].
-        assert(Hn : n + S n0 -1 = n + n0) by omega;rewrite Hn in HDw;clear Hn.
+        assert(Hn : n + S n0 -1 = n + n0) by lia;rewrite Hn in HDw;clear Hn.
         MReplace (M1 ++ L1 ++ [F ** G]) ( (L1 ++ M1) ++ [F ** G]).
         apply TensorComm'.
         MReplace ( (L1 ++ M1) ++ [G ** F] ) ( L1 ++ M1 ++ [G ** F] ).
-        eapply HDw with (m:= n) (n1:= n0);try(omega);auto using PosFNegAtomPorOrNegAtom ...
+        apply HDw with n0 n;try(lia);auto using PosFNegAtomPorOrNegAtom ...
 
       + (* Case DEC 2 *)
         assert(IH2 : RInd(n + S n0)) by(  apply IH;auto);
           destruct IH2 as [HUp HDw].
-        assert(Hn : n + S n0 -1 = n + n0) by omega;rewrite Hn in HDw;clear Hn.
+        assert(Hn : n + S n0 -1 = n + n0) by lia;rewrite Hn in HDw;clear Hn.
         eapply tri_dec2 with (F:=F0);solveF ...
         unfold RDown in HDw.
         MReplace (M1 ++ M2 ++ [F ** G]) ( (M2 ++ M1) ++ [F ** G]).
         apply TensorComm'.
         MReplace ( (M2 ++ M1) ++ [G ** F]) ( M2 ++ M1 ++ [G ** F]).
-        eapply HDw with (m:= n) (n1:= n0);try(omega);auto using PosFNegAtomPorOrNegAtom;solveF.
+        eapply HDw with n0 n;try(lia);auto using PosFNegAtomPorOrNegAtom;solveF.
     Qed.
 
-    
+
     Ltac TensorFlip M1 M2 F G :=
       MReplace (M1 ++ M2 ++ [F ** G]) ((M2 ++ M1) ++ [F ** G] ); apply TensorComm'; MReplace ((M2 ++ M1) ++ [G ** F]) (M2 ++ M1 ++ [G ** F]).
-    
-    
-    
-    
+
+
+
+
     (* =============================================== *)
     (* PROOF OF RUP *)
     (* Case when both formulas are not Async *)
@@ -1236,14 +1236,14 @@ Module InvLemmas (DT : Eqset_dec_pol).
         assert(~Asynchronous G) by auto using PosFIsNegAAsync.
         assert(~Asynchronous F) by auto using IsPositiveAtomNotAssync.
         inversion HD2;subst ...
-        eapply ITAsyncSync with (nm:=nm) (n:= S n) (m:= m) ;eauto. omega.
+        eapply ITAsyncSync with (nm:=nm) (n:= S n) (m:= m) ;eauto. lia.
 
       + (* G is a positive atom *)
         assert(~Asynchronous G) by auto using IsPositiveAtomNotAssync.
         assert(~Asynchronous F) by auto using PosFIsNegAAsync.
         inversion HD1;subst ...
         TensorFlip M1 M2 F G.
-        eapply ITAsyncSync with (nm:=nm) (n:= S m) (m:= n) ;eauto. omega.
+        eapply ITAsyncSync with (nm:=nm) (n:= S m) (m:= n) ;eauto. lia.
       +  (* F nor G can do release *)
         assert(HAG : ~Asynchronous G) by auto using PosFIsNegAAsync.
         assert(HAF : ~Asynchronous F) by auto using PosFIsNegAAsync.
@@ -1266,42 +1266,42 @@ Module InvLemmas (DT : Eqset_dec_pol).
           rewrite H3.
           eapply tri_dec1 with (F:= F0) ...
           MReplaceIn L' (L1' ++ [F]) H1.
-          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; omega).
+          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; lia).
           destruct IH' as [HUp  HDw].
-          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by omega;rewrite Hn in HDw;clear Hn.
-          eapply  HDw with (n1:= n0) (m:= S ( S n));auto using PosFNegAtomPorOrNegAtom ...
+          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by lia;rewrite Hn in HDw;clear Hn.
+          eapply  HDw with n0 (S ( S n));auto using PosFNegAtomPorOrNegAtom ...
           (* Nor F nor G were chosen *)
           rewrite H9.
           eapply tri_dec1 with (F:= F1) ...
           MReplaceIn L'0 (L1 ++ [G]) H8.
-          assert (IH' : RInd (S n + S (S n0))) by ( apply IH; omega).
+          assert (IH' : RInd (S n + S (S n0))) by ( apply IH; lia).
           destruct IH' as [HUp  HDw].
-          assert(Hn : S n + S (S n0) - 1 = n + S (S n0)) by omega;rewrite Hn in HDw;clear Hn.
+          assert(Hn : S n + S (S n0) - 1 = n + S (S n0)) by lia;rewrite Hn in HDw;clear Hn.
           TensorFlip M1 L1 F G.
-          eapply  HDw with (n1:= n) (m:= S ( S n0));auto using PosFNegAtomPorOrNegAtom ...
+          eapply  HDw with n (S ( S n0));auto using PosFNegAtomPorOrNegAtom ...
         ++ (* DEC 1 DEC 2 *)
           eapply tri_dec2 with (F:=F1) ...
-          assert (IH' : RInd (S n + S (S n0))) by ( apply IH; omega).
+          assert (IH' : RInd (S n + S (S n0))) by ( apply IH; lia).
           destruct IH' as [HUp  HDw].
-          assert(Hn : S n + S (S n0) - 1 = n + S (S n0)) by omega;rewrite Hn in HDw;clear Hn.
+          assert(Hn : S n + S (S n0) - 1 = n + S (S n0)) by lia;rewrite Hn in HDw;clear Hn.
           TensorFlip M1 M2 F G.
-          eapply  HDw with (n1:= n) (m:= S ( S n0));auto using PosFNegAtomPorOrNegAtom ...
+          eapply  HDw with n (S ( S n0));auto using PosFNegAtomPorOrNegAtom ...
         ++ (* DEC 2 DEC 1 *)
           eapply tri_dec2 with (F:=F0) ...
-          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; omega).
+          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; lia).
           destruct IH' as [HUp  HDw].
-          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by omega;rewrite Hn in HDw;clear Hn.
-          eapply  HDw with (n1:= n0) (m:= S ( S n));auto using PosFNegAtomPorOrNegAtom ...
+          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by lia;rewrite Hn in HDw;clear Hn.
+          eapply  HDw with n0 (S ( S n));auto using PosFNegAtomPorOrNegAtom ...
         ++ (* DEC 2 DEC 2 *)
           eapply tri_dec2 with (F:=F0) ...
-          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; omega).
+          assert (IH' : RInd (S n0 + S (S n))) by ( apply IH; lia).
           destruct IH' as [HUp  HDw].
-          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by omega;rewrite Hn in HDw;clear Hn.
-          eapply  HDw with (n1:= n0) (m:= S ( S n));auto using PosFNegAtomPorOrNegAtom ...
-          
+          assert(Hn : S n0 + S (S n) - 1 = n0 + S (S n)) by lia;rewrite Hn in HDw;clear Hn.
+          eapply  HDw with n0 (S ( S n));auto using PosFNegAtomPorOrNegAtom ...
+
     Qed.
-    
-    
+
+
     (* =============================================== *)
     (* PROOF OF RUP *)
     (* =============================================== *)
@@ -1320,27 +1320,27 @@ Module InvLemmas (DT : Eqset_dec_pol).
                   eapply ITCaseAsyncAsync;eauto
                 else idtac
               end).
-        eapply ITAsyncSync with  (nm := nm) (n:= 0%nat) (m:=n) ;try omega;solveF;eauto.
-        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try omega;solveF.
-        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try omega;solveF.
-        apply ITAsyncSync with (nm:=nm) (n:= S (max n m)) (m:=n0);try omega;solveF.
-        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try omega;solveF.
-        TensorFlip M1 M2 F Top.  eapply ITAsyncSync with  (nm := nm) (n:= 0%nat) (m:=n) ;try omega;solveF;eauto.
-        TensorFlip M1 M2 F Bot.  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try omega;solveF;eauto.
-        TensorFlip M1 M2 F (F1 $ G0).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try omega;solveF;eauto.
-        TensorFlip M1 M2 F (F1 & G0).  eapply ITAsyncSync with  (nm := nm) (n:= S (max n0 m)) (m:=n) ;try omega;solveF;eauto.
-        TensorFlip M1 M2 F (? F1).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try omega;solveF;eauto.
+        eapply ITAsyncSync with  (nm := nm) (n:= 0%nat) (m:=n) ;try lia;solveF;eauto.
+        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try lia;solveF.
+        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try lia;solveF.
+        apply ITAsyncSync with (nm:=nm) (n:= S (max n m)) (m:=n0);try lia;solveF.
+        apply ITAsyncSync with (nm:=nm) (n:= S n) (m:=n0);try lia;solveF.
+        TensorFlip M1 M2 F Top.  eapply ITAsyncSync with  (nm := nm) (n:= 0%nat) (m:=n) ;try lia;solveF;eauto.
+        TensorFlip M1 M2 F Bot.  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try lia;solveF;eauto.
+        TensorFlip M1 M2 F (F1 $ G0).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try lia;solveF;eauto.
+        TensorFlip M1 M2 F (F1 & G0).  eapply ITAsyncSync with  (nm := nm) (n:= S (max n0 m)) (m:=n) ;try lia;solveF;eauto.
+        TensorFlip M1 M2 F (? F1).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try lia;solveF;eauto.
         (* both F and G are not asynchronous formulas *)
         eapply  ITSyncSync with (nm := nm) (n:=n) (m:=n0)...
-        
-        TensorFlip M1 M2 F (F{ FX}).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try omega;solveF;eauto.
-        eapply ITAsyncSync with  (nm := nm) (n:= S n) (m:=n0) ;try omega;solveF;eauto.
-        
+
+        TensorFlip M1 M2 F (F{ FX}).  eapply ITAsyncSync with  (nm := nm) (n:= S n0) (m:=n) ;try lia;solveF;eauto.
+        eapply ITAsyncSync with  (nm := nm) (n:= S n) (m:=n0) ;try lia;solveF;eauto.
+
       + (* L1 is empty and L2 is not empty *)
         apply InvTensorConsNil with (nm:=nm) (n':=n') (m':=m') (L1 := [])...
       + (* L1 is not empty and L2 is empty *)
         assert( |-F- B; M2 ++ M1 ++ [G ** F]; UP ([] ++ l :: L1 )).
-        eapply InvTensorConsNil with (nm:=nm) (n':=m') (m':=n') ... omega.
+        eapply InvTensorConsNil with (nm:=nm) (n':=m') (m':=n') ... lia.
         apply AdequacyTri2 in H. destruct H.
         rewrite app_nil_r in *.
         MReplaceIn (M2 ++ M1 ++ [G ** F]) ((M2 ++ M1) ++ [G ** F]) H.
@@ -1370,11 +1370,11 @@ Module InvLemmas (DT : Eqset_dec_pol).
         apply UpExtension in H5;auto using LexpPosOrNegAtomConc.
         destruct H5.
         destruct H.
-        assert(HRI: RInd (m + x)). apply IH. omega.
+        assert(HRI: RInd (m + x)). apply IH. lia.
         eapply tri_rel ...
         destruct HRI as [HUp  HDown]. clear HDown.
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ([A3 ⁺] ++ [])).
-        eapply HUp with (n:= x )(m0:= m) ... omega.
+        eapply HUp with x m ... lia.
         eapply EquivUpArrow2;eauto.
       ++ (* perp1 *)
         (* same inconsistency *)
@@ -1387,36 +1387,36 @@ Module InvLemmas (DT : Eqset_dec_pol).
         apply UpExtension in H5;auto using LexpPosOrNegAtomConc.
         destruct H5.
         destruct H. 
-        assert(HRI: RInd (m + x)). apply IH. omega.
+        assert(HRI: RInd (m + x)). apply IH. lia.
         eapply tri_rel ...
         destruct HRI as [HUp  HDown]. clear HDown.
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [A3 ⁻] ++ [])).
-        eapply HUp with (n:= x )(m0:= m) ... omega.
+        eapply HUp with x m ... lia.
         eapply EquivUpArrow2;eauto.
       ++ (* bbot *) 
          apply UpExtension in H4;auto using LexpPosOrNegAtomConc.
         destruct H4 as [m' H4]. destruct H4 as [H4 H4'].
-        assert(HRI: RInd (m' + m))  by (apply IH ;omega).
+        assert(HRI: RInd (m' + m))  by (apply IH ;lia).
         destruct HRI as [HUp  HDown] ...
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [⊥] ++ [])).
-        eapply HUp with (n:= m' )(m0:= m) ...
-        eapply EquivUpArrow2;eauto.  
+        eapply HUp with m' m ...
+        eapply EquivUpArrow2;eauto.
       ++ (* tensor *)
         symmetry in H2.
-        assert(HC: M ++ [F] =mul= [F] ++ M) by solve_permutation; rewrite HC in H2;clear HC. 
+        assert(HC: M ++ [F] =mul= [F] ++ M) by solve_permutation; rewrite HC in H2;clear HC.
         (* 2 choices: F is M or in N *)
         simpl_union_context.
         +++ rewrite union_comm in HL1.
             rewrite HL1 in H7. rewrite H.
             assert(HRI: RInd (S m + m0)).  apply IH. simpl. apply le_n_S.
             rewrite Nat.add_comm. apply plus_le_compat_r ...
-            destruct HRI as [HUp  HDown];auto ... 
-            eapply HDown in H7  ... 
+            destruct HRI as [HUp  HDown];auto ...
+            eapply HDown in H7  ...
             apply AdequacyTri1 in H3.
             apply H7 in HD2.
             eapply tri_tensor with (N:=N ) (M:=L1 ++ M' ++ [F ** G]) ...
-            omega.
+            lia.
             assumption.
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
@@ -1427,67 +1427,67 @@ Module InvLemmas (DT : Eqset_dec_pol).
             apply AdequacyTri1 in H7.
             apply H3 in HD2.
             eapply tri_tensor with (M:=M0 ) (N:=L2 ++ M' ++ [F ** G]) ...
-            omega.
+            lia.
             assumption.
       ++ (* Par *)
         apply UpExtension in H6;auto using LexpPosOrNegAtomConc.
         destruct H6 as [m' H6]. destruct H6 as [H6 H6'].
-        assert(HRI: RInd (m' + m))  by (apply IH ;omega).
+        assert(HRI: RInd (m' + m))  by (apply IH ;lia).
         destruct HRI as [HUp  HDown] ...
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [F0 $ G0] ++ [])).
-        eapply HUp with (n:= m' )(m0:= m) ...
+        eapply HUp with m' m ...
         eapply EquivUpArrow2;eauto.
       ++ (* oplus1 *)
-        assert(HRI: RInd (S m +n)) by (apply IH ; omega).
+        assert(HRI: RInd (S m +n)) by (apply IH ; lia).
         destruct HRI as [HUp  HDown] ...
         rewrite Nat.sub_0_r in HDown.
         apply tri_plus1.
-        eapply HDown with (n0:=n) (m0:=m)...
-        omega.
+        eapply HDown with n m...
+        lia.
       ++ (* oplus2 *)
-        assert(HRI: RInd (S m +n)) by (apply IH ; omega).
+        assert(HRI: RInd (S m +n)) by (apply IH ; lia).
         destruct HRI as [HUp  HDown] ...
         rewrite Nat.sub_0_r in HDown.
         apply tri_plus2. 
-        eapply HDown with (n0:=n) (m0:=m)...
-        omega.
+        eapply HDown with n m...
+        lia.
       ++ (* with *)
         apply UpExtension in H6;auto using LexpPosOrNegAtomConc.
         destruct H6 as [m' H6]. destruct H6 as [H6 H6'].
-        assert(HRI: RInd (m' + m))  by (apply IH ;omega).
+        assert(HRI: RInd (m' + m))  by (apply IH ;lia).
         destruct HRI as [HUp  HDown] ...
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [F0 & G0] ++ [])).
-        eapply HUp with (n:= m' )(m0:= m) ...
+        eapply HUp with m' m ...
         eapply EquivUpArrow2;eauto.
-        
+
       ++ (* quest *)
         apply UpExtension in H5;auto using LexpPosOrNegAtomConc.
         destruct H5 as [m' H5]. destruct H5 as [H5 H5'].
-        assert(HRI: RInd (m' + m))  by (apply IH ;omega).
+        assert(HRI: RInd (m' + m))  by (apply IH ;lia).
         destruct HRI as [HUp  HDown] ...
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [? F0] ++ [])).
-        eapply HUp with (n:= m' )(m0:= m) ...
+        eapply HUp with m' m ...
         eapply EquivUpArrow2;eauto.
-        
+
       ++ (* exists *)
-        assert(HRI: RInd (m + S n )) by ( apply IH;omega).
+        assert(HRI: RInd (m + S n )) by ( apply IH;lia).
         destruct HRI as [HUp  HDown] ...
         eapply HDown in H3;eauto ...
-        omega.
+        lia.
       ++ (* forall *)
         apply UpExtension in H4;auto using LexpPosOrNegAtomConc.
         destruct H4 as [m' H4]. destruct H4 as [H4 H4'].
-        assert(HRI: RInd (m' + m))  by (apply IH ;omega).
+        assert(HRI: RInd (m' + m))  by (apply IH ;lia).
         destruct HRI as [HUp  HDown] ...
         apply tri_rel ...
         assert(|-F- B; M ++ M' ++ [F ** G]; UP ( [F{ FX}] ++ [])).
-        eapply HUp with (n:= m' )(m0:= m) ...
+        eapply HUp with m' m ...
         eapply EquivUpArrow2;eauto.
     Qed.
-    
+
 
     Theorem InvTensorAux : forall n, RInd n.
       intro n.
@@ -1525,8 +1525,8 @@ Module InvLemmas (DT : Eqset_dec_pol).
   (** Completeness Theorem *)
   (* =============================================== *)
   Module Completeness.
-    
-     
+
+
     Theorem CompletenessAux : forall B L n,  n |-- B ; L -> |-F- B ; empty ; UP L.
     Proof with solveF;NegPhase.
       intros.
@@ -1544,17 +1544,17 @@ Module InvLemmas (DT : Eqset_dec_pol).
           apply PositiveNegativeAtomNeg;auto.
           eauto.
           auto...
-          
+
           (* Negative Atom *)
           eapply tri_dec1 with (F:=A3 ⁺).
           apply NegativePositiveAtomNeg ...
           eauto.
           auto...
         ++ (* one *)
-          apply EquivUpArrow2 with (L:= [1]) ... 
+          apply EquivUpArrow2 with (L:= [1]) ...
           eapply tri_dec1 with (F:=1) ...
         ++ (* top *)
-          apply EquivUpArrow2 with (L:= ⊤ :: M) ...          
+          apply EquivUpArrow2 with (L:= ⊤ :: M) ...
       + (* Inductive Cases *)
         inversion H1;subst;solveF;
           try(match goal with [H : ?L =mul= ?M |- |-F- _ ; _ ; UP ?L] =>
@@ -1577,9 +1577,9 @@ Module InvLemmas (DT : Eqset_dec_pol).
           MReplace ([F ⊕ G]) ( [] ++ [F ⊕ G]). 
           apply InvOPlus.InvPlusComm ...
         ++ (* With *)
-          eapply H with (m0:=m)...
+          apply H with m...
         ++ (* With2 *)
-          eapply H with (m0:=n0)...
+          apply H with n0...
         ++ (* Copy *)
           apply H in H4 ... 
           apply EquivUpArrow2 with (L':= F :: L) in H4...

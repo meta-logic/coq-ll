@@ -21,8 +21,8 @@ Require Export LL.Multisets.
 Require Export LL.StrongInduction.
 Require Export LL.FLLMetaTheory.
 
-Hint Resolve Max.le_max_r : core .
-Hint Resolve Max.le_max_l : core .
+#[local] Hint Resolve Max.le_max_r : core .
+#[local] Hint Resolve Max.le_max_l : core .
 
 
 Module PL.
@@ -33,7 +33,7 @@ Module PL.
   | disj : LForm -> LForm -> LForm (* disjunction *)
   | impl : LForm -> LForm -> LForm (* intuitionistic implication *)
   .
-  
+
   Theorem LForm_dec_eq : forall F G : LForm, {F = G} + {F <> G}.
     induction F;destruct G;try(right;discriminate);
       try(
@@ -62,9 +62,8 @@ Module PL.
   End F_dec.
 
   Declare Module MSFormulas : MultisetList F_dec.
-  Export MSFormulas. 
-  
-  
+  Export MSFormulas.
+
   Reserved Notation " L ';' n '|-P-' F" (at level 80).
   Inductive sq : list LForm -> nat -> LForm -> Prop :=
   | init : forall (L L' :list LForm) a, L =mul= atom a :: L' -> L ; 0 |-P- atom a
@@ -100,17 +99,17 @@ Module PL.
       inversion H0;subst.
       rewrite H in H1.
       eapply init;auto.
-      
+
       rewrite H in H1.
       eapply botL;auto.
     + (* inductive *)
       inversion H1;subst.
-      
+
       (* cR *) 
       apply cR.
       eapply H with (L:=L);auto.
       eapply H with (L:=L);auto.
-      
+
       (* cL *)
       rewrite H0 in H3.
       eapply cL;auto.
@@ -126,12 +125,12 @@ Module PL.
       (* dL *)
       rewrite H0 in H4.
       eapply dL;eauto.
-      
-      
+
+
       (* impl R *)  
       eapply H with (L' := F0 :: L') in H4;auto.
       eapply impR;auto.
-      
+
       (* impl L *)
       eapply H with (L' := L') in H5;auto.
       eapply impL;eauto.
@@ -155,7 +154,7 @@ Definition pr := 1%nat. (* atoms / propositions *)
 Definition cj := 2%nat. (* conjunction *)
 Definition dj := 3%nat. (* disjunction *)
 Definition im := 4%nat. (* implication *)
-Hint Unfold rg lf bt pr cj dj im : core .
+#[export] Hint Unfold rg lf bt pr cj dj im : core .
 
 (* Bottom Left *)
 Definition  BLEFT :Lexp := fun T:Type => tensor (perp (a1 lf (cte PL.bot))) top.
@@ -225,7 +224,7 @@ Definition ILEFT  :Lexp :=
                                     (atom (a1 rg (var z)))))))).
 
 Definition Theory := BLEFT :: INIT :: CRIGHT :: CLEFT :: DRIGHT1 :: DRIGHT2 :: DLEFT :: IRIGHT :: ILEFT :: nil.
-Hint Unfold Theory : core .
+#[export] Hint Unfold Theory : core .
 
 
 
@@ -234,37 +233,37 @@ Example translation:  |-F- Theory ; [Atom (A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1
                                                         (FC1 pr (Cte (PL.atom 2))) )) ]  ; UP []. 
 Proof with unfold Theory in *;solveF;simplifyG.
   eapply tri_dec2 with (F:=CLEFT) (B' :=  [BLEFT; INIT; CRIGHT; DRIGHT1; DRIGHT2; DLEFT; IRIGHT; ILEFT])...
-  
+
   eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 1)))).
-  eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 2)))).                            
-  simpl.                                                                                                          
+  eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 2)))).
+  simpl.
 
   eapply tri_tensor with (N:= [(A1 lf (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])           
                          (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]) ...                              
-  apply Init1 ...                                                                                                     
+  apply Init1 ...
   apply tri_rel ...
   NegPhase.
   eapply tri_dec2 with (F:=CRIGHT) ...
 
   eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 1))).
-  eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 2))).                                                                                
+  eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 2))).
   eapply tri_tensor with
       (N:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])
       (M:=[Atom (A1 lf (FC1 pr (Cte (PL.atom 1)))) ; Atom (A1 lf (FC1 pr (Cte (PL.atom 2)) ))]);eauto ...
   eapply Init1 ...
   eapply tri_rel ...
   eapply tri_with ; eapply tri_store ...
-  
+
   + (* branch 1 *)
     eapply tri_dec2 with (F:=INIT)... 
     eapply tri_ex with (t:= (Cte (PL.atom 1))).
     eapply tri_tensor with
         (N:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺ ;Atom (A1 rg (FC1 pr (Cte (PL.atom 1))))  ])
         (M:=  [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺]) ...
-    
+
     eapply tri_tensor with (M:= [(A1 lf (FC1 pr (Cte (PL.atom 1)))) ⁺])
                            (N:= [(A1 rg (FC1 pr (Cte (PL.atom 1)))) ⁺]) ...
-  + (* branch 2 *)          
+  + (* branch 2 *)
     eapply tri_dec2 with (F:=INIT) ...
     eapply tri_ex with (t:= (Cte (PL.atom 2))).
     eapply tri_tensor with (N:= [(A1 lf (FC1 pr (Cte (PL.atom 2)))) ⁺ ;
@@ -286,13 +285,13 @@ Fixpoint encodeTerm (F: PL.LForm) :=
 
 Definition encodeFL (F: PL.LForm) := Atom (A1 lf ( encodeTerm F)). (* left encoding *)
 Definition encodeFR (F: PL.LForm) := Atom (A1 rg ( encodeTerm F)). (* right encoding *)
-Hint Unfold encodeFL encodeFR : core .
+#[export] Hint Unfold encodeFL encodeFR : core .
 
 Definition encodeList := map encodeFL.
 
 Definition encodeSequent (L: list PL.LForm) (F: PL.LForm) :=
   |-F- Theory ; (encodeFR F) :: encodeList L ; UP [].
-Hint Unfold encodeSequent: core .
+#[export] Hint Unfold encodeSequent: core .
 
 Inductive IsPositiveAtomL : list Lexp -> Prop :=
 | ispL_nil : IsPositiveAtomL nil
@@ -328,13 +327,13 @@ Section InversionTerm.
         |[H :  FC1 ?n ?t = FC2 ?n' ?t' ?t'' |- _] => assert(FC1 n t  <> FC2 n' t' t'') by (eapply Terms_fc1_fc2;eauto);contradiction
         |[H :  FC2 ?n' ?t' ?t'' = FC1 ?n ?t |- _] => symmetry in H;assert(FC1 n t  <> FC2 n' t' t'') by (eapply Terms_fc1_fc2;eauto);contradiction
         end).
-  
+
   Lemma InvEncTermAt : forall F t,  encodeTerm F = FC1 pr t -> exists a, F = PL.atom a.
     intros.
     destruct F;simpl in H; InvTermAux.
     apply F1Eqt in H;eauto.
   Qed.
-  
+
   Lemma InvEncTermAtAt : forall F t n,  (A1 n (encodeTerm F)) ⁺ = ((A1 n (FC1 pr t)) ⁻)° -> exists a, F = PL.atom a.
 
     intros.
@@ -344,15 +343,15 @@ Section InversionTerm.
     apply InvEncTermAt in H1.
     auto.
   Qed.
-  
+
   Lemma InvEncTermCj : forall F t t', encodeTerm F = FC2 cj t t' -> exists G G', F = PL.conj G G'.
     intros.
     destruct F;simpl in H;InvTermAux.
     eexists;eauto.
-    apply F2Eqn in H. unfold dj in H. unfold cj in H. firstorder.
-    apply F2Eqn in H. unfold im in H. unfold cj in H. firstorder.
+    apply F2Eqn in H. unfold dj in H. unfold cj in H. lia.
+    apply F2Eqn in H. unfold im in H. unfold cj in H. lia.
   Qed.
-  
+
   Lemma InvEncTermCjAt : forall F t t0 n,  (A1 n (encodeTerm F)) ⁺ = ((A1 n (FC2 cj t t0)) ⁻)° -> exists G G', F = PL.conj G G'.
     intros.
     rewrite AtomNeg in H.
@@ -393,11 +392,11 @@ Section InversionTerm.
                                    exists G G', F = PL.disj G G' /\ encodeFR G = Atom (A1 rg t) /\ encodeFR G' = Atom (A1 rg t').
     intros.
     destruct F;simpl in H ;InvTermAux.
-    apply F2Eqn in H. unfold dj in H. unfold cj in H. firstorder.
+    apply F2Eqn in H. unfold dj in H. unfold cj in H. lia.
     apply F2Eqt1 in H as Ht1.
     apply F2Eqt2 in H as Ht2;subst.
     eexists. eexists;eauto.
-    apply F2Eqn in H. unfold dj in H. unfold im in H. firstorder.
+    apply F2Eqn in H. unfold dj in H. unfold im in H. lia.
   Qed.
 
   Lemma InvEncTermDjAt : forall F t t' n,  (A1 n (encodeTerm F)) ⁺ = ((A1 n (FC2 dj t t')) ⁻)° -> exists G G', F = PL.disj G G' /\ encodeFR G = Atom (A1 rg t) /\ encodeFR G' = Atom (A1 rg t').
@@ -405,10 +404,10 @@ Section InversionTerm.
     rewrite AtomNeg in H.
     LexpSubst.
     LexpSubst.
-    
+
     eapply InvDjTerm;eauto.
   Qed.
-  
+
   Lemma InvDj: forall F t t' ,  encodeFR F = ((A1 rg (FC2 dj t t')) ⁻)° -> exists G G', F = PL.disj G G' /\ encodeFR G = Atom (A1 rg t) /\ encodeFR G' = Atom (A1 rg t').
     intros.
     unfold encodeFR in H. 
@@ -423,9 +422,9 @@ Section InversionTerm.
                                    exists G G', F = PL.impl G G' /\ encodeFR G = Atom (A1 rg t) /\ encodeFR G' = Atom (A1 rg t').
     intros.
     destruct F;simpl in H ;InvTermAux.
-    apply F2Eqn in H. unfold cj in H. unfold im in H. firstorder.
-    apply F2Eqn in H. unfold dj in H. unfold im in H. firstorder.
-    
+    apply F2Eqn in H. unfold cj in H. unfold im in H. lia.
+    apply F2Eqn in H. unfold dj in H. unfold im in H. lia.
+
     apply F2Eqt1 in H as Ht1.
     apply F2Eqt2 in H as Ht2;subst.
     eexists. eexists;eauto.
@@ -438,7 +437,7 @@ Section InversionTerm.
     LexpSubst.
     eapply InvImTerm;eauto.
   Qed.
-  
+
   Lemma InvIm: forall F t t' ,  encodeFR F = ((A1 rg (FC2 im t t')) ⁻)° -> exists G G', F = PL.impl G G' /\ encodeFR G = Atom (A1 rg t) /\ encodeFR G' = Atom (A1 rg t').
     intros.
     unfold encodeFR in H.
@@ -463,7 +462,7 @@ Section InversionTerm.
     split;auto.
   Qed.
 
-  
+
 End InversionTerm.
 
 (* Injuctivity of encodeTerm *)
@@ -477,7 +476,7 @@ Lemma encodeTEq : forall t1 t2,  encodeTerm t1 = encodeTerm t2 -> t1 = t2.
           |[H :  FC2 ?n ?t' ?t'' = Cte ?t |- _] => symmetry in H;assert(Cte t <> FC2 n t' t'') by (eapply Terms_cte_fc2;eauto);contradiction
           |[H :  FC1 ?n ?t = FC2 ?n' ?t' ?t'' |- _] => assert(FC1 n t  <> FC2 n' t' t'') by (eapply Terms_fc1_fc2;eauto);contradiction
           |[H :  FC2 ?n' ?t' ?t'' = FC1 ?n ?t |- _] => symmetry in H ;assert(FC1 n t  <> FC2 n' t' t'') by (eapply Terms_fc1_fc2;eauto);contradiction
-          |[F : FC2 ?n ?t1 ?t2 = FC2 ?n' ?t1' ?t2' |- _] => assert(Hn : n = n' ) by  (apply F2Eqn in H; auto);firstorder;try(assert(Ht1 : (encodeTerm t1_1) = (encodeTerm t2_1)) by (eapply F2Eqt1;eauto);assert(Ht2 : (encodeTerm t1_2) = (encodeTerm t2_2)) by (eapply F2Eqt2;eauto);subst; apply IHt1_1 in Ht1;apply IHt1_2 in Ht2;subst;auto)
+          |[F : FC2 ?n ?t1 ?t2 = FC2 ?n' ?t1' ?t2' |- _] => assert(Hn : n = n' ) by  (apply F2Eqn in H; auto);try lia;try(assert(Ht1 : (encodeTerm t1_1) = (encodeTerm t2_1)) by (eapply F2Eqt1;eauto);assert(Ht2 : (encodeTerm t1_2) = (encodeTerm t2_2)) by (eapply F2Eqt2;eauto);subst; apply IHt1_1 in Ht1;apply IHt1_2 in Ht2;subst;auto)
           end
          ).
 
@@ -494,18 +493,18 @@ Qed.
 (* Encode Right only produces right atoms *)
 Inductive RightAtom: Lexp -> Prop :=
 | at_r : forall t, RightAtom ((Atom (A1 rg t))).
-Hint Constructors RightAtom : core .
+#[export] Hint Constructors RightAtom : core .
 
 (* Encode Left only produces left atoms *)
 Inductive LeftAtom : Lexp -> Prop :=
 | at_l : forall t, LeftAtom ((Atom (A1 lf t))).
-Hint Constructors LeftAtom : core .
+#[export] Hint Constructors LeftAtom : core .
 
 (* Encode List only produces left atoms *)
 Inductive LeftAtomL: list Lexp -> Prop :=
 | lf_nil : LeftAtomL  nil
 | lf_cons : forall L F, LeftAtom F -> LeftAtomL L -> LeftAtomL (F :: L) .
-Hint Constructors LeftAtomL : core .
+#[export] Hint Constructors LeftAtomL : core .
 
 Lemma encodeRightRight : forall F, RightAtom (encodeFR F).
 Proof with solveF.
@@ -531,7 +530,7 @@ Qed.
 Lemma EncodeFRLFContr : forall F t, encodeFR F <> ((A1 lf t) ⁻)°.
   intros F t HF.
   rewrite AtomNeg in HF.
-  
+
   destruct F;compute in HF;
     match goal with [HF : ?F = ?G |- False ] =>
                     apply @equal_f_dep with (x:=unit) in HF;inversion HF
@@ -550,7 +549,7 @@ Qed.
 
 Lemma EncodeFLRGContr' : forall F t, encodeFL F <> ((A1 rg t) ⁻)°.
   intros F t HF.
-  
+
   generalize(encodeLeftLeft F); intro HLL.
   apply EncodeFLRGContr with (t:=t) in HLL.
   contradiction.
@@ -657,13 +656,13 @@ Proof with solveF.
   auto ...
 Qed.
 
-Hint Resolve IsPINIT IsPCLEFT IsPCRIGHT IsPBLEFT IsPDLEFT IsPDRIGHT1 IsPDRIGHT2 IsPILEFT IsPIRIGHT : core .
+#[export] Hint Resolve IsPINIT IsPCLEFT IsPCRIGHT IsPBLEFT IsPDLEFT IsPDRIGHT1 IsPDRIGHT2 IsPILEFT IsPIRIGHT : core .
 
 Theorem Soundness: forall (L : list PL.LForm) F n, L  |-P- n ; F -> ( encodeSequent L F ).
 Proof with solveF.
   intros L F n HD.
   dependent induction n generalizing L F using strongind.
-  
+
   + (* base case *)
     inversion HD;subst;unfold encodeSequent;simpl;autounfold;simpl.
     (* case init *)
@@ -683,7 +682,7 @@ Proof with solveF.
     rewrite H. autounfold. simpl.
     eapply tri_dec2 with (F:= BLEFT);eauto.
     eapply tri_tensor with (N:= [(A1 lf (Cte PL.bot)) ⁺] ) (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList L') ...
-    
+
     apply Init1 ...
   + (* Inductive Cases *) 
     inversion HD;subst;autounfold in *;simpl;autounfold;simpl;simplifyG.
@@ -694,7 +693,7 @@ Proof with solveF.
       eapply tri_tensor with (N:= [(A1 rg (FC2 cj (encodeTerm F0)  (encodeTerm G))) ⁺])
                              (M:= encodeList L);eauto ...
       simplifyG ...
-      
+
       apply tri_rel ...
       apply tri_with; apply tri_store ...
       (* Branch F *)
@@ -703,7 +702,7 @@ Proof with solveF.
       (* Branch G *)
       rewrite union_comm. 
       apply H in H3 ... 
-      
+
     ++ (* case Conj L *)
       assert (Heq : PL.MSFormulas.meq L (PL.conj G G' :: L')) ...
       eapply multisetEncode in Heq.
@@ -730,11 +729,11 @@ Proof with solveF.
       eapply tri_ex with (t:= encodeTerm G) ...
       eapply tri_tensor with (N:= [encodeFR (PL.disj F0 G)])
                              (M:=  encodeList L);eauto ...
-      
+
       unfold encodeFR;simpl ... simplifyG ...
-      apply tri_rel;autounfold ... reflexivity.
-      
-      
+      apply tri_rel;autounfold ...
+
+
       apply tri_store ...
       rewrite union_comm. simplifyG ...
     ++ (* disjunction R2 *)
@@ -748,7 +747,7 @@ Proof with solveF.
 
       unfold encodeFR;simpl ...
 
-      apply tri_rel;autounfold ... 
+      apply tri_rel;autounfold ...
       apply tri_store ...
       rewrite union_comm ...
     ++  (* disjunction LEFT *)
@@ -787,7 +786,7 @@ Proof with solveF.
       apply tri_par ...
       apply tri_store ...
       apply tri_store ... simplifyG ...
-      
+
       MReplace ((encodeList L ++ [encodeFL F0]) ++ [encodeFR G]) (encodeFR G :: encodeFL F0 :: encodeList L) ... 
     ++ (* Implication Left *)
       assert(HLL' : PL.MSFormulas.meq L (PL.impl F0 G :: L')) by 
@@ -807,7 +806,7 @@ Proof with solveF.
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G) ; encodeFR F])
                              (M:=  encodeList L') ...
 
-      
+
       (* First Tensor *)
       eapply tri_tensor with (N:= [encodeFL (PL.impl F0 G)])
                              (M:=  [encodeFR F]) ...
@@ -830,7 +829,7 @@ Proof with solveF.
       eapply tri_par ...
       eapply tri_store...
       eapply tri_store...
-      
+
       unfold encodeFL in H5.
       unfold encodeFR in H5.
       MReplace ( (encodeList L' ++ [(A1 lf (encodeTerm G)) ⁺]) ++
@@ -846,17 +845,17 @@ Qed.
 
 
 Lemma AtomsTheoryFalse : forall A B, Theory =mul= Atom A :: B -> False.
-Proof with solveF. 
+Proof with solveF.
   intros.
   unfold Theory in H.
-  multisetContr... 
+  multisetContr...
 Qed.
 
 Lemma AtomsTheoryFalse' : forall A B, Theory =mul= Perp A :: B -> False.
 Proof with solveF.
   intros.
   unfold Theory in H.
-  multisetContr... 
+  multisetContr...
 Qed.
 
 Lemma InvI1 : forall n t M,  true = isPositive n -> |-F- Theory; M; DW ((A1 n t) ⁻) ->
@@ -917,7 +916,7 @@ Lemma NotEqFRFL : forall F G, encodeFR G <> encodeFL F.
   apply A1InvN in H.
   unfold rg in H.
   unfold lf in H.
-  firstorder.
+  lia.
 Qed.
 
 Lemma EncodeListMembers: forall F L,  In (encodeFL F) (encodeList L) -> In F L.
@@ -1017,7 +1016,7 @@ Lemma encodeInvConj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
   simpl in H.
   assert(exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a =((A1 lf (FC2 cj t t')) ⁻)°
                        /\ M =mul= (encodeFR F) :: encodeList L').
-  apply DestructMSet4; auto.                     
+  apply DestructMSet4; auto.
   (*!! Multsets: from H' and H *)
   destruct H0 as [L' H0].
   destruct H0 as [a HM].
@@ -1040,7 +1039,7 @@ Lemma encodeInvDisj : forall F L M t t', encodeFR F :: encodeList L =mul= M ++ [
   simpl in H.
   assert(exists  L' a, PL.MSFormulas.meq L (a::L') /\ encodeFL a =((A1 lf (FC2 dj t t')) ⁻)°
                        /\ M =mul= (encodeFR F) :: encodeList L').
-  
+
   apply DestructMSet4; auto.
   (*!! Multsets: from H' and H *)
   destruct H0 as [L' H0].
@@ -1071,7 +1070,7 @@ Lemma encodeInvImpl : forall F L M t1 t2 t3, encodeFR F :: encodeList L =mul= M 
   destruct H0 as [L' H0].
   destruct H0 as [a HM].
   destruct HM as [HM [HM' HM'']].
-  
+
   symmetry in HM''.
   apply EncSidesCorrect in HM'' as HM'''.
   destruct HM''';subst.
@@ -1546,7 +1545,7 @@ Proof with solveF.
       contradiction.
       assert(IsPositiveAtom F0) by( eapply PositiveIn;eauto).
       contradiction.
-      
+
     ++ assert(
            F0 = BLEFT \/ F0 = INIT \/ 
            F0 =  CRIGHT \/ F0 =  CLEFT \/ 
@@ -1566,7 +1565,7 @@ Proof with solveF.
        destruct H1. do 7 right. left. eauto.
        destruct H1. do 8 right. eauto.
        inversion H1. 
-       
+
        destruct H1  as [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 | [HF1 |HF1]]]]]]]];subst.
        +++ (* case BLeft *)
          apply AdequacyTri1 in H4.
@@ -1580,6 +1579,7 @@ Proof with solveF.
          destruct H4 as [L' [a [H4 H4']]];subst.
          eexists.
          apply PL.Exch with (L:= PL.atom a :: L');auto.
+         symmetry; assumption.
          eapply PL.init ...
        +++ (* case CRIGHT *)
          apply InvCRIGHT in H4.
@@ -1592,8 +1592,8 @@ Proof with solveF.
          apply H  with (m:=n1) in H4... destruct H4 as [n H4].
          apply H  with (m:=n2) in H5... destruct H5 as [m H5].
          eexists. eapply PL.cR;eauto.
-         assert(n2 <= max n1 n2). apply Nat.le_max_r. omega.
-         assert(n1 <= max n1 n2). apply Nat.le_max_l. omega.
+         lia.
+         lia.
        +++  (* case CLEFT *)
          apply InvCLEFT in H4.
          destruct H4 as [L' H4].
@@ -1606,7 +1606,7 @@ Proof with solveF.
          rewrite HL in H4. clear HL.
          apply H  with (m:=n1) in H4... destruct H4 as [n H4].
          eexists. eapply PL.cL;eauto.
-         omega.
+         lia.
        +++ (* DISJ RIGHT 1 *)
          apply InvDRIGHT1 in H4.
          destruct H4 as [G1 [G2 [n1]]].
@@ -1616,7 +1616,7 @@ Proof with solveF.
          destruct H4 as [n H4].
          eexists.
          apply PL.dR1;eauto.
-         omega.
+         lia.
        +++ (* DISJ RIGHT 2 *)
          apply InvDRIGHT2 in H4.
          destruct H4 as [G1 [G2 [n1]]].
@@ -1626,7 +1626,7 @@ Proof with solveF.
          destruct H4 as [n H4].
          eexists.
          apply PL.dR2;eauto.
-         omega. 
+         lia.
        +++ (* DISJ LEFT *)
          apply InvDLEFT in H4.
          destruct H4 as [L' [G1 [G2 [n1 [n2]] ]]].
@@ -1636,21 +1636,21 @@ Proof with solveF.
 
          apply H  with (m:=n1) (L:= G1 :: L') in H4... destruct H4 as [m1 H4].
          apply H  with (m:=n2) (L:= G2 :: L') in H5... destruct H5 as [m2 H5].
-         
+
          eexists. eapply PL.dL;eauto.
-         assert(n2 <= max n1 n2). apply Nat.le_max_r. omega.
-         assert(n1 <= max n1 n2). apply Nat.le_max_l. omega.
+         lia.
+         lia.
        +++ (* Implication Right *)
          apply InvIRight in H4.
          destruct H4 as [G1 [G2 [n1]]].
          destruct H1; subst.
          destruct H4; subst.
-         
+
          apply H with (m:=n1) (L:= G1::L)in H4.
          destruct H4 as [n H4].
          eexists.
          apply PL.impR;eauto.
-         omega.
+         lia.
        +++ (* IMP Left *)
          apply InvILEFT in H4.
          destruct H4 as [L' [G1 [G2 [n1 [n2]]]]].
@@ -1665,7 +1665,7 @@ Proof with solveF.
          destruct H5 as [n2' H5].
          eexists.
          eapply PL.impL;eauto.
-         
+
          repeat apply Nat.le_le_succ_r ...
          repeat apply Nat.le_le_succ_r ...
 Qed.

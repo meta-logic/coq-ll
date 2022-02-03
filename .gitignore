@@ -1,4 +1,9 @@
 **/*.aux
 **/*.vo
+**/*.vok
+**/*.vos
 **/*.glob
 **/*.v.d
+**/.Makefile.d
+**/.makefile.d
+**/.lia.cache

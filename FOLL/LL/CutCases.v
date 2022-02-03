@@ -45,35 +45,35 @@ Module CCases (DT : Eqset_dec_pol).
         inversion Hn2; subst; inversion Hh; try cut_free.
         - simpl_cases2.
           organizer.
-          refine (tab_bot H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_bot H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_par H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_par H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - simpl_cases2. 
           organizer.
           refine (tab_tensor _ _ _ P H2 H3 H4 H6 Hn2 Hn1); eauto.   
         - simpl_cases2.
           organizer.
-          refine (tab_plus1 H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_plus1 H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_plus2 H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_plus2 H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.  
           refine (tab_with _ _ _ P H2 H3 H4 H6 Hn2 Hn1); eauto.   
         - simpl_cases2.
           organizer.
-          refine (tab_copy H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_copy H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_quest H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_quest H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - apply resolvers2 in H2; firstorder; lexp_contr H2.
         - simpl_cases2.
           organizer.
-          refine (tab_ex H _ Hw P H2 H4 H3 Hn2 Hn1). omega.
+          refine (tab_ex H _ Hw P H2 H4 H3 Hn2 Hn1). lia.
         - simpl_cases2. 
           organizer.
-          refine (tab_fx H _ Hw P H2 H4 H3 Hn2 Hn1). omega.   
+          refine (tab_fx H _ Hw P H2 H4 H3 Hn2 Hn1). lia.   
       }  
     * apply resolvers2 in H0; firstorder; lexp_contr H0.
     * simpl_cases2.
@@ -95,9 +95,9 @@ Module CCases (DT : Eqset_dec_pol).
         refine (tab_quest _ _ _ P _ H2 H1 Hn1 _); eauto.
     * apply resolvers2 in H0; firstorder; lexp_contr H0.
     * simpl_cases2. 
-      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). omega.  
+      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). lia.  
     * simpl_cases2. 
-      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). omega.    
+      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). lia.    
   Qed.
   Arguments aux_CUT_ap [n1 n2 h B L M1 M2 v].
 
@@ -121,41 +121,41 @@ Module CCases (DT : Eqset_dec_pol).
         inversion Hn2; subst; inversion Hh; try cut_free.
         - simpl_cases2. organizer.
           refine (tab_bot H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2. 
           organizer.
           refine (tab_par H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2; organizer.
           refine (tab_tensor _ _ _ P H2 H3 H4 H6 Hn2 Hn1); eauto.   
         - simpl_cases2.
           organizer.
           refine (tab_plus1 H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2.
           organizer.
           refine (tab_plus2 H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2;  
             organizer.  
           refine (tab_with _ _ _ P H2 H3 H4 H6 Hn2 Hn1); eauto.   
         - simpl_cases2.
           organizer.
           refine (tab_copy H _ Hw P H2 H3 H4 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2.
           organizer.
           refine (tab_quest H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - apply resolvers2 in H2; firstorder; lexp_contr H2.
         - simpl_cases2.
           organizer.
           refine (tab_ex H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.
+          lia.
         - simpl_cases2. 
           organizer.
           refine (tab_fx H _ Hw P H2 H4 H3 Hn2 Hn1). 
-          omega.                       
+          lia.                       
       }    
 
     * simpl_cases2;
@@ -175,9 +175,9 @@ Module CCases (DT : Eqset_dec_pol).
         refine (tab_quest _ _ _ P _ H2 H1 Hn1 _); eauto.
     * apply resolvers2 in H0; firstorder; lexp_contr H0.
     * simpl_cases2. 
-      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). omega.  
+      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). lia.  
     * simpl_cases2. 
-      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). omega.    
+      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). lia.    
   Qed. 
   Arguments aux_CUT_tz [n1 n2 h B L M1 M2].
 
@@ -207,33 +207,33 @@ Module CCases (DT : Eqset_dec_pol).
           eexists; eauto. 
         - simpl_cases2; top_commutes.  
         - simpl_cases2. organizer.
-          refine (tab_bot H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_bot H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2. organizer.
-          refine (tab_par H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_par H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2; organizer.
-          refine (tab_tensor _ _ _ P H2 H3 H5 H7 Hn2 Hn1) ; eauto. omega.   
+          refine (tab_tensor _ _ _ P H2 H3 H5 H7 Hn2 Hn1) ; eauto. lia.   
         - simpl_cases2.
           organizer.
-          refine (tab_plus1 H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_plus1 H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_plus2 H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_plus2 H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2;  
             organizer.  
-          refine (tab_with _ _ _ P H2 H3 H5 H7 Hn2 Hn1); eauto. omega.  
+          refine (tab_with _ _ _ P H2 H3 H5 H7 Hn2 Hn1); eauto. lia.  
         - simpl_cases2.
           organizer.
-          refine (tab_copy H _ Hw P H2 H4 H5 Hn2 Hn1). omega.
+          refine (tab_copy H _ Hw P H2 H4 H5 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_quest H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_quest H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - apply resolvers2 in H2; firstorder; lexp_contr H2.
         - simpl_cases2.
           organizer.
-          refine (tab_ex H _ Hw P H2 H3 H4 Hn2 Hn1). omega.
+          refine (tab_ex H _ Hw P H2 H3 H4 Hn2 Hn1). lia.
         - simpl_cases2. 
           organizer.
-          refine (tab_fx H _ Hw P H2 H3 H4 Hn2 Hn1). omega.                       
+          refine (tab_fx H _ Hw P H2 H3 H4 Hn2 Hn1). lia.                       
       }    
 
     * simpl_cases2;
@@ -251,9 +251,9 @@ Module CCases (DT : Eqset_dec_pol).
         refine (tab_quest _ _ _ P _ H2 H1 Hn1 _); eauto.
     * apply resolvers2 in H0; firstorder; lexp_contr H0.
     * simpl_cases2. 
-      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). omega.  
+      refine (tab_ex H _ Hw P H0 H2 H1 Hn1 Hn2). lia.  
     * simpl_cases2. 
-      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). omega.    
+      refine (tab_fx H _ Hw P H0 H2 H1 Hn1 Hn2). lia.    
   Qed.
   Arguments aux_CUT_bo [n1 n2 h B L M1 M2].
 
@@ -386,7 +386,7 @@ Module CCases (DT : Eqset_dec_pol).
           organizer.
           
           refine (tab_bot H0 _ _ P H1 H6 H4 Hn2 Hn1); auto.
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.
         - 
           destruct (FEqDec (F0 $ G0) (F° $ G°)) as [Te|notTe].
@@ -404,47 +404,47 @@ Module CCases (DT : Eqset_dec_pol).
             simpl_cases2.
             organizer.
             refine (tab_par H0 _ _ P H6 H1 H4 Hn2 Hn1).
-            omega.
+            lia.
             rewrite lweight_dual_plus; auto.
         - simpl_cases2.
           organizer.
           refine (tab_tensor H0 _ _ P H1 H4 H6 H8 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.
         - simpl_cases2.
           organizer.     
           refine (tab_plus1 H0 _ _ P H1 H6 H4 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.
         - simpl_cases2.
           organizer.     
           refine (tab_plus2 H0 _ _ P H1 H6 H4 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.
         - simpl_cases2.
           organizer.
           refine (tab_with H0 _ _ P H1 H4 H6 H8 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.
         - organizer.
           refine (tab_copy H0 _ _ P H1 H4 H6 Hn2 Hn1). 
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.       
         - simpl_cases2.
           organizer.
           refine (tab_quest H0 _ _ P H1 H6 H4 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.        
         - apply resolvers2 in H1; firstorder; lexp_contr H1.  
         - simpl_cases2.
           organizer.
           refine (tab_ex H0 _ _ P H1 H6 H4 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.   
         - simpl_cases2.
           organizer.
           refine (tab_fx H0 _ _ P H1 H6 H4 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual_plus; auto.                   
       }
     +  
@@ -514,17 +514,17 @@ Module CCases (DT : Eqset_dec_pol).
             - simpl_cases2. 
               organizer.
               refine (tab_bot H0 _ _ P H1 H6 H4 Hn2 Hn1); auto.
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.
             - simpl_cases2. 
               organizer.
               refine (tab_par H0 _ _ P H1 H6 H4 Hn2 Hn1); auto.
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.       
             - simpl_cases2.
               organizer.
               refine (tab_tensor H0 _ _ P H1 H4 H6 H8 Hn2 Hn1).
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.
             - destruct (FEqDec (F° ⊕ G°) (F1 ⊕ G1)) as [Te|notTe].
               rewrite <- Te in *.
@@ -542,7 +542,7 @@ Module CCases (DT : Eqset_dec_pol).
                 simpl_cases2.
                 organizer.     
                 refine (tab_plus1 H0 _ _ P H1 H6 H4 Hn2 Hn1).
-                omega.
+                lia.
                 rewrite lweight_dual_plus; auto.
             - destruct (FEqDec (F° ⊕ G°) (F1 ⊕ G1)) as [Te|notTe].
               rewrite <- Te in *.
@@ -559,32 +559,32 @@ Module CCases (DT : Eqset_dec_pol).
                 simpl_cases2.
                 organizer.     
                 refine (tab_plus2 H0 _ _ P H1 H6 H4 Hn2 Hn1).
-                omega.
+                lia.
                 rewrite lweight_dual_plus; auto.    
             - simpl_cases2.
               organizer.
               refine (tab_with H0 _ _ P H1 H4 H6 H8 Hn2 Hn1).
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.
             - organizer.
               refine (tab_copy H0 _ _ P H1 H4 H6 Hn2 Hn1). 
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.              
             - simpl_cases2.
               organizer.
               refine (tab_quest H0 _ _ P H1 H6 H4 Hn2 Hn1).
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.        
             - apply resolvers2 in H1; firstorder; lexp_contr H1.  
             - simpl_cases2.
               organizer.
               refine (tab_ex H0 _ _ P H1 H6 H4 Hn2 Hn1).
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto.   
             - simpl_cases2.
               organizer.
               refine (tab_fx H0 _ _ P H1 H6 H4 Hn2 Hn1).
-              omega.
+              lia.
               rewrite lweight_dual_plus; auto. 
           }
         +   simpl_cases2.    
@@ -651,41 +651,41 @@ Module CCases (DT : Eqset_dec_pol).
         - simpl_cases2.
           organizer.
           refine (tab_bot H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
         - simpl_cases2. 
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.
           refine (tab_par H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.       
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.
           refine (tab_tensor H0 _ _ P H1 H3 H6 H8 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.    
           refine (tab_plus1 H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.   
           refine (tab_plus2 H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.
           refine (tab_with H0 _ _ P H1 H3 H6 H8 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
         - organizer.
           refine (tab_copy H0 _ _ P H1 H5 H6 Hn2 Hn1). 
-          omega.
+          lia.
           rewrite lweight_dual; auto.       
         - destruct (FEqDec (? F°) (? F1)) as [Te|notTe].
           rewrite <- Te in *.
@@ -701,20 +701,20 @@ Module CCases (DT : Eqset_dec_pol).
             simpl_cases2.
             organizer.
             refine (tab_quest H0 _ _ P H1 H3 H5 Hn2 Hn1).
-            omega.
+            lia.
             rewrite lweight_dual; auto.     
         - apply resolvers2 in H1; firstorder; lexp_contr H1.  
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.
           refine (tab_ex H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.   
         - simpl_cases2.
           rewrite (Ng_involutive (! F)) in Hn1;
             rewrite union_comm in P.
           refine (tab_fx H0 _ _ P H1 H3 H5 Hn2 Hn1).
-          omega.
+          lia.
           rewrite lweight_dual; auto.
       }
     * simpl_cases2.
@@ -774,39 +774,39 @@ Module CCases (DT : Eqset_dec_pol).
         - simpl_cases2.
           organizer.
           refine (tab_bot H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.
+          lia.
         - simpl_cases2. 
           organizer.
           refine (tab_par H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.    
+          lia.    
         - simpl_cases2.
           organizer.
           refine (tab_tensor H0 _ Hw P H1 H3 H4 H6 Hn2 Hn1).
-          omega.
+          lia.
         - simpl_cases2.
           organizer.   
           refine (tab_plus1 H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.
+          lia.
         - simpl_cases2.
           organizer.   
           refine (tab_plus2 H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.
+          lia.
         - simpl_cases2.
           organizer.
           refine (tab_with H0 _ Hw P H1 H3 H4 H6 Hn2 Hn1).
-          omega.
+          lia.
         - organizer.
           refine (tab_copy H0 _ Hw P H1 H3 H4 Hn2 Hn1). 
-          omega.    
+          lia.    
         - simpl_cases2.
           organizer.
           refine (tab_quest H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.   
+          lia.   
         - apply resolvers2 in H1; firstorder; lexp_contr H1.
         - simpl_cases2.
           organizer. 
           refine (tab_ex H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-          omega.
+          lia.
         - destruct (FEqDec ((E{ FX0})°) (F{ FX})).
           + 
             rewrite e in *.
@@ -827,10 +827,10 @@ Module CCases (DT : Eqset_dec_pol).
           + simpl_cases2.
             organizer. 
             refine (tab_fx H0 _ Hw P H1 H4 H3 Hn2 Hn1).
-            omega.
+            lia.
         - simpl_cases2.  
           refine (tab_ex H0 _ Hw P H1 H3 H2 Hn1 Hn2).
-          omega.
+          lia.
       }
     * simpl_cases2.
       refine (tab_fx H0 _ _ P _ H3 H2 Hn1 Hn2); auto.
@@ -876,7 +876,7 @@ Module CCases (DT : Eqset_dec_pol).
     * apply resolvers2 in H1; firstorder; lexp_contr H1.
     * simpl_cases2.  
       refine (tab_ex H0 _ Hw P H1 H3 H2 Hn1 Hn2).
-      omega.
+      lia.
     * {
         destruct (FEqDec (F{ FX}) (F{ FX0}) ).
         rewrite e in *. clear e.
@@ -887,25 +887,25 @@ Module CCases (DT : Eqset_dec_pol).
         - simpl_cases2; top_commutes.  
         - simpl_cases2. organizer.
           refine (tab_bot _ _ Hw P H3 H4 H5 Hn2 _); eauto.  
-          omega.
+          lia.
         - simpl_cases2. organizer.
-          refine (tab_par _ _ Hw P H3 H4 H5 Hn2 _); eauto. omega.
+          refine (tab_par _ _ Hw P H3 H4 H5 Hn2 _); eauto. lia.
         - simpl_cases2. organizer.
-          refine (tab_tensor H0 _ Hw P H3 H4 H6 H8 Hn2 Hn1). omega.
+          refine (tab_tensor H0 _ Hw P H3 H4 H6 H8 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_plus1 _ _ Hw P H3 H4 H5 Hn2 _); eauto. omega.
+          refine (tab_plus1 _ _ Hw P H3 H4 H5 Hn2 _); eauto. lia.
         - simpl_cases2.
           organizer.
-          refine (tab_plus2 _ _ Hw P H3 H4 H5 Hn2 _); eauto. omega.
+          refine (tab_plus2 _ _ Hw P H3 H4 H5 Hn2 _); eauto. lia.
         - simpl_cases2. organizer.
-          refine (tab_with H0 _ Hw P H3 H4 H6 H8 Hn2 Hn1). omega.
+          refine (tab_with H0 _ Hw P H3 H4 H6 H8 Hn2 Hn1). lia.
         - simpl_cases2.
           organizer.
-          refine (tab_copy _ _ Hw P H3 H5 H6 Hn2 _); eauto. omega.
+          refine (tab_copy _ _ Hw P H3 H5 H6 Hn2 _); eauto. lia.
         - simpl_cases2.
           organizer.
-          refine (tab_quest _ _ Hw P H3 H4 H5 Hn2 _); eauto. omega.
+          refine (tab_quest _ _ Hw P H3 H4 H5 Hn2 _); eauto. lia.
         - apply resolvers2 in H3; firstorder.
           lexp_contr H3.
         - 
@@ -925,10 +925,10 @@ Module CCases (DT : Eqset_dec_pol).
                }
              eapply WeightFE; eauto.
           -- simpl_cases2. organizer.
-             refine (tab_ex H0 _ Hw P H3 H4 H5 Hn2 Hn1 ). omega.
+             refine (tab_ex H0 _ Hw P H3 H4 H5 Hn2 Hn1 ). lia.
         - simpl_cases2. 
           organizer.
-          refine (tab_fx H0 _ Hw P H3 H4 _ Hn2 Hn1); auto. omega. 
+          refine (tab_fx H0 _ Hw P H3 H4 _ Hn2 Hn1); auto. lia. 
         - simpl_cases2. 
           refine (tab_fx H0 _ Hw P H1 H3 _ Hn1 Hn2); auto. 
       }        

@@ -80,25 +80,25 @@ Require Import LL.Eqset.
 Set Implicit Arguments.
 
 Module SqSystems (DT : Eqset_dec_pol).
-  
+
   Module Export SxLL := FormulasLL DT.
   Export DT.
 
-  Hint Resolve Max.le_max_r  Max.le_max_l : core .
-  Hint Constructors IsNegativeAtom IsPositiveAtom : core .
+  #[export] Hint Resolve Max.le_max_r  Max.le_max_l : core .
+  #[export] Hint Constructors IsNegativeAtom IsPositiveAtom : core .
 
-  
+
   (****** ARROWS ******)
   Inductive Arrow  :=
   | UP (l : list Lexp)
   | DW (F : Lexp).
-  
+
   Definition Arrow2LL (A: Arrow) : list Lexp :=
     match A  with
     | UP l => l
     | DW F => [F]
     end.
-  
+
   Lemma Arrow_eq_dec : forall F1 F2: Arrow , {F1 =F2} + {F1 <> F2}.
     intros.
     destruct F1;destruct F2.
@@ -109,13 +109,13 @@ Module SqSystems (DT : Eqset_dec_pol).
     generalize(FEqDec F F0);intro.
     destruct H;subst;auto. right;intuition. apply n;inversion H;auto.
   Qed.
-  
+
 
   (******************************************************)
   (** Triadic system *)
   (******************************************************)
   Reserved Notation " '|-F-' B ';' L ';' X " (at level 80).
-  
+
   Inductive TriSystem:  list Lexp -> list Lexp -> Arrow -> Prop :=
   | tri_init1 : forall B A, IsNegativeAtom A ->  |-F- B ; [(Dual_LExp A)] ; DW (A)
   | tri_init2 : forall B B' A, IsNegativeAtom A -> B =mul= (Dual_LExp A) :: B' -> |-F- B ; [] ; DW (A)
@@ -126,7 +126,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   | tri_plus2 : forall B M F G, |-F- B ; M ; DW G -> |-F- B ; M ; DW (F ⊕ G)
   | tri_bang : forall B F, |-F- B ; [] ; UP [F] -> |-F- B ; [] ; DW (! F)
   | tri_rel : forall B F L, Release F -> |-F- B ; L ; UP [F] ->  |-F- B ; L ; DW F
-                                                                                 
+
   | tri_top : forall B L M, |-F- B ; L ; UP (Top :: M)
   | tri_bot : forall B L M, |-F- B ; L ; UP M -> |-F- B ; L ; UP (Bot :: M)
   | tri_par : forall B L M F G, |-F- B ; L ; UP (F::G::M) -> |-F- B ; L ; UP(F $ G :: M)
@@ -139,8 +139,8 @@ Module SqSystems (DT : Eqset_dec_pol).
   | tri_ex  : forall B FX M t, |-F- B; M ; DW (Subst FX t) -> |-F- B; M ; DW (E{FX})
   | tri_fx  : forall B L FX M,    (forall x, |-F- B ; L ; UP( (Subst FX x) ::  M)) -> |-F- B ; L ; UP (F{FX} :: M)
   where " '|-F-' B ';' L ';' X " := (TriSystem B L X).
-  Hint Constructors TriSystem : core .
-  
+  #[export] Hint Constructors TriSystem : core .
+
   (******************************************************)
   (** Triadic system with meassures *)
   (******************************************************)
@@ -155,7 +155,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   | trih_plus2 : forall B M F G n, n |-F- B ; M ; DW G -> S n |-F- B ; M ; DW (F ⊕ G)
   | trih_bang : forall B F n, n |-F- B ; [] ; UP [F] -> S n |-F- B ; [] ; DW (! F)
   | trih_rel : forall B F L n, Release F -> n |-F- B ; L ; UP [F] ->  S n |-F- B ; L ; DW F
-                                                                                          
+
   | trih_top : forall B L M, 0 |-F- B ; L ; UP (Top :: M)
   | trih_bot : forall B L M n, n |-F- B ; L ; UP M -> S n |-F- B ; L ; UP (Bot :: M)
   | trih_par : forall B L M F G n, n |-F- B ; L ; UP (F::G::M) -> S n |-F- B ; L ; UP(F $ G :: M)
@@ -171,8 +171,8 @@ Module SqSystems (DT : Eqset_dec_pol).
       forall B L n FX M,
         (forall x : Term, n |-F- B ; L ; UP( (Subst FX x) ::  M)) -> S n |-F- B ; L ; UP (F{FX} :: M)
   where " n '|-F-' B ';' L ';' X " := (TriSystemh n B L X).
-  Hint Constructors TriSystemh : core .
-  
+  #[export] Hint Constructors TriSystemh : core .
+
   (** Dyadic System *)
   Reserved Notation " '|--' B ';' L" (at level 80).
   Inductive sig2: list Lexp -> list Lexp -> Prop :=
@@ -200,20 +200,20 @@ Module SqSystems (DT : Eqset_dec_pol).
   | sig2_quest: forall B L M F , L =mul= (? F) :: M  ->
                                  |-- F :: B ; M -> 
                                               |-- B ; L
-                                                        
+
   | sig2_bang: forall B F L , L =mul= [! F] ->
                               |--  B ; [F] ->
                                        |--  B ; L
   | sig2_ex  : forall B L FX M t,
       L =mul= E{FX} ::  M ->  |-- B ; (Subst FX t) :: M ->  |--  B ; L
   | sig2_fx  : forall B L FX M,  L =mul= (F{FX}) :: M -> (forall x, |-- B ; [Subst FX x] ++  M) ->  |-- B ; L
-                                                                                                              
+
   where "|-- B ; L" := (sig2 B L).
 
   (** Dyadic system plus height of the derivation *)
   Reserved Notation " n '|--' B ';' L" (at level 80).
   Inductive sig2h: nat -> list Lexp -> list Lexp -> Prop :=
-    
+
   | sig2h_init : forall B L A, L =mul= (A ⁺) :: [A ⁻] -> 0 |-- B ; L
   | sig2h_one : forall B L, L =mul= [1] -> 0 |-- B ; L 
   | sig2h_top : forall B L M, L =mul= Top :: M -> 0 |-- B ; L
@@ -232,19 +232,19 @@ Module SqSystems (DT : Eqset_dec_pol).
   | sig2h_copy: forall B D L M F n, 
       D =mul= F :: B -> L =mul= F :: M ->
       n |-- D ; L ->  S n|-- D ; M 
-                                   
+
   | sig2h_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                     n |-- F :: B ; M ->   S n |-- B ; L
-                                                                        
+
   | sig2h_bang : forall B F L n, L =mul= [! F] ->
                                  n |--  B ; [F] ->  S n |--  B ; L
-                                                                   
+
   | sig2h_ex  : forall B L n FX M t,
       L =mul= E{FX} ::  M -> n |-- B ; (Subst FX t) :: M -> S n |--  B ; L
   | sig2h_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-- B ; [Subst FX x] ++  M) -> S n |-- B ; L
-                                                                                                                      
+
   where "n |-- B ; L" := (sig2h n B L).
-  Hint Constructors sig2h : core .
+  #[export] Hint Constructors sig2h : core .
 
   (* Dyadic system with inductive measures *)
   Reserved Notation "n '|-c' B ';' L" (at level 80).
@@ -269,7 +269,7 @@ Module SqSystems (DT : Eqset_dec_pol).
       L =mul= (F & G) :: M ->
       m |-c B ; F :: M ->
                 n |-c B ; G :: M -> S (max n m) |-c B ; L
-                                                          
+
   | sig2hc_copy: forall B D L M F n, 
       D =mul= F :: B -> L =mul= F :: M ->
       n |-c D ; L -> 
@@ -278,15 +278,15 @@ Module SqSystems (DT : Eqset_dec_pol).
   | sig2hc_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                      n |-c F :: B ; M -> 
                                                     S n |-c B ; L
-                                                                  
+
   | sig2hc_bang : forall B F L n, L =mul= [! F] ->
                                   n |-c  B ; [F] ->
                                              S n |-c  B ; L
-                                                            
+
   | sig2hc_ex  : forall B L n FX M t,
       L =mul= E{FX} ::  M -> n |-c B ; (Subst FX t) :: M -> S n |-c  B ; L
   | sig2hc_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-c B ; [Subst FX x] ++  M) -> S n |-c B ; L
-                                                                                                                       
+
   where "n |-c B ; L" := (sig2hc n B L).
 
   (** System with rules Cut and Cut! *)
@@ -316,7 +316,7 @@ Module SqSystems (DT : Eqset_dec_pol).
       L =mul= (F & G) :: M ->
       m |-cc B ; F :: M ->
                  n |-cc B ; G :: M -> S (max n m) |-cc B ; L
-                                                             
+
   | sig2hcc_copy: forall B D L M F n, 
       D =mul= F :: B -> L =mul= F :: M ->
       n |-cc D ; L -> 
@@ -325,15 +325,15 @@ Module SqSystems (DT : Eqset_dec_pol).
   | sig2hcc_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                       n |-cc F :: B ; M -> 
                                                       S n |-cc B ; L
-                                                                     
+
   | sig2hcc_bang : forall B F L n, L =mul= [! F] ->
                                    n |-cc  B ; [F] ->
                                                S n |-cc  B ; L
-                                                               
+
   | sig2hcc_ex  : forall B L n FX M t,
       L =mul= E{FX} ::  M -> n |-cc B ; (Subst FX t) :: M -> S n |-cc  B ; L
   | sig2hcc_fx  : forall B L n FX M,  L =mul= (F{FX}) :: M -> (forall x, n |-cc B ; [Subst FX x] ++  M) -> S n |-cc B ; L
-                                                                                                                          
+
   where "n |-cc B ; L" := (sig2hcc n B L).
 
   (** System with all the inductive measures needed for the proof of cut-elimination *)
@@ -352,12 +352,11 @@ Module SqSystems (DT : Eqset_dec_pol).
                                                                                                n |~> c2 ; B ; G :: M -> S (max n m) |~> c1 + c2; B ; L
   | sig3_copy: forall (B L M D: list Lexp) F n c, D =mul= F :: B -> L =mul= F :: M -> n |~> c; D ; L -> S n |~> c ; D ; M
   | sig3_quest : forall (B L M: list Lexp) F n c, L =mul= (? F) :: M  -> n |~> c; F :: B ; M -> S n |~> c; B ; L
-  | sig3_bang : forall (B L: list Lexp) F n c, L =mul= [! F] -> n |~>  c; B ; [F] -> S n |~> c ; B ; L 
-                                                                                                       
+  | sig3_bang : forall (B L: list Lexp) F n c, L =mul= [! F] -> n |~>  c; B ; [F] -> S n |~> c ; B ; L
   | sig3_ex  : forall (B L: list Lexp) n c FX M t,
       L =mul= E{FX} ::  M -> n |~> c; B ; (Subst FX t) :: M -> S n |~> c; B ; L
   | sig3_fx  : forall (B L: list Lexp) n c FX M,  L =mul= (F{FX}) :: M -> (forall x, n |~> c; B ; (Subst FX x) ::  M) -> S n |~> c; B ; L
-                                                                                                                                          
+
 
   | sig3_CUT : forall (B L: list Lexp) n c w h, sig3_cut_general w h n c B L -> S n |~> S c ; B ; L 
 
@@ -382,9 +381,9 @@ Module SqSystems (DT : Eqset_dec_pol).
   Notation " n '~>' m ';' w ';' h ';' B ';' L"
     := (sig3_cut_general w h n m B L) (at level 80).
 
-  Hint Constructors sig2h : core .
-  Hint Constructors sig2hc : core .
-  Hint Constructors sig2hcc : core .
-  Hint Constructors sig3 : core .
+  #[export] Hint Constructors sig2h : core .
+  #[export] Hint Constructors sig2hc : core .
+  #[export] Hint Constructors sig2hcc : core .
+  #[export] Hint Constructors sig3 : core .
 
 End SqSystems.

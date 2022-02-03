@@ -9,6 +9,8 @@ Require Export SequentCalculi.
 Require Export Coq.Arith.PeanoNat.
 Set Implicit Arguments.
 
+#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+
 (** Simplification Lemmas *)
 
 Theorem sig2h_nil: forall n B L,
@@ -56,7 +58,7 @@ Proof.
 Qed.
 (* End Simple Lemmas *)
 
-Hint Resolve sig2h_nil sig2hc_nil sig2hcc_nil sig3_nil 
+#[export] Hint Resolve sig2h_nil sig2hc_nil sig2hcc_nil sig3_nil 
      sig2h_cnil sig2hc_cnil sig2hcc_cnil sig3_cnil : core .
 
 (** Exchange Rule *)
@@ -94,7 +96,7 @@ Arguments sig2hc_exchange [n B1 B2 L1 L2].
 Arguments sig2hcc_exchange [n B1 B2 L1 L2].
 Arguments sig3_exchange [n c B1 B2 L1 L2].
 
-Hint Resolve sig2h_exchange
+#[export] Hint Resolve sig2h_exchange
      sig2hc_exchange
      sig2hcc_exchange
      sig3_exchange : exchanges.
@@ -398,7 +400,7 @@ Proof.
     inversion H1; subst;
       eapply sig3_CUT.
     eapply sig3_cut with (F:=F); eauto.
-    
+
     eapply sig3_ccut with (F:=F); eauto.
     change (F° :: B ++ D) with ((F° :: B) ++ D).
     eapply H; auto.
@@ -482,4 +484,3 @@ Proof.
     refine (sig2h_bang H1 _).
     apply H; auto. 
 Qed.
-

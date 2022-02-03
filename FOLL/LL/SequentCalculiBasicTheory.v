@@ -21,17 +21,17 @@ Require Export LL.SequentCalculi.
 Set Implicit Arguments.
 
 Module SqBasic (DT : Eqset_dec_pol).
-  
-  Module Export Sys :=  SqSystems DT.
-  Hint Resolve Max.le_max_r : core .
-  Hint Resolve Max.le_max_l : core .
-  Hint Constructors sig2h : core .
-  Hint Constructors sig2hc : core .
-  Hint Constructors sig2hcc : core .
-  Hint Constructors sig3 : core .
 
-  
-  
+  Module Export Sys :=  SqSystems DT.
+  #[export] Hint Resolve Max.le_max_r : core .
+  #[export] Hint Resolve Max.le_max_l : core .
+  #[export] Hint Constructors sig2h : core .
+  #[export] Hint Constructors sig2hc : core .
+  #[export] Hint Constructors sig2hcc : core .
+  #[export] Hint Constructors sig3 : core .
+
+
+
   (** Exchange for the dyadic system *)
   Lemma sig2_der_compat : forall B1 B2 L1 L2 : list Lexp, B1 =mul= B2 -> L1 =mul= L2 -> |-- B1 ; L1 -> |-- B2 ; L2.
   Proof.
@@ -70,7 +70,7 @@ Module SqBasic (DT : Eqset_dec_pol).
     eapply sig2_fx;eauto.
   Qed.
 
-  Instance sig2_der_morphism :
+  #[export] Instance sig2_der_morphism :
     Proper (meq ==> meq ==> iff) (sig2).
   Proof.
     unfold Proper; unfold respectful. 
@@ -144,7 +144,7 @@ Module SqBasic (DT : Eqset_dec_pol).
   Lemma Sig2Top: forall B M M', |-- B; M ++ ⊤ :: M'.
     intros. eapply sig2_top;auto.
   Qed.
-  Hint Resolve Sig2InitNegative Sig2InitNegative' Sig2One Sig2Top : core .
+  #[export] Hint Resolve Sig2InitNegative Sig2InitNegative' Sig2One Sig2Top : core .
 
   Lemma sig2hc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-c B1 ; L1 -> n |-c B2 ; L2.
   Proof.
@@ -200,16 +200,16 @@ Module SqBasic (DT : Eqset_dec_pol).
   Qed.
 
   Generalizable All Variables.
-  Instance sig2hc_der_morphism :
+  #[export] Instance sig2hc_der_morphism n :
     Proper (meq ==> meq ==> iff) (sig2hc n).
   Proof.
     unfold Proper; unfold respectful. 
-    intros n B1 B2 PB L1 L2 PL.
+    intros B1 B2 PB L1 L2 PL.
     split; intro H.
     refine (sig2hc_der_compat PB PL H).
     refine (sig2hc_der_compat (symmetry PB) (symmetry PL) H).
   Qed.
-  
+
   Lemma sig2hcc_der_compat : forall n (B1 B2 L1 L2 : list Lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-cc B1 ; L1 -> n |-cc B2 ; L2.
   Proof.
     intros n B1 B2 L1 L2 PB PL H.
@@ -265,14 +265,14 @@ Module SqBasic (DT : Eqset_dec_pol).
         eapply sig2hcc_ex; auto; eapply H with (B1:=B1) (L1:=Subst FX t :: M) ;simpl;auto. 
       + (* forall *)
         eapply sig2hcc_fx; auto; intro x; eapply H with (B1:=B1) (L1:=Subst FX x :: M) ;simpl;auto. apply H3.
-  Qed. 
-  
+  Qed.
+
   Generalizable All Variables.
-  Instance sig2hcc_der_morphism :
+  #[export] Instance sig2hcc_der_morphism n :
     Proper (meq ==> meq ==> iff) (sig2hcc n).
   Proof.
     unfold Proper; unfold respectful. 
-    intros n B1 B2 PB L1 L2 PL.
+    intros B1 B2 PB L1 L2 PL.
     split; intro H.
     refine (sig2hcc_der_compat PB PL H).
     refine (sig2hcc_der_compat (symmetry PB) (symmetry PL) H).
@@ -295,7 +295,7 @@ Module SqBasic (DT : Eqset_dec_pol).
 
     - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
         try rewrite PB in H3; try rewrite PB in H2.
-      +  
+      +
         refine (sig3_bot H2 _); auto.
         apply H with (L1:= M) (B1:=B1); auto.
       +
@@ -317,10 +317,10 @@ Module SqBasic (DT : Eqset_dec_pol).
         apply H with (L1:= G :: M) (B1:=B1); auto.
       + 
         refine (sig3_copy H2 H3 _).
-        apply H with (L1:= L) (B1:=B1); auto.    
+        apply H with (L1:= L) (B1:=B1); auto.
       +
         refine (sig3_quest H2 _).
-        apply H with (L1:= M) (B1:= F :: B1); auto. 
+        apply H with (L1:= M) (B1:= F :: B1); auto.
       +
         refine (sig3_bang H2 _).
         apply H with (L1:= [F]) (B1:=B1); auto. 
@@ -344,20 +344,20 @@ Module SqBasic (DT : Eqset_dec_pol).
   Qed.
 
   Generalizable All Variables.
-  Instance sig3_der_morphism :
+  #[export] Instance sig3_der_morphism n c :
     Proper (meq ==> meq ==> iff) (sig3 n c).
   Proof.
     unfold Proper; unfold respectful. 
-    intros n c B1 B2 PB L1 L2 PL.
+    intros B1 B2 PB L1 L2 PL.
     split; intro H.
     refine (sig3_der_compat PB PL H).
     refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
   Qed.
 
-  Hint Constructors sig2h : core .
-  Hint Constructors sig2hc : core .
-  Hint Constructors sig2hcc : core .
-  Hint Constructors sig3 : core .
+  #[export] Hint Constructors sig2h : core .
+  #[export] Hint Constructors sig2hc : core .
+  #[export] Hint Constructors sig2hcc : core .
+  #[export] Hint Constructors sig3 : core .
 
   Theorem sig2hc_then_sig2hcc: forall n B L, sig2hc n B L -> sig2hcc n B L.
   Proof.
@@ -383,25 +383,25 @@ Module SqBasic (DT : Eqset_dec_pol).
   (* substitution lemma axioms. See details in the SequentCalculi3 part below *)
 
   Axiom fx_swap_sig2h : forall M B FX,
-      (forall x : Term, exists m : nat, m |-- B; [Subst FX x] ++ M) -> 
+      (forall x : Term, exists m : nat, m |-- B; [Subst FX x] ++ M) ->
       (exists m : nat, forall x : Term, m |-- B; [Subst FX x] ++ M).
-  
+
   Axiom fx_swap_sig2hc : forall M B FX,
-      (forall x : Term, exists m : nat, m |-c B; [Subst FX x] ++ M) -> 
+      (forall x : Term, exists m : nat, m |-c B; [Subst FX x] ++ M) ->
       (exists m : nat, forall x : Term, m |-c B; [Subst FX x] ++ M).
 
   Axiom fx_swap_sig2hcc : forall M B FX,
-      (forall x : Term, exists m : nat, m |-cc B; [Subst FX x] ++ M) -> 
+      (forall x : Term, exists m : nat, m |-cc B; [Subst FX x] ++ M) ->
       (exists m : nat, forall x : Term, m |-cc B; [Subst FX x] ++ M).
 
   Axiom fx_swap_sig3h : forall c M B FX,
-      (forall x : Term, exists m : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
+      (forall x : Term, exists m : nat, m |~> c ; B; [Subst FX x] ++ M) ->
       (exists m : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
 
   Axiom fx_swap_sig3c : forall m M B FX,
-      (forall x : Term, exists c : nat, m |~> c ; B; [Subst FX x] ++ M) -> 
+      (forall x : Term, exists c : nat, m |~> c ; B; [Subst FX x] ++ M) ->
       (exists c : nat, forall x : Term, m |~> c ; B; [Subst FX x] ++ M).
-  
+
   Theorem sig2hcc_then_sig2hc: forall n B L, sig2hcc n B L -> exists m, sig2hc m B L.
   Proof.
     intros.
@@ -421,13 +421,13 @@ Module SqBasic (DT : Eqset_dec_pol).
     eexists; eapply sig2hc_with; eassumption.
     eexists; eapply sig2hc_copy; eassumption.
     eexists; eapply sig2hc_quest; eassumption.
-    eexists; eapply sig2hc_bang; eassumption.  
-    eexists; eapply sig2hc_ex; eassumption.  
-    apply fx_swap_sig2hc in H1.  
+    eexists; eapply sig2hc_bang; eassumption.
+    eexists; eapply sig2hc_ex; eassumption.
+    apply fx_swap_sig2hc in H1.
     destruct H1.
     eexists.
-    eapply sig2hc_fx; eauto. 
-  Qed. 
+    eapply sig2hc_fx; eauto.
+  Qed.
 
   Theorem sig2hc_iff_sig2hcc: forall B L, (exists n, sig2hc n B L) <-> exists m, sig2hcc m B L.
   Proof.
@@ -467,37 +467,37 @@ Module SqBasic (DT : Eqset_dec_pol).
         refine (sig3_par H1 H0).
       ***
         assert (exists c : nat, m |~> c ; B; F :: M) as Hn1 by solve [eapply H; auto].
-        assert (exists c : nat, n0 |~> c ; B; F° :: N) as Hn2 by solve [eapply H; auto].      
+        assert (exists c : nat, n0 |~> c ; B; F° :: N) as Hn2 by solve [eapply H; auto].
         destruct Hn1, Hn2.
         eexists.
         eapply sig3_CUT.
         refine (sig3_cut _ _ _ H0 H4); auto.
       ***
         assert (exists c : nat, m |~> c ; B; (! F) :: M) as Hn1 by solve [eapply H; auto].
-        assert (exists c : nat, n0 |~> c ; F° :: B; N) as Hn2 by solve [eapply H; auto].     
+        assert (exists c : nat, n0 |~> c ; F° :: B; N) as Hn2 by solve [eapply H; auto].
         destruct Hn1, Hn2.
         eexists.
         eapply sig3_CUT.
         refine (sig3_ccut _ _ _ H0 H4); auto.
       ***
         assert (exists c : nat, m |~> c ; B; F :: M) as Hn1 by solve [eapply H; auto].
-        assert (exists c : nat, n0 |~> c ; B; G :: N) as Hn2 by solve [eapply H; auto].     
+        assert (exists c : nat, n0 |~> c ; B; G :: N) as Hn2 by solve [eapply H; auto].
         destruct Hn1, Hn2.
         eexists.
         refine (sig3_tensor H1 H0 H4).
-      ***                  
+      ***
         assert (exists c : nat, n |~> c ; B; F :: M) as Hn by solve [eapply H; auto].
         destruct Hn.
         eexists.
         refine (sig3_plus1 H1 H0).
-      ***                  
+      ***
         assert (exists c : nat, n |~> c ; B; G :: M) as Hn by solve [eapply H; auto].
         destruct Hn.
         eexists.
-        refine (sig3_plus2 H1 H0).                        
+        refine (sig3_plus2 H1 H0).
       ***
         assert (exists c : nat, m |~> c ; B; F :: M) as Hn1 by solve [eapply H; auto].
-        assert (exists c : nat, n0 |~> c ; B; G :: M) as Hn2 by solve [eapply H; auto].      
+        assert (exists c : nat, n0 |~> c ; B; G :: M) as Hn2 by solve [eapply H; auto].
         destruct Hn1, Hn2.
         eexists.
         refine (sig3_with H1 H0 H4).
@@ -511,7 +511,7 @@ Module SqBasic (DT : Eqset_dec_pol).
         assert (exists c : nat, n |~> c ; F :: B; M) as Hn by solve [eapply H; auto].
         destruct Hn.
         eexists.
-        refine (sig3_quest H1 H0).               
+        refine (sig3_quest H1 H0).
       ***
         assert (exists c : nat, n |~> c ; B; [F]) as Hn by solve [eapply H; auto].
         destruct Hn.
@@ -529,8 +529,8 @@ Module SqBasic (DT : Eqset_dec_pol).
         destruct Hn.
         eexists.
         refine (sig3_fx H1 H0).
-  Qed.        
-  
+  Qed.
+
 
   Theorem sig3_then_sig2hcc :  forall B L n c, 
       n |~> c ; B ; L  -> n |-cc B ; L.
@@ -559,16 +559,16 @@ Module SqBasic (DT : Eqset_dec_pol).
         assert (m |-cc B; F :: M) as Hc1 by
               solve [eapply H; auto; eassumption].
         assert (n0 |-cc B; G :: N) as Hc2 by
-              solve [eapply H; auto; eassumption].        
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_tensor H1 Hc1 Hc2).
-      ***                  
+      ***
         assert (n |-cc B; F :: M) as Hc by
               solve [eapply H; auto; eassumption].
         refine (sig2hcc_plus1 H1 Hc).
-      ***                  
+      ***
         assert (n |-cc B; G :: M) as Hc by
               solve [eapply H; auto; eassumption].
-        refine (sig2hcc_plus2 H1 Hc).                        
+        refine (sig2hcc_plus2 H1 Hc).
       ***
         assert (m |-cc B; F :: M) as Hc1 by
               solve [eapply H; auto; eassumption].
@@ -606,9 +606,9 @@ Module SqBasic (DT : Eqset_dec_pol).
         assert (m |-cc B; (! F) :: M) as Hc1 by
               solve [eapply H; auto; eassumption].
         assert (n0 |-cc F° :: B; N) as Hc2 by
-              solve [eapply H; auto; eassumption].        
+              solve [eapply H; auto; eassumption].
         refine (sig2hcc_ccut _ Hc1 Hc2); auto.
-  Qed.        
+  Qed.
 
   Theorem sig3_iff_sig2hcc :  forall B L, 
       (exists n c, n |~> c ; B ; L) <-> exists m, m |-cc B ; L.
@@ -695,8 +695,8 @@ easily conclude the goal [G].
     apply H0.
   Qed.
 
-  
-  
+
+
   (** The [B] and [M] contexts can be substituted by equivalent multisets *)
   Theorem TriExchangeh : forall B B' M M' X n, n |-F-  B ; M ; X -> B =mul= B' -> M =mul= M' -> n |-F- B' ; M' ; X.
   Proof.
@@ -769,16 +769,16 @@ easily conclude the goal [G].
   Qed.
 
   Generalizable All Variables.
-  Instance trih_morphh : Proper (meq ==> meq ==> eq ==> iff) (TriSystemh n).
-  Proof. 
-    intros n A B Hab C D Hcd X Y Hxy; subst.
+  #[export] Instance trih_morphh n : Proper (meq ==> meq ==> eq ==> iff) (TriSystemh n).
+  Proof.
+    intros A B Hab C D Hcd X Y Hxy; subst.
     split;intro.
     + apply TriExchangeh with (B:=A) (M:=C);auto.
     + apply TriExchangeh with (B:=B) (M:=D);auto.
   Qed.
-  Instance trih_morph' : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystemh n).
-  Proof. 
-    intros n A B Hab C D Hcd X Y Hxy; subst.
+  #[export] Instance trih_morph' n : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystemh n).
+  Proof.
+    intros A B Hab C D Hcd X Y Hxy; subst.
     split;intro.
     + apply TriExchangeh with (B:=A) (M:=C);auto.
     + apply TriExchangeh with (B:=B) (M:=D);auto.
@@ -793,16 +793,16 @@ easily conclude the goal [G].
     eapply AdequacyTri1;eauto.
   Qed.
 
-  Instance tri_morph : Proper (meq ==> meq ==> eq ==> iff) (TriSystem).
-  Proof. 
+  #[export] Instance tri_morph : Proper (meq ==> meq ==> eq ==> iff) (TriSystem).
+  Proof.
     intros  A B Hab C D Hcd X Y Hxy; subst.
     split;intro.
     + apply TriExchange with (B:=A) (M:=C);auto.
     + apply TriExchange with (B:=B) (M:=D);auto.
   Qed.
-  
-  Instance tri_morph' : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystem).
-  Proof. 
+
+  #[export] Instance tri_morph' : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystem).
+  Proof.
     intros A B Hab C D Hcd X Y Hxy; subst.
     split;intro.
     + apply TriExchange with (B:=A) (M:=C);auto.
@@ -877,7 +877,7 @@ easily conclude the goal [G].
     apply tri_rel. constructor.
     apply tri_top.
   Qed.
-  
+
   Ltac solveF :=
     subst;simpl in *;LexpContr;auto using tri_init1, tri_top, Init1, Init2,Init1', Init2', InitAtom, InitAtom',TopDown;invNegAtom;invRel;invPosOrNegAtom;try(LexpSubst);
     try(
@@ -898,14 +898,14 @@ easily conclude the goal [G].
           rewrite H2 in H1 ; inversion H1 ;auto
         | [|- ?M =mul= ?N] => try ( (timeout 3 solve_permutation) )
         end
-      ).
+      ); (try reflexivity); try now symmetry.
 
   Lemma StoreInversion : forall n B M F,  n |-F- B; M; UP [F] -> PosOrNegAtom F -> n -1 |-F- B ; M ++ [F] ; UP [].
     intros.
     inversionF H.
     simpl. rewrite Nat.sub_0_r. auto.
   Qed.
-  
+
   Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> LexpPos N -> exists m, m |-F- B ; M ++ N ; UP L.
     intros.
     generalize dependent M.

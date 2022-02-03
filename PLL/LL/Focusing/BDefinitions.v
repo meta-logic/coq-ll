@@ -14,7 +14,7 @@ Require Export LL.MetaTheory.StrongInduction.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
 Require Import Coq.Setoids.Setoid.
-Require Import Omega.
+Require Import Lia.
 Require Export LL.llTactics.
 Require Export List.
 Export ListNotations.
@@ -48,11 +48,11 @@ Inductive Asynchronous : lexp -> Prop :=
 | AWith :  forall F G, Asynchronous (With F G)
 | AQuest : forall F  , Asynchronous (Quest F).
 
-Hint Constructors Asynchronous : core.
+#[export] Hint Constructors Asynchronous : core.
 
 Theorem AsyncEqR : forall F:lexp, AsynchronousF F = true -> Asynchronous F.
 Proof.
-  intros.  
+  intros.
   destruct F;auto;try (inversion H).
 Qed.
 
@@ -66,7 +66,7 @@ Qed.
 Inductive IsNegativeAtom : lexp -> Prop :=
   IsNA : forall v, IsNegativeAtom (Perp v).
 
-Hint Constructors IsNegativeAtom : core.
+#[export] Hint Constructors IsNegativeAtom : core.
 
 Definition IsNegativeAtomF (F:lexp) :=
   match F with
@@ -94,7 +94,7 @@ Fixpoint exp_weight (P:lexp) : nat :=
 Theorem exp_weight0 : forall  F:lexp, exp_weight F > 0.
 Proof.
   intro.
-  induction F;simpl;omega.
+  induction F;simpl;lia.
 Qed.
 
 Theorem exp_weight0F : forall  F:lexp, exp_weight F = 0%nat -> False.
@@ -118,7 +118,7 @@ Theorem exp_weight0LF : forall l L, 0%nat = plus (exp_weight l) (L_weight L) -> 
 Proof.
   intros.
   assert(exp_weight l > 0%nat) by (apply exp_weight0).
-  omega.
+  lia.
 Qed.
 
 Theorem L_weightApp : forall L M, L_weight (L ++M) = plus (L_weight L) (L_weight M).
@@ -127,7 +127,7 @@ Proof.
   induction L; auto.
   simpl.
   rewrite IHL.
-  omega.
+  lia.
 Qed.
 
 Lemma GtZero : forall n, n >0 -> exists n', n = S n'.
@@ -180,14 +180,14 @@ Inductive lexpPos' : list lexp -> Prop :=
 | l_sin : forall a, (AsynchronousF a = false) -> lexpPos' [a]
 | l_cos : forall a l, lexpPos' [a] -> lexpPos' l -> lexpPos' (a::l).
 
-Hint Resolve l_nil l_sin l_cos : core.
+#[export] Hint Resolve l_nil l_sin l_cos : core.
 
 (* Properties of lexpPos *)
 Lemma lexpPosUnion a L: lexpPos [a] -> lexpPos L -> lexpPos ([a] ++ L).
 Proof.
   intros.
   simpl; firstorder.
-Qed.  
+Qed.
 
 Lemma lexpPosUnion_inv a L: lexpPos ([a] ++ L) -> lexpPos [a] /\ lexpPos L.
 Proof.
@@ -228,13 +228,12 @@ Proof.
     apply IHP1;auto.
 Qed.
 
-Instance lexpPos_morph : Proper (meq ==> iff) (lexpPos).
+#[export] Instance lexpPos_morph : Proper (meq ==> iff) (lexpPos).
 Proof.
   intros L M Heq .
   split;intro.
   + eapply LPos1;eauto.
   + apply LPos1 with (L:=M);auto.
-    
 Qed.
 
 
@@ -242,7 +241,7 @@ Qed.
 
 
 Lemma LPos2 : forall M N L, L =mul= M ++ N -> lexpPos L -> lexpPos M.
-Proof. 
+Proof.
   induction M;intros;simpl;auto.  
   assert (L =mul= M ++ (a::N)) by ( rewrite H; eauto).
   apply IHM in H1;auto.
@@ -266,7 +265,7 @@ Proof.
   apply GtZero in H0.
   destruct H0.
   rewrite H0 in H.
-  omega.
+  lia.
 Qed.
 
 Lemma AsynchronousFlexpPos : forall  l, AsynchronousF l = false -> lexpPos [l].
@@ -285,7 +284,7 @@ Inductive Arrow : Set :=
 | DW : lexp -> Arrow.
 
 
-Fixpoint eqArrow (exp_1 exp_2 : Arrow) :=
+Definition eqArrow (exp_1 exp_2 : Arrow) :=
   match exp_1, exp_2 with
   | DW a, DW b =>  a = b
   | UP A, UP B =>  A = B
@@ -298,25 +297,31 @@ Proof.
 Qed.
 
 Lemma eqArrow_symm: forall x y, eqArrow x y -> eqArrow y x.
-Proof. 
+Proof.
   induction x ; induction y; intros; simpl; auto.
 Qed.
 
 Lemma eqArrow_trans: forall x y z, eqArrow x y -> eqArrow y z -> eqArrow x z.
-Proof.  
+Proof.
   induction x ; induction y; induction z; intros; simpl in *; auto; subst; auto.
   contradiction.
   contradiction.
 Qed.
 
-Hint Resolve eqArrow_refl eqArrow_symm eqArrow_trans : core.
+#[export] Hint Resolve eqArrow_refl eqArrow_symm eqArrow_trans : core.
 
 Add Parametric Relation : Arrow eqArrow
     reflexivity proved by eqArrow_refl
     symmetry proved by eqArrow_symm
     transitivity proved by eqArrow_trans as eq_arrow.
 
-Declare Instance eqArrow_Equivalence : Equivalence eqArrow. 
+#[export] Instance eqArrow_Equivalence : Equivalence eqArrow.
+Proof.
+split.
+intros x; apply eqArrow_refl.
+intros x y; apply eqArrow_symm.
+intros x y z; apply eqArrow_trans.
+Qed.
 
 Lemma Arrow_eq_dec : forall A B: Arrow, {A = B} + {A <> B}.
 Proof.
@@ -330,7 +335,7 @@ Definition Arrow2LL (A: Arrow) : list lexp :=
   match A with
   | UP l => l
   | DW f => [f]
-  end.                     
+  end.
 
 
 (* We assume a positive bias in the encodings *)
@@ -359,7 +364,7 @@ Inductive Release : lexp-> Prop :=
 | RelWith : forall F G, Release (With F G)
 | RelQuest : forall F, Release (Quest F).
 
-Hint Constructors Release : core.
+#[export] Hint Constructors Release : core.
 Theorem ReleaseR : forall F:lexp, ReleaseF F = true -> Release F.
 Proof.
   intros.
@@ -382,7 +387,7 @@ Inductive NotAsynchronous : lexp -> Prop :=
 | NAPlus : forall F G,  NotAsynchronous ( Plus F  G)
 | NABang : forall F,  NotAsynchronous ( ! F ).
 
-Hint Constructors NotAsynchronous : core.
+#[export] Hint Constructors NotAsynchronous : core.
 
 Theorem AsynchronousEquiv : forall F, NotAsynchronous F <-> ~ Asynchronous F.
 Proof.
@@ -401,7 +406,7 @@ Inductive PosOrPosAtom : lexp -> Prop :=
 | PPPlus : forall F G,  PosOrPosAtom ( Plus F  G)
 | PPBang : forall F,  PosOrPosAtom ( ! F ).
 
-Hint Constructors PosOrPosAtom : core.
+#[export] Hint Constructors PosOrPosAtom : core.
 
 Inductive NotPosOrPosAtom : lexp -> Prop :=
 | NPPAtom :  forall v,  NotPosOrPosAtom (Perp v)
@@ -411,7 +416,7 @@ Inductive NotPosOrPosAtom : lexp -> Prop :=
 | NPPWith : forall F G, NotPosOrPosAtom (With F G)
 | NPPQuest : forall F , NotPosOrPosAtom (Quest F).
 
-Hint Constructors NotPosOrPosAtom : core.
+#[export] Hint Constructors NotPosOrPosAtom : core.
 
 Lemma DecPosOrPosAtom1 : forall F, PosOrPosAtom F -> ~ NotPosOrPosAtom F.
 Proof.
@@ -436,17 +441,3 @@ Proof.
   intros.
   destruct F;(try inversion H); reflexivity.
 Qed.
-
-Lemma plus_le_reg_r: forall n m p : nat, n + p <= m + p -> n <= m.
-Proof.
-  intros.
-  assert (plus n p = plus p n) by (apply plus_comm).
-  assert (plus m p = plus p m) by (apply plus_comm).
-  rewrite H0 in H. rewrite H1 in H.
-  eapply plus_le_reg_l in H.
-  assumption.
-Qed.
-
-
-
-

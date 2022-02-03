@@ -20,28 +20,28 @@ Set Implicit Arguments.
 
 
 Module FLLMetaTheory (DT : Eqset_dec_pol).
-  
+
   Module Export Sys :=  SqBasic DT.
   Ltac EquivPosCase H IH m L Hinv :=
     match goal with
       [_ : AsynchronousF _ = false |- _] =>
-      
+
       apply IH  with(m:=L_weight L) in Hinv;auto  using le_plus_r;
       simpl;eapply tri_store;auto
     end.
 
-  Hint Rewrite Neg2pos Ng_involutive : core .
-  Hint Constructors Asynchronous : core .
-  Hint Constructors IsNegativeAtom : core .
-  Hint Resolve l_nil l_sin l_cos : core .
-  Hint Unfold Lexp_weight Dual_LExp : core .
+  #[export] Hint Rewrite Neg2pos Ng_involutive : core .
+  #[export] Hint Constructors Asynchronous : core .
+  #[export] Hint Constructors IsNegativeAtom : core .
+  #[export] Hint Resolve l_nil l_sin l_cos : core .
+  #[export] Hint Unfold Lexp_weight Dual_LExp : core .
   (*Hint Constructors Release. *)
-  Hint Constructors NotAsynchronous : core .
-  Hint Resolve wt_refl wt_symm wt_trans : core .
+  #[export] Hint Constructors NotAsynchronous : core .
+  #[export] Hint Resolve wt_refl wt_symm wt_trans : core .
   (* Hint Constructors PosOrPosAtom. *)
   (*Hint Constructors NotPosOrPosAtom.
   Hint Resolve exp_weight_inv. *)
-  Hint Unfold Exp_weight : core .
+  #[export] Hint Unfold Exp_weight : core .
 
   Theorem EquivAuxBot : forall B  L L' M ,  |-F- B ; M ; UP (L ++ L') -> |-F- B ; M ;  UP (L ++ [Bot] ++ L').
   Proof with solveF.
@@ -53,13 +53,13 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent M .
     generalize dependent w .
     induction w as [| w' IH] using strongind ; intros M B L' L H Hw  ;  destruct L as [|l] ...
-    
+
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
     + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw'; inversion H;subst;solveF;
         try(
             match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
-                            let solve_tac1 := (apply tri_store;solveF; apply IH with (m:= L_weight  L);solveF;try omega ) in
+                            let solve_tac1 := (apply tri_store;solveF; apply IH with (m:= L_weight  L);solveF;try lia ) in
                             match l with
                             | Perp _ => solve_tac1
                             | Atom _ => solve_tac1
@@ -69,24 +69,24 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
                             | _ ⊕ _ => solve_tac1
                             | ! _  => solve_tac1
                             | E{ _ }   => solve_tac1
-                            | Bot => apply tri_bot;apply IH with (m:= L_weight  L);solveF;try(omega)
-                            | ? _ => apply tri_quest;apply IH with (m:= L_weight  L);solveF;try(omega)
+                            | Bot => apply tri_bot;apply IH with (m:= L_weight  L);solveF;try(lia)
+                            | ? _ => apply tri_quest;apply IH with (m:= L_weight  L);solveF;try(lia)
                             end
             end ) .
       ++ (* par *)
         inversionF H ...
-        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6 ...  autounfold. omega.
+        apply IH  with (L:= F :: G :: L) (m:= (Exp_weight  F) + (Exp_weight G) + L_weight L) in H6 ...  autounfold. lia.
       ++(* with *)
         inversion H...
-        apply IH with (L:= F :: L) (m:= (Exp_weight  F) + L_weight  L) in H7;autounfold;try(omega) ...
-        apply IH with (L:= G :: L) (m:= (Exp_weight  G) + L_weight  L) in H8;autounfold;try(omega) ...
+        apply IH with (L:= F :: L) (m:= (Exp_weight  F) + L_weight  L) in H7;autounfold;try(lia) ...
+        apply IH with (L:= G :: L) (m:= (Exp_weight  G) + L_weight  L) in H8;autounfold;try(lia) ...
       ++ (* forall *)
         inversion H...
         simpl; eapply tri_fx;auto; intro x. eapply IH with (L:=Subst FX x  :: L) ...
-        rewrite <- subs_weight_weak with (x:=x).  omega.
+        rewrite <- subs_weight_weak with (x:=x).  lia.
   Qed.
-  
-  
+
+
   Theorem EquivAuxWith : forall B  L L' M F G ,
       |-F- B ; M ; UP (L ++ [F] ++ L') ->
                    |-F- B ; M ; UP (L ++ [G] ++ L') ->
@@ -95,17 +95,17 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
-    generalize dependent L' . 
+    generalize dependent L' .
     generalize dependent B .
-    generalize dependent M . 
-    generalize dependent w .  
-    induction w as [| w' IH] using strongind  ; intros  M B L' L H H' Hw  ;  destruct L as [|l] ...  
+    generalize dependent M .
+    generalize dependent w .
+    induction w as [| w' IH] using strongind  ; intros  M B L' L H H' Hw  ;  destruct L as [|l] ...
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.  
     + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl;simpl in H;inversion Hw' ;inversionF H;solveF;subst;
         try(
             match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
-                            let solve_tac1 := (inversionF H'; apply tri_store;solveF; apply IH with (m:= L_weight  L);auto;try omega ) in
+                            let solve_tac1 := (inversionF H'; apply tri_store;solveF; apply IH with (m:= L_weight  L);auto;try lia ) in
                             match l with
                             | 1   => solve_tac1
                             | 0   => solve_tac1
@@ -120,21 +120,21 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       ++ (* par *)
         inversion H;solveF;inversion H';solveF;subst; apply tri_par ...
         eapply IH with (L:= F0 :: G0 :: L) (m:= Exp_weight(F0) + Exp_weight(G0) +  L_weight L) ...
-        omega. 
+        lia. 
       ++ (* with *)
         inversion H ...
         inversion H' ...
         apply tri_with .
         eapply IH with (L:= F0 :: L) (m:= Exp_weight(F0) + L_weight L) ...
-        autounfold ; omega.
+        autounfold ; lia.
         eapply IH with (L:= G0 :: L) (m:= Exp_weight(G0) + L_weight L) ...
-        autounfold ; omega.
+        autounfold ; lia.
       ++  (* quest *)
         inversion H ...
         inversion H';subst ...
         apply tri_quest.
         eapply IH with   (m:= L_weight L) ...
-        omega.
+        lia.
       ++ (* forall  *)
         inversion H ...
         inversion H' ...
@@ -142,7 +142,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         intro.
         generalize(H4 x);intros; generalize(H5 x);intros.
         eapply IH with (m:=  Exp_weight  (Subst FX x) + L_weight  L ) ...
-        rewrite <- subs_weight_weak with (x:=x).  omega ...
+        rewrite <- subs_weight_weak with (x:=x).  lia ...
         apply tri_fx ...
   Qed.
 
@@ -158,7 +158,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent M .
     generalize dependent n .
     generalize dependent w .
-    
+
     induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l] ...
     + simpl. simpl in H.
       eapply tri_par;auto.
@@ -169,7 +169,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     + caseLexp l ;inversion Hw as [Hw'];subst;auto;inversion Hw' ;inversionF H;solveF;
         try(
             match goal with [|- |-F- _ ; _ ; UP (?l :: _) ] =>
-                            let solve_tac1 := apply tri_store;solveF; eapply IH  with (m:=  L_weight L) ;eauto;try omega in
+                            let solve_tac1 := apply tri_store;solveF; eapply IH  with (m:=  L_weight L) ;eauto;try lia in
                                                   match l with
                                                   | 1   => solve_tac1
                                                   | 0   => solve_tac1
@@ -181,12 +181,12 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
                                                   | Perp _ => solve_tac1
                                                   | Bot => apply tri_bot ; eapply IH  with (m:=  L_weight L);eauto
                                                   | Par _ _ => apply tri_par ;
-                                                               eapply IH  with (L:= F0 :: G0 :: L) (m:= Exp_weight F0 + Exp_weight G0 +  L_weight L);eauto;simpl;omega
-                                                  | ? _ => apply tri_quest; eapply IH  with (m:=  L_weight L);eauto; omega
+                                                               eapply IH  with (L:= F0 :: G0 :: L) (m:= Exp_weight F0 + Exp_weight G0 +  L_weight L);eauto;simpl;lia
+                                                  | ? _ => apply tri_quest; eapply IH  with (m:=  L_weight L);eauto; lia
                                                   end end ) .
       ++ (* with *)
-        apply IH  with (L:= F0 :: L) (m:=  Exp_weight F0 + L_weight L) in H8;autounfold;try(omega);auto.
-        apply IH  with (L:= G0 :: L) (m:=  Exp_weight G0 + L_weight L) in H9;autounfold;try(omega);auto.
+        apply IH  with (L:= F0 :: L) (m:=  Exp_weight F0 + L_weight L) in H8;autounfold;try(lia);auto.
+        apply IH  with (L:= G0 :: L) (m:=  Exp_weight G0 + L_weight L) in H9;autounfold;try(lia);auto.
       ++ (* forall *)
         assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F $ G] ++ L')) as Hp.
         intro.
@@ -197,7 +197,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         simpl. eapply tri_fx;auto;intro.
   Qed.
 
-  Hint Resolve AsyncEqNeg : core .
+  #[export] Hint Resolve AsyncEqNeg : core .
   Theorem EquivAuxSync : forall B  L L' M  F ,  ~ Asynchronous F ->  |-F- B ; M ++ [F] ; UP (L ++ L') -> |-F- B ; M ;  UP (L ++ [F] ++ L').
   Proof with solveF .
     intros.
@@ -207,12 +207,12 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent B .
     generalize dependent M .
     generalize dependent w .  
-    
+
     induction w as [| w' IH] using strongind; intros   M   B  L'  L  H1 Hw; destruct L as [|l] ...
     + simpl in Hw. (* Hw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction. 
     + caseLexp l ;inversion Hw as [Hw'];subst;auto;inversion Hw';inversionF H1;subst;solveF;
-        
+
         try(
             match goal with
               [ H : |-F- _; (_ ++ [?F]) ++ [?G]; UP (?L ++ ?L') |- |-F- _ ; _ ; UP ( ?G :: ?L  ++ ?F :: ?L')] =>
@@ -224,12 +224,12 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         apply tri_bot.
         apply IH    with (m:=  L_weight L);auto.
       ++ (* PAR *)
-        apply IH  with (L:= F0 :: G :: L) (m:= Exp_weight F0 + Exp_weight G +  L_weight L) in H7;try(simpl; omega);auto.
+        apply IH  with (L:= F0 :: G :: L) (m:= Exp_weight F0 + Exp_weight G +  L_weight L) in H7;try(simpl; lia);auto.
       ++ (* WITH *)
-        apply IH  with (L:= F0 :: L) (m:= Exp_weight F0 + L_weight L) in H8;try(autounfold;simpl; omega);auto.
-        apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in H9;try(autounfold;simpl; omega);auto.
+        apply IH  with (L:= F0 :: L) (m:= Exp_weight F0 + L_weight L) in H8;try(autounfold;simpl; lia);auto.
+        apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in H9;try(autounfold;simpl; lia);auto.
       ++ (* quest *)
-        apply IH  with  (m:= L_weight L) in H6;try(simpl; omega);auto.
+        apply IH  with  (m:= L_weight L) in H6;try(simpl; lia);auto.
       ++ (* forall *)
         assert(forall x, |-F- B; M; UP (((Subst FX x) ::L) ++ [F] ++ L')) as Hp.
         intro.
@@ -238,7 +238,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         rewrite <- subs_weight_weak with (x:=x). auto.
         eapply tri_fx;auto. 
   Qed.
-  
+
   Theorem EquivAuxQuest : forall B  L L' M  n F,  n |-F- B ++ [F] ; M ; UP (L ++ L') ->  |-F- B ; M ;  UP (L ++ [? F] ++ L').
   Proof with solveF .
     intros.
@@ -249,7 +249,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent M .
     generalize dependent n .
     generalize dependent w .
-    
+
     induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l] ...
     + simpl. simpl in H.
       eapply tri_quest;auto.
@@ -268,13 +268,13 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         apply IH  with (m:=  L_weight L) in H5;auto using le_plus_r.
       ++ (* par *)
         apply IH  with (L:=F0 :: G :: L)  (m:=  Exp_weight F0 + Exp_weight G + L_weight L) in H7;auto using le_plus_r.
-        simpl. omega.
+        simpl. lia.
       ++ (* with *)
-        apply IH  with (L:=F0 :: L)  (m:=  Exp_weight F0 + L_weight L) in H8;auto;try(autounfold;simpl;omega).
-        apply IH  with (L:=G :: L)  (m:=  Exp_weight G + L_weight L) in H9;auto;try(autounfold;simpl;omega).
+        apply IH  with (L:=F0 :: L)  (m:=  Exp_weight F0 + L_weight L) in H8;auto;try(autounfold;simpl;lia).
+        apply IH  with (L:=G :: L)  (m:=  Exp_weight G + L_weight L) in H9;auto;try(autounfold;simpl;lia).
       ++ (* quest *)
         apply tri_quest.
-        eapply IH  with   (m:=  L_weight L);auto;try(autounfold;simpl;omega).
+        eapply IH  with   (m:=  L_weight L);auto;try(autounfold;simpl;lia).
         MReplace ( (B ++ [F0]) ++ [F]) ((B ++ [F]) ++ [F0]) ...
         eauto.
       ++ (* FORALL *)
@@ -296,45 +296,45 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent B .
     generalize dependent M .
     generalize dependent w .
-    
+
     induction w as [| w' IH] using strongind;  intros M B L' L Hw  ;  destruct L as [|l] ...
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.
     + caseLexp l ;inversion Hw as [Hw'];subst;auto;simpl in *;inversion Hw'; solveF;
-        try(apply tri_store;solveF;auto  ; apply IH  with (m:=  L_weight L);try(omega);auto).
+        try(apply tri_store;solveF;auto  ; apply IH  with (m:=  L_weight L);try(lia);auto).
       ++ (* bot *)
         apply tri_bot.
-        apply IH  with (m:=  L_weight L);try(omega);auto.
+        apply IH  with (m:=  L_weight L);try(lia);auto.
       ++ (*  PAR *)
         apply tri_par. 
         eapply IH  with  (L:= F :: G :: L) (m:= Exp_weight F + Exp_weight G + L_weight L);
-          auto; try(rewrite H2);simpl;autounfold;try(omega).
+          auto; try(rewrite H2);simpl;autounfold;try(lia).
       ++ (* with *)
         apply tri_with.
         eapply IH  with  (L:= F :: L) (m:= Exp_weight F + L_weight L);
-          auto; try(rewrite H2);simpl;autounfold;try(omega).
+          auto; try(rewrite H2);simpl;autounfold;try(lia).
         eapply IH  with  (L:= G :: L) (m:= Exp_weight G + L_weight L);
-          auto; try(rewrite H2);simpl;autounfold;try(omega).
+          auto; try(rewrite H2);simpl;autounfold;try(lia).
       ++ (* quest *)
         apply tri_quest.
-        apply IH  with (m:=  L_weight L);try(omega);auto.
+        apply IH  with (m:=  L_weight L);try(lia);auto.
       ++ (* forall *)
         apply tri_fx.
         intro.
         apply IH with (L:= Subst FX x :: L) (m:= exp_weight  (FX unit tt) + L_weight L);simpl; try( rewrite Hw');auto.
         rewrite <- subs_weight_weak with (x:=x). auto.
-  Qed.  
-  
+  Qed.
+
   Theorem EquivAuxForAll : forall B  L L' M   FX, (forall x,  |-F- B ; M ; UP (L ++ [Subst FX x]++ L')) ->  |-F- B ; M ;  UP (L ++ [F{FX}] ++ L'). 
-  Proof with solveF .  
+  Proof with solveF .
     intros.
     remember (L_weight  L) as w.
     generalize dependent L .
     generalize dependent L' .
     generalize dependent B .
     generalize dependent M .
-    generalize dependent w .   
-    
+    generalize dependent w .
+
     induction w as [| w' IH] using strongind ; intros M B L' L H Hw ;  destruct L as [|l] ...
     + simpl in Hw. (* Heqw is inconsisten *)
       apply exp_weight0LF in Hw. contradiction.  
@@ -345,7 +345,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
                                     (intro;generalize (H x); intro Hp'; try(inversionF Hp';solveF); 
                                      apply IH  with (m:= L_weight  L) in Hp;auto);
                                               apply tri_store;subst;solveF; simpl in Hw';inversion Hw';
-                                                                                     apply IH  with (m:= L_weight  L) in Hp;try(omega);auto in
+                                                                                     apply IH  with (m:= L_weight  L) in Hp;try(lia);auto in
                                                                                          match l with
                                                                                          | Atom _ => solve_tac1
                                                                                          | Perp _ => solve_tac1
@@ -360,26 +360,26 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       ++ (* bot *) 
         assert(Hp: forall x,  |-F- B; M; UP (L ++ [Subst FX x] ++ L')).
         intro; generalize (H x); intro Hp'; inversion Hp'; subst ...
-        apply IH  with (m:= L_weight  L) in Hp; try(apply tri_bot);try(omega);auto.
+        apply IH  with (m:= L_weight  L) in Hp; try(apply tri_bot);try(lia);auto.
       ++ (* par *)
         assert(Hp: forall x,  |-F- B; M; UP ( F :: G :: L ++ [Subst FX x] ++ L')).
         intro; generalize (H x); intro Hp'; inversion Hp'; subst ... auto.
         apply IH  with (L:= F :: G :: L) (m:= Exp_weight  F + Exp_weight G + L_weight  L) in Hp ...
         subst. simpl in Hw';inversion Hw';auto ...
-        omega.
+        lia.
       ++ (* With *)
         assert(Hp1: forall x,  |-F- B; M; UP ( F:: L ++ [Subst FX x] ++ L')).
         intro; generalize (H x); intro Hp1'; inversion Hp1'; subst ... auto.
         assert(Hp2: forall x,  |-F- B; M; UP ( G:: L ++ [Subst FX x] ++ L')).
         intro; generalize (H x); intro Hp2'; inversion Hp2'; subst ... auto.
         inversion Hw'. subst. 
-        apply IH  with (L:= F :: L) (m:= Exp_weight F + L_weight L) in Hp1;try(omega); subst;autounfold;simpl;try(omega); auto.
-        apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in Hp2;try(omega); subst;autounfold;simpl;try(omega); auto.
+        apply IH  with (L:= F :: L) (m:= Exp_weight F + L_weight L) in Hp1;try(lia); subst;autounfold;simpl;try(lia); auto.
+        apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in Hp2;try(lia); subst;autounfold;simpl;try(lia); auto.
       ++  (* quest *)
         assert(Hp: forall x,  |-F- B ++ [F]; M; UP (L ++ [Subst FX x] ++ L')) .
         intro; generalize (H x); intro Hp'; inversion Hp'; subst;LexpContr;intuition ... auto.
         apply IH  with (m:= L_weight  L) in Hp;auto. 
-        subst;inversion Hw';omega .
+        subst;inversion Hw';lia .
       ++ (* forall *)
         subst.
         assert(Hp: forall x x', |-F- B; M; UP ((Subst FX0 x') :: L ++ [Subst FX x] ++ L')).
@@ -400,14 +400,14 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     generalize dependent B .
     generalize dependent M .
     generalize dependent w .
-    
+
     induction w as [| w' IH] using strongind;  intros ;  destruct L as [|l] ...
     + assert (L'= []) by( apply emp_mult;auto) ...
       subst.
       eapply AdequacyTri1;eauto.
     + inversion Heqw.
       generalize(exp_weight0  l);intros.
-      omega.
+      lia.
     + assert (L'= []) by( apply emp_mult;auto).
       subst.
       eapply AdequacyTri1;eauto.
@@ -418,24 +418,24 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       destruct Heq as [Heq | Heq].
       ++ (* case 1 *)
         destruct Heq;subst.
-        inversionF H;subst;try(simpl in Heqw; inversion Heqw; subst;simpl;try(omega)).
+        inversionF H;subst;try(simpl in Heqw; inversion Heqw; subst;simpl;try(lia)).
         +++ (* bottom *)
           eapply IH with (L' :=L') in H6;auto.
         +++ (* par *)
           eapply IH with (L' := F::G::L') in H6;auto.
-          simpl. autounfold. omega.
+          simpl. autounfold. lia.
         +++ (* with *)
           eapply IH with (m:= L_weight (F::L)) (L:= F ::L) (L' := F :: L') in H7;auto.
           eapply IH with (m:= L_weight (G::L)) (L := G :: L) (L' := G :: L') in H8;auto.
-          simpl. autounfold. omega.
-          simpl. autounfold. omega.
+          simpl. autounfold. lia.
+          simpl. autounfold. lia.
         +++  (* quest *)
           eapply IH with (m:= L_weight L) (L' :=L') in H6;auto. 
-          omega.
+          lia.
         +++  (* store *)
           eapply IH with (m:= L_weight L) (L' :=L') in H8;auto.
           generalize(exp_weight0  a);intro.
-          omega.
+          lia.
         +++ (* forall *)
           eapply tri_fx;auto.
           intro. 
@@ -470,16 +470,16 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
           eapply IH with (m:= L_weight(G :: L1 ++ a :: L2))
                          (L:=G :: L1 ++ a :: L2)
                          (L' := [a] ++ L1' ++ [G ] ++ L2') in H7 ...
-          
+
           apply EquivAuxWith with (L := a :: L1'); simpl;auto .
           simpl in Heqw. inversion Heqw. auto.
           simpl. rewrite plus_assoc_reverse. apply le_plus_r.
-          simpl in Heqw. inversion Heqw.  autounfold. omega.
+          simpl in Heqw. inversion Heqw.  autounfold. lia.
         +++ (* quest *)
           eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 ...
           eapply AdequacyTri2 in H5. destruct H5.
           eapply EquivAuxQuest with (L := a :: L1');eauto.
-          simpl in Heqw. inversion Heqw. omega.
+          simpl in Heqw. inversion Heqw. lia.
         +++ (* copy *)
           eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H7 ...
           eapply EquivAuxSync with (L:=a :: L1');eauto.
@@ -490,7 +490,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
           destruct H1. 
           rewrite H1 in Heqw. simpl in Heqw.
           inversion Heqw. 
-          simpl. autounfold. omega.
+          simpl. autounfold. lia.
         +++ (* forall *)
           assert(forall x, |-F- B; M; UP ((a :: L1' ) ++ [Subst FX x] ++ L2')) ...
           intro x.
@@ -506,7 +506,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
     destruct H.
     eapply EquivUpArrow in H;eauto.
   Qed.
-  
+
   (* Weakening *)
   Theorem TriWeakening : forall B L F X n, n |-F- B ; L ; X -> n |-F- B ++ [F] ; L ; X.
   Proof with solveF .
@@ -537,7 +537,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       ++ eapply H in H2;auto.
          eapply trih_ex;eauto.
   Qed.
-  
+
   (* Up and Down relation *)
   Lemma UpExtension: forall B M L F n, LexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; UP L ->
                                                                                   exists m, m<= S n /\ m |-F- B; M ; UP (L ++ [F]).
@@ -557,13 +557,13 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       split;auto.
       simpl.
       eapply trih_store ;auto.
-      
+
       generalize(LPos3 M [F] (meq_refl (M ++ [F])) HPos);intro.
       inversion H;auto.
 
       simpl in Hw.
       apply AsyncEqNeg;auto.
-      
+
       apply exp_weight0LF in Hw;contradiction.
 
     + intros. 
@@ -575,11 +575,11 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       ++ (* bot *)
         apply IH with (m:= L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega.
+        exists (S n');split;auto. lia.
       ++  (* PAR *)
         apply IH with (m:= Exp_weight  F0 + Exp_weight  G + L_weight  L) in H5 ...
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl ... omega.
+        exists (S n');split;auto. lia. simpl ... lia.
       ++ (* with *)
         apply IH with (m:= Exp_weight  F0 + L_weight  L) in H6 ...
         apply IH with (m:= Exp_weight  G + L_weight L) in H7 ...
@@ -590,13 +590,13 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         apply le_n_S.
         rewrite Max.succ_max_distr.
         apply Nat.max_le_compat;auto.
-        autounfold. omega.
-        autounfold. omega.
+        autounfold. lia.
+        autounfold. lia.
       ++  (* quest *)
         apply IH with (m:= L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
-        exists (S n');split;auto. omega. simpl; eauto.
-        omega. 
+        exists (S n');split;auto. lia. simpl; eauto.
+        lia. 
       ++ (* Store *) 
         MReplaceIn ((M ++ [F]) ++ [l]) ((M ++ [l]) ++ [F]) H7.
         apply IH with (m:= L_weight L) in H7;auto.
@@ -604,7 +604,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         destruct H1.
         exists (S x).
         split;auto.
-        omega.
+        lia.
         eauto using WeightLeq ...
         MReplace ((M ++ [l]) ++ [F]) ((M ++ [F]) ++ [l]) ...
       ++  (* FORALL *)
@@ -617,7 +617,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         destruct H1 as [n H1].
         destruct H1 as [H1 H1'].
         exists (S n). split.
-        omega.
+        lia.
         eapply trih_fx.
         intro x.
         generalize (H1' x); intro Hx ...

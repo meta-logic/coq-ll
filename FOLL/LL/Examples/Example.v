@@ -1,4 +1,4 @@
-Add LoadPath "../../".
+(* Add LoadPath "../" . *) 
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
 Require Import Coq.Classes.Morphisms.
@@ -15,12 +15,12 @@ Require Export LL.FLLMetaTheory.
 Require Export LL.Multisets.
 Require Export LL.Eqset.
 
-  
+
 Module SLL := SqBasic NatSet.
 Export SLL.
 
 
-Hint Unfold Subst : core .
+#[local] Hint Unfold Subst : core .
 Example test1: |-F- [] ; [] ; UP(F{fun _ x=> atom(a1 1 (var x))} :: E{fun _ x=> perp(a1 1 (var x))} :: nil).
 Proof with solveF.
   eapply tri_fx;intros.
@@ -36,7 +36,7 @@ Qed.
 Definition p := A0 1.
 Definition q := A0 3.
 Definition r := A0 5.
-Hint Unfold p q r : core.
+#[local] Hint Unfold p q r : core.
 
 Example sequent: |-F- [] ; [] ; UP( [ (p ⁺ & q ⁺) $  ⊥ $ (? p ⁻) $ (? q ⁻) ] ).
 Proof with solveF.

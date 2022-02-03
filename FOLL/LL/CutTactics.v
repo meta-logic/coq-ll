@@ -10,18 +10,18 @@ Require Export Coq.Init.Logic.
 Require Export Coq.Arith.Wf_nat.
 Require Export Coq.Program.Equality.
 Require Export Coq.Arith.Plus.
-Require Export Omega.
+Require Export Lia.
 Export ListNotations.
 Set Implicit Arguments.
 
-Hint Resolve Max.le_max_r: core .
-Hint Resolve Max.le_max_l: core .
+#[local] Hint Resolve Max.le_max_r: core .
+#[local] Hint Resolve Max.le_max_l: core .
 
 Module CTactics (DT : Eqset_dec_pol).
   Module Export Sys :=  SqBasic DT.
   (*Module SLL := SqSystems NatSet.
     Export SLL.*)
-  
+
   Ltac aux_bases :=
     match goal with
     | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
@@ -46,7 +46,7 @@ Module CTactics (DT : Eqset_dec_pol).
     | [ H: 0%nat = plus 0 0 |- _ ] => clear H
     | [ H: plus 0 0 = 0%nat |- _ ] => clear H
     end.
-  
+
   Ltac simpl_cases0 := 
     match goal with
     | [ H : ?a :: ?M1 =mul= [?b] |- _ ] => 
@@ -114,7 +114,7 @@ Module CTactics (DT : Eqset_dec_pol).
         assert (x =mul= M ++ L2) by solve [eapply solsls2; eauto]; rewrite union_comm in H0
       ]
     end.
-  
+
 
   Ltac normalizeAll :=
     match goal with
@@ -154,11 +154,11 @@ Module CTactics (DT : Eqset_dec_pol).
 match goal with
   | [ P : ?L =mul= ?M1 U ?M2, H0 : ?M1 =mul= {{?A ⁻}}, Hn2 : ?n |-- ?B; {{?A ⁻}} U ?M2 |- _ ] => 
      solve [eexists; rewrite P, H0; exact Hn2]  
- end.   
+ end.
    *)
 
   (************************************************)
-  
+
   Ltac resolve_rewrite :=
     repeat
       match goal with
@@ -168,53 +168,7 @@ match goal with
 
   Ltac resolve_max :=
     simpl;
-    try omega;
-    repeat
-      match goal with
-      | [  |- ?n <= ?n ] => 
-        auto
-      | [  |- ?n <= S ?n ] =>         
-        apply le_S
-      | [  |- ?n <= S (max ?n _) ] =>         
-        apply le_S   
-      | [  |- ?n <= S (max _ ?n) ] =>         
-        apply le_S                
-      | [  |- ?m <= max _ ?m ] => 
-        apply Max.le_max_r
-      | [  |- ?n <= max ?n _ ] => 
-        apply Max.le_max_l 
-      | [  |- _ <= _ + 0 ] => 
-        rewrite <- plus_n_O
-      | [  |- _ + 0 <= _ ] => 
-        rewrite <- plus_n_O      
-      | [  |- 0 + _ <= _ ] => 
-        rewrite plus_O_n
-      | [  |- _ <= 0 + _ ] => 
-        rewrite plus_O_n
-      | [  |- _ + ?X <= max _ _ + ?X ] => 
-        apply plus_le_compat_r    
-      | [  |- ?X + _ <= max _ _ + ?X ] => 
-        rewrite Nat.add_comm;  
-        apply plus_le_compat_r         
-      | [  |- ?X + _ <= ?X + max _ _] => 
-        apply plus_le_compat_l    
-      | [  |- ?m + ?X <= ?X + max _ _] => 
-        rewrite Nat.add_comm    
-      | [  |- _ + S _ <= _ ] => 
-        rewrite <- plus_n_Sm
-      | [  |- _ <= _ + S _ ] => 
-        rewrite <- plus_n_Sm
-      | [  |- S _ <= S _ ] => 
-        apply le_n_S  
-      | [  |- max _ 0 <= _ ] => 
-        rewrite Max.max_0_r 
-      | [  |- _ <= max _ 0 ] => 
-        rewrite Max.max_0_r   
-      | [  |- max 0 _ <= _ ] => 
-        rewrite Max.max_0_l 
-      | [  |- _ <= max 0 _ ] => 
-        rewrite Max.max_0_l                                                
-      end.
+    try lia.
 
   Lemma tab_top L B M1 M2 T:
     L =mul= M1 ++ M2 -> 
@@ -904,7 +858,7 @@ match goal with
     refine (HI _ _ _ _ _ _);
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
           auto; try resolve_rewrite];
-      resolve_max. rewrite Hh. resolve_max. 
+      resolve_max.
     destruct Hyp as [t Ht];
       eexists;
       refine (sig3_tensor _ Ht H2); auto; resolve_rewrite.
@@ -916,7 +870,7 @@ match goal with
     refine (HI _ _ _ _ _ _);
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
           auto; try resolve_rewrite];
-      resolve_max. rewrite Hh. resolve_max. 
+      resolve_max.
     destruct Hyp as [t Ht];
       eexists;
       refine (sig3_tensor _ H1 Ht); auto; resolve_rewrite.  
@@ -949,7 +903,7 @@ match goal with
     refine (HI _ _ _ _ _ _);
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); 
           auto; try resolve_rewrite];
-      resolve_max. rewrite Hh. resolve_max.
+      resolve_max.
     destruct Hyp as [t Ht];
       eexists;
       refine (sig3_tensor _ Ht H2); auto; resolve_rewrite.
@@ -961,7 +915,7 @@ match goal with
     refine (HI _ _ _ _ _ _);
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); 
           auto; try resolve_rewrite];
-      resolve_max.  rewrite Hh. resolve_max.
+      resolve_max.
     destruct Hyp as [t Ht];
       eexists;
       refine (sig3_tensor _ H1 Ht); auto; resolve_rewrite.  
@@ -1012,20 +966,18 @@ match goal with
     refine (HI _ _ _ _ _ _); 
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
           try resolve_rewrite; perm_simplify];
-      resolve_max. 
-    rewrite Hh. resolve_max. 
-    
+      resolve_max.
+
     assert (exists m, m |~> 0 ; B; G :: (M2 ++ T)) as Hyp2.        
     rewrite PM in H2; rewrite meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _); 
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
           try resolve_rewrite; perm_simplify];
       resolve_max.
-    rewrite Hh. resolve_max. 
-    
+
     destruct Hyp1 as [t1 Ht1];
       destruct Hyp2 as [t2 Ht2];
-      
+
       eexists;
       refine (sig3_with _ Ht1 Ht2);
       resolve_rewrite; eauto. 
@@ -1052,25 +1004,25 @@ match goal with
     assert (exists m, m |~> 0 ; B; F :: (T ++ M2)) as Hyp1.
     rewrite PM in H1; 
       rewrite  meq_swap_cons in H1.
-    refine (HI _ _ _ _ _ _); 
+    refine (HI _ _ _ _ _ _);
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H1 Hn2); auto; 
           try resolve_rewrite; perm_simplify];
-      resolve_max. rewrite Hh. resolve_max.
-    
-    assert (exists m, m |~> 0 ; B; G :: (T ++ M2)) as Hyp2.        
+      resolve_max.
+
+    assert (exists m, m |~> 0 ; B; G :: (T ++ M2)) as Hyp2.
     rewrite PM in H2; 
       rewrite  meq_swap_cons in H2.
     refine (HI _ _ _ _ _ _); 
       [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ H2 Hn2); auto;
           try resolve_rewrite; perm_simplify];
-      resolve_max. rewrite Hh. resolve_max.
+      resolve_max.
 
     destruct Hyp1 as [t1 Ht1];
       destruct Hyp2 as [t2 Ht2];
-      
+
       eexists;
       refine (sig3_with _ Ht1 Ht2);
-      resolve_rewrite.   
+      resolve_rewrite.
   Qed.
   Arguments tab_with_S [L B M1 M2 M T h n1 n2 n3 w F G a]. 
 
@@ -1248,7 +1200,7 @@ match goal with
     M1 =mul= F{ FX} :: T ->  
     (forall x : Term, n1 |~> 0; B; [Subst FX x] ++ M )-> 
     S n1 |~> 0 ; B; a :: M1 ->
-                    n2 |~> 0 ; B; a° :: M2 -> exists m : nat, m |~> 0; B; L. 
+                    n2 |~> 0 ; B; a° :: M2 -> exists m : nat, m |~> 0; B; L.
   Proof.
     intros HI Hhei Wei PL PM PM1 H Hn1 Hn2.
     induction w.
@@ -1269,6 +1221,6 @@ match goal with
             Hn1 : ?n |~> ?c; ?B; ?a :: ?M1,
                                  Hn2 : ?n' |~> ?c'; ?B'; ?a' :: ?M2' |- exists m0 : nat, m0 |~> ?d; ?B; ?L ] => 
       rewrite (Ng_involutive a) in Hn1;
-      rewrite union_comm in P     
+      rewrite union_comm in P
     end.
 End CTactics.

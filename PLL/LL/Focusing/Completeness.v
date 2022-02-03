@@ -79,16 +79,16 @@ Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; emp
       eassumption.
       solve_permutation.
     ++ (* Tensor *)
-      apply H in H3;auto.
-      apply H in H4;auto.
+      apply H in H3;auto; try lia.
+      apply H in H4;auto; try lia.
       destruct H3.
       destruct H4.
       apply EquivUpArrow with (L':= M ++ [F])in H0; auto. destruct H0.
       apply EquivUpArrow with (L':= N ++ [G])in H3; auto. destruct H3.
       assert (exists m, m |-F- B ; [] ++ [] ++ [F ** G]; UP (M ++ N)).
       eapply InvTensor; simpl;eauto.
-      
-      
+
+
       inversion H4.
       simpl in H5.
       eapply EquivUpArrow with (L:=[F ** G] ++ (M ++ N));auto.
@@ -128,8 +128,8 @@ Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; emp
       eapply H4.
       solve_permutation.
     ++ (* With *)
-      apply H in H3;auto.
-      apply H in H4;auto.
+      apply H in H3;auto; try lia.
+      apply H in H4;auto; try lia.
       destruct H3.
       destruct H4.
       assert (S (Init.Nat.max x x0) |-F- B ;  [] ; UP ([F & G] ++ M )).
@@ -142,39 +142,39 @@ Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; emp
       rewrite H3 in H4.
       apply H in H4;auto.
       destruct H4.
-      
+
       assert (F € B).
       rewrite meq_cons_app in H2.
       rewrite H2.
       auto.
-      
+
       apply member_then_eq in H4.
       destruct H4 as [B1  [B2 H2']]. 
       rewrite H2 in H0.
       assert (HB' : B1 ++ ([F] ++ B2) =mul= (B1 ++ B2) ++ [F]) by solve_permutation.
       rewrite meq_cons_append in H0.
-      
+
       apply InvCopy in H0.
-      
+
       destruct H0.
       eexists.
       rewrite meq_cons_append in H2.
       rewrite H2. eauto.
       simpl. auto.
-      
+
     ++ (* Quest *)
       apply H in H3;auto.
       destruct H3.
-      
+
       apply EquivUpArrow with (L := [? F] ++ M) (n:= S x);auto.
       eapply tri_quest;auto.
-      
+
       apply TriExchange with (B:= [F] ++ B ) (M:=[]);auto.
       solve_permutation.
     ++ (* Bang *)
       apply meq_sym in H2.
       apply MulSingleton in H2;subst.
-      
+
       apply H in H3;auto.
       destruct H3.
       eexists.
@@ -197,8 +197,3 @@ Theorem Completeness : forall B L M n,  n |-- B ; M ++ L ->
   destruct H1.
   apply StoreInversionL with (L:=L) in H1;auto.
 Qed.
-
-
-
-
-

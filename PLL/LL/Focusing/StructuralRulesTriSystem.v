@@ -8,7 +8,7 @@ This files proves some permutation lemmas for the negative connectives.
 
 (* Add LoadPath "../../". *)
 Require Import Arith.
-Require Import Omega.
+Require Import Lia.
 Require Import TriSystem.
 Require Import Coq.Relations.Relations.
 Require Import Coq.Arith.EqNat.
@@ -76,15 +76,15 @@ Proof.
       eexists.
       simpl.
       apply tri_with;eassumption.
-      omega.
-      omega.
+      lia.
+      lia.
     ++  (* QUEST *)
       apply IH  with(m:=L_weight L) in H4;auto.
       destruct H4.
       eexists.
       simpl. eapply tri_quest ;auto.
       eassumption.
-      omega.
+      lia.
 Qed.
 
 Ltac EquivAuxWithPosCases IH H H' L n1 n0 H6 H13 :=
@@ -109,7 +109,7 @@ Proof.
   generalize dependent n .
   generalize dependent n' .
   generalize dependent w .
-  
+
   induction w as [| w' IH] using strongind  ; intros n' n M B L' L H H' Hw  ;  destruct L as [|l].
   + simpl. simpl in H.
     eexists.
@@ -118,7 +118,7 @@ Proof.
     destruct l; simpl in Hw; inversion Hw.
   + simpl in Hw. inversion Hw.
   + destruct l; inversion Hw as [Hw']; try(EquivAuxWithPosCases IH H H' L n1 n0 H6 H13).
-    
+
     ++ (* TOP *)
       simpl.
       eexists.
@@ -141,7 +141,7 @@ Proof.
       inversion H; inversion H';subst.
       assert(exists m0 : nat, m0 |-F- B; M ++ [l1 ** l2]; UP (L ++ [F & G] ++ L')) as Hp.
       eapply IH with  (m:= L_weight L);eauto.
-      omega.
+      lia.
       destruct Hp.
       eexists.
       simpl. eapply tri_store;auto; eassumption.
@@ -151,13 +151,13 @@ Proof.
       subst.
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: l2 :: L) ++ [F & G] ++ L')) as Hp.
       eapply IH with (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L) ) ;eauto.
-      simpl. omega.
-      
+      simpl. lia.
+
       destruct Hp.
       eexists.
       simpl.
       eapply tri_par;auto; eassumption.
-      
+
       subst.
       inversion H12.
       subst.
@@ -167,7 +167,7 @@ Proof.
       inversion H; inversion H';subst.
       assert(exists m0 : nat, m0 |-F- B; M ++ [l1 ⊕ l2]; UP (L ++ [F & G] ++ L')) as Hp.
       eapply IH with  (m:= L_weight L);eauto.
-      omega.
+      lia.
       destruct Hp.
       eexists.
       simpl. eapply tri_store;auto; eassumption.
@@ -175,21 +175,21 @@ Proof.
       inversion H.
       inversion H'.
       subst.
-      
+
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: L) ++ [F & G] ++ L')) as Hp1.
       eapply IH with (m:= plus (exp_weight l1) (L_weight L) ) ;eauto.
-      simpl. omega.
+      simpl. lia.
       assert(exists m0 : nat, m0 |-F- B; M ; UP ((l2 :: L) ++ [F & G] ++ L')) as Hp2.
       eapply IH with (m:= plus (exp_weight l2) (L_weight L) ) ;eauto.
-      simpl. omega.
-      
+      simpl. lia.
+
       destruct Hp1.
       destruct Hp2.
-      
+
       eexists.
       simpl.
       eapply tri_with;auto; eassumption.
-      
+
       subst.
       inversion H13.
       subst.
@@ -198,18 +198,18 @@ Proof.
       inversion H; inversion H';subst.
       assert(exists m0 : nat, m0 |-F- B; M ++ [! l]; UP (L ++ [F & G] ++ L')) as Hp.
       eapply IH with  (m:= L_weight L);eauto.
-      omega.
+      lia.
       destruct Hp.
       eexists.
       simpl. eapply tri_store;auto; eassumption.
-      
+
     ++  (* quest *)
       inversion H.
       inversion H'.
       subst.
       assert(exists m0 : nat, m0 |-F- B ++ [l]; M ; UP (L ++ [F & G] ++ L')) as Hp.
       eapply IH with (m:= L_weight L) ;eauto.
-      omega.
+      lia.
 
       destruct Hp.
       eexists.
@@ -269,15 +269,15 @@ Proof.
       eexists.
       simpl.
       apply tri_with;eassumption.
-      omega.
-      omega.
+      lia.
+      lia.
     ++  (* QUEST *)
       apply IH  with(m:=L_weight L) in H4;auto.
       destruct H4.
       eexists.
       simpl. eapply tri_quest ;auto.
       eassumption.
-      omega.
+      lia.
 Qed.
 
 
@@ -360,8 +360,8 @@ Proof.
       eexists.
       simpl.
       apply tri_with;eassumption.
-      omega.
-      omega.
+      lia.
+      lia.
       inversion H7.
     ++ (* BANG *) (* Tactic should solve this one *)
       inversion H1;subst.
@@ -377,7 +377,7 @@ Proof.
       destruct H6.
       eexists.
       simpl. eapply tri_quest ;auto;eassumption.
-      omega.
+      lia.
       inversion H7.
 Qed.
 
@@ -428,8 +428,8 @@ Proof.
       eexists.
       simpl.
       apply tri_with;eassumption.
-      omega.
-      omega.
+      lia.
+      lia.
     ++  (* QUEST *)
       assert ((B ++ [F]) ++ [l] =mul= (B ++ [l]) ++ [F]) by solve_permutation.
       assert ( n0 |-F- (B ++ [l]) ++ [F] ; M ; UP (L ++ L')).
@@ -455,7 +455,7 @@ Proof.
   generalize dependent B .
   generalize dependent M .
   generalize dependent w .
-  
+
   induction w as [| w' IH] using strongind;  intros M B L' L Hw ;  destruct L as [|l].
   + simpl.
     eexists.
@@ -494,40 +494,40 @@ Proof.
     ++ (* tensor *)
       assert( exists m0 : nat, m0 |-F- B; M ++ [l1 ** l2] ; UP (L ++ [⊤] ++ L')).
       apply IH with (m := L_weight L);auto.
-      omega.
+      lia.
       destruct H.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* Par *)
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l1 :: l2  :: L) ++ [⊤] ++ L')).
       apply IH with (m := plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L));subst;auto.
-      simpl. omega.
+      simpl. lia.
       destruct H.
       eexists. simpl. eapply tri_par;auto. eassumption.
     ++ (* Oplus *)
       assert( exists m0 : nat, m0 |-F- B; M ++ [l1 ⊕ l2] ; UP (L ++ [⊤] ++ L')).
       apply IH with (m := L_weight L);subst;auto.
-      omega.
+      lia.
       destruct H.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* with *)
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l1 ::L) ++ [⊤] ++ L')).
       apply IH with (m := plus (exp_weight l1) (L_weight L));auto.
-      omega.
+      lia.
       assert( exists m0 : nat, m0 |-F- B; M ; UP ((l2 ::L) ++ [⊤] ++ L')).
       apply IH with (m := plus (exp_weight l2) (L_weight L));auto.
-      omega.
+      lia.
       destruct H. destruct H0.
       eexists. simpl. eapply tri_with;auto;eassumption.
     ++ (* Bang *)
       assert( exists m0 : nat, m0 |-F- B; M ++ [! l] ; UP (L ++ [⊤] ++ L')).
       apply IH with (m := L_weight L);subst;auto.
-      omega.
+      lia.
       destruct H.
       eexists; simpl;eapply tri_store;auto;eassumption.
     ++ (* Quest *)
       assert( exists m0 : nat, m0 |-F- B ++ [l]; M ; UP (L ++ [⊤] ++ L')).
       apply IH with (m := L_weight L);subst;auto.
-      omega.
+      lia.
       destruct H.
       eexists. simpl. eapply tri_quest;auto. eassumption.
 Qed.
@@ -553,14 +553,14 @@ Proof.
   generalize dependent B .
   generalize dependent M .
   generalize dependent w .
-  
+
   induction w as [| w' IH] using strongind;  intros ;  destruct L as [|l].
   + simpl in H.
     simpl.
     eexists;eassumption.
   + inversion Heqw.
     generalize(exp_weight0 l);intros.
-    omega.
+    lia.
   + simpl in H.
     simpl.
     eexists;eassumption.
@@ -572,32 +572,32 @@ Proof.
       apply EquivAuxTop.
 
     ++ (* bot *)
-      
+
       inversion Heqw. subst.
       simpl in H.
-      inversion H;firstorder; subst.
+      inversion H; (try now intuition); subst.
       apply IH with (m:= L_weight L)in H4 ;auto.
       destruct H4.
-      
+
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxBot in H0;auto.
-      
+
     ++ (* tensor *)
       inversion Heqw. subst.
       simpl in H.
       inversion H;subst.
       apply IH with (m:= L_weight L)in H6 ;auto.
       destruct H6.
-      
+
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxSync in H0;auto.
-      omega.
+      lia.
     ++ (* par *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;firstorder; subst.
+      inversion H;(try now intuition); subst.
       apply IH with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L))in H4 ; auto.
       destruct H4.
 
@@ -605,58 +605,58 @@ Proof.
       rewrite H1 in H0.
       eapply EquivAuxPar in H0;auto.
       simpl.
-      omega.
+      lia.
     ++ (* OPLUS *)
       inversion Heqw. subst.
       simpl in H.
       inversion H;subst.
       apply IH with (m:= L_weight L)in H6 ;auto.
       destruct H6.
-      
+
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxSync in H0;auto.
-      omega.
+      lia.
     ++ (* with *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;firstorder; subst.
+      inversion H;(try now intuition); subst.
       apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L))in H5 ;auto.
       apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L))in H7 ;auto.
-      
+
       destruct H5.
       destruct H7.
       assert( F :: (l1 :: L) ++ L' = [F] ++ [l1 ] ++ (L ++ L'));auto.
       assert( F :: (l2 :: L) ++ L' = [F] ++ [l2 ] ++ (L ++ L'));auto.
       rewrite H2 in H0.
       rewrite H3 in H1.
-      
-      
+
+
       eapply EquivAuxWith with (F:=l1) (G:=l2) in H0;eauto.
-      omega.
-      omega.
+      lia.
+      lia.
     ++ (* bang *)
       inversion Heqw. subst.
       simpl in H.
       inversion H;subst.
       apply IH with (m:= L_weight L)in H6 ;auto.
       destruct H6.
-      
+
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxSync in H0;auto.
-      omega.
+      lia.
     ++ (* quest *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;firstorder; subst.
+      inversion H;(try now intuition); subst.
       apply IH with (m:= L_weight L)in H4 ;auto.
       destruct H4.
-      
+
       assert( F::L ++ L' = [F] ++ (L ++ L'));auto.
       rewrite H1 in H0.
       eapply EquivAuxQuest in H0;auto.
-      omega.
+      lia.
 Qed.
 
 
@@ -673,7 +673,7 @@ Proof.
   generalize dependent B .
   generalize dependent M .
   generalize dependent w .
-  
+
   induction w as [| w' IH] using strongind;  intros ;  destruct L as [|l].
   +assert (L'= []) by( apply emp_mult;auto).
    subst.
@@ -681,7 +681,7 @@ Proof.
    eassumption.
   + inversion Heqw.
     generalize(exp_weight0 l);intros.
-    omega.
+    lia.
   + assert (L'= []) by( apply emp_mult;auto).
     subst.
     eexists.
@@ -689,10 +689,10 @@ Proof.
   + destruct L' as [| l'].
     (* H0 is inconsisten *)
     apply DestructMulFalse in H0. contradiction.
-    
+
 
     apply DestructMSet2 in H0 as Heq.
-    
+
     destruct Heq as [Heq | Heq].
     ++ destruct Heq;subst.
        inversion H;subst.
@@ -706,42 +706,42 @@ Proof.
          eapply IH with (L' := F::G::L') in H6;auto.
          destruct H6.
          eexists. eapply tri_par;eauto.
-         simpl in Heqw. inversion Heqw. simpl. omega.
+         simpl in Heqw. inversion Heqw. simpl. lia.
        +++ (* with *)
          eapply IH with (m:= L_weight (F::L)) (L:= F ::L) (L' := F :: L') in H7;auto.
          eapply IH with (m:= L_weight (G::L)) (L := G :: L) (L' := G :: L') in H8;auto.
          destruct H7. destruct H8.
          eexists. eapply tri_with;eauto.
-         
-         simpl in Heqw. inversion Heqw. simpl. omega.
-         simpl in Heqw. inversion Heqw. simpl. omega.
+
+         simpl in Heqw. inversion Heqw. simpl. lia.
+         simpl in Heqw. inversion Heqw. simpl. lia.
        +++  (* quest *)
          eapply IH with (m:= L_weight L) (L' :=L') in H6;auto.
          destruct H6.
          eexists. eapply tri_quest;eauto.
-         simpl in Heqw. inversion Heqw. simpl. omega.
+         simpl in Heqw. inversion Heqw. simpl. lia.
        +++  (* store *)
          eapply IH with (m:= L_weight L) (L' :=L') in H8;auto.
          destruct H8.
          eexists. eapply tri_store;eauto.
          simpl in Heqw. inversion Heqw.
          generalize(exp_weight0 l');intro.
-         omega.
+         lia.
     ++
       destruct Heq as [L1 [L2 [L1' [L2' Heq]]]].
-      
+
       destruct Heq as [Heq [Heq1 Heq2]];subst.
-      
+
       inversion H;subst.
       +++ (* top *)
-        
+
         eapply EquivAuxTop with (L:= l' :: L1').
       +++ (* bottom *)
         eapply IH with (m:= L_weight(L1 ++ l' :: L2))(L:=L1 ++ l' :: L2) (L' := [l'] ++ L1' ++ L2') in H5 .
         destruct H5.
         simpl in H1.
         eapply EquivAuxBot with (L:= l' :: L1');eauto.
-        
+
         simpl in Heqw. inversion Heqw. auto.
         rewrite <-Heq2.
         perm_simplify.
@@ -751,11 +751,11 @@ Proof.
                          (L:=F :: G :: L1 ++ l' :: L2)
                          (L' := [l'] ++ L1' ++ [F ; G] ++ L2') in H5 .
         destruct H5.
-        
-        
+
+
         eapply EquivAuxPar with (L:= l' :: L1');eauto.
         simpl in Heqw. inversion Heqw. auto.  
-        simpl. omega.   
+        simpl. lia.   
         assert( L1' ++ [F; G] ++ L2' =mul= [F; G] ++ L1' ++ L2') by auto.  
         rewrite H1. rewrite <- Heq2.
         solv_P.
@@ -763,7 +763,7 @@ Proof.
         change ([F; G]) with ([F] ++ [G]).
         solve_permutation.
         reflexivity.
-        
+
       +++ (* with *)
         eapply IH with (m:= L_weight(F :: L1 ++ l' :: L2))
                          (L:=F :: L1 ++ l' :: L2)
@@ -771,30 +771,30 @@ Proof.
         eapply IH with (m:= L_weight(G :: L1 ++ l' :: L2))
                          (L:=G :: L1 ++ l' :: L2)
                          (L' := [l'] ++ L1' ++ [G ] ++ L2') in H7 .
-        
+
         destruct H6. destruct H7.
         eapply EquivAuxWith with (L := l' :: L1'); eauto.
         simpl in Heqw. inversion Heqw. auto.
-        simpl. omega.
+        simpl. lia.
         assert(HC : [l'] ++ L1' ++ [G] ++ L2' =mul= [l'] ++ [G] ++ L1' ++ L2') by solve_permutation.  
         rewrite HC. clear HC.
         solv_P.
         solve_permutation.
         reflexivity. 
-        simpl in Heqw. inversion Heqw. simpl. omega.
+        simpl in Heqw. inversion Heqw. simpl. lia.
         assert(HC : L1' ++ [F] ++ L2' =mul=  [F] ++ L1' ++ L2') by solve_permutation.  
         rewrite HC. clear HC.
         solv_P. 
         solve_permutation.
         reflexivity.
-        
+
       +++ (* quest *)
         eapply IH with (m:= L_weight(L1 ++ l' :: L2))(L:=L1 ++ l' :: L2) (L' := [l'] ++ L1' ++ L2') in H5 .
         destruct H5.
         eapply EquivAuxQuest with (L := l' :: L1');eauto.
-        
+
         simpl in Heqw. inversion Heqw. auto.
-        simpl. omega. 
+        simpl. lia. 
         rewrite <- Heq2. solve_permutation.
         reflexivity.
 
@@ -810,12 +810,12 @@ Proof.
         apply GtZero in H1.
         destruct H1.
         rewrite H1 in Heqw. simpl in Heqw.
-        
+
         inversion Heqw.
-        simpl. omega.
+        simpl. lia.
         rewrite <- Heq2.
         solve_permutation.
-        
+
         reflexivity.
 Qed.
 
@@ -838,8 +838,8 @@ Theorem TriWeakening : forall B L F X n, n |-F- B ; L ; X -> n |-F- B ++ [F] ; L
     ++ eapply tri_top.
   + (* Inductive *)
     inversion H0;subst.
-    ++ eapply H in H3;auto.
-       eapply H in H4;auto.
+    ++ eapply H in H3;auto; try lia.
+       eapply H in H4;auto; try lia.
        eapply tri_tensor;eauto.
     ++ eapply H in H2;auto.
        eapply tri_plus1;eauto.
@@ -853,8 +853,8 @@ Theorem TriWeakening : forall B L F X n, n |-F- B ; L ; X -> n |-F- B ++ [F] ; L
        eapply tri_bot;eauto.
     ++ eapply H in H2;auto.
        eapply tri_par;eauto.
-    ++ eapply H in H2;auto.
-       eapply H in H3;auto.
+    ++ eapply H in H2;auto; try lia.
+       eapply H in H3;auto; try lia.
        eapply tri_with;eauto.
     ++  eapply H with (B := B ++ [F0]) (F:=F) in H2;auto.
         eapply tri_quest;auto.
@@ -888,7 +888,7 @@ Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; 
     split;auto.
     simpl.
     eapply tri_store;auto.
-    
+
     generalize(LPos3 M [F] (meq_refl (M ++ [F])) HPos);intro.
     inversion H;auto.
 
@@ -905,46 +905,46 @@ Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; 
     ++ (* bot *)
       apply IH with (m:= L_weight L) in H5;auto.
       destruct H5 as [n'  [IHn IHd]].
-      exists (S n');split;auto. omega. simpl. eapply tri_bot;auto.
+      exists (S n');split;auto. lia. simpl. eapply tri_bot;auto.
     ++  (* PAR *)
       apply IH with (m:= plus (plus (exp_weight F0) (exp_weight G)) (L_weight L)) in H5;auto.
       destruct H5 as [n'  [IHn IHd]].
-      exists (S n');split;auto. omega. simpl. eapply tri_par;auto.
-      simpl. omega.
+      exists (S n');split;auto. lia. simpl. eapply tri_par;auto.
+      simpl. lia.
     ++ (* with *)
       apply IH with (m:= plus (exp_weight F0) (L_weight L)) in H6;auto.
       apply IH with (m:= plus (exp_weight G) (L_weight L)) in H7;auto.
       destruct H6 as [n'  [IHn IHd]].
       destruct H7 as [m'  [IHn' IHd']].
       simpl.
-      
+
       exists (S (Init.Nat.max n' m'));split;auto. simpl.
       apply le_n_S.
       rewrite Max.succ_max_distr.
       apply Nat.max_le_compat;auto.
-      
+
       eapply tri_with;auto.
-      omega.
-      omega.
+      lia.
+      lia.
     ++  (* quest *)
       apply IH with (m:= L_weight L) in H5;auto.
       destruct H5 as [n'  [IHn IHd]].
-      exists (S n');split;auto. omega. simpl. eapply tri_quest;auto.
-      omega.
+      exists (S n');split;auto. lia. simpl. eapply tri_quest;auto.
+      lia.
     ++ (* Store *)
       assert(exists m0 : nat, m0 <= S n0 /\ m0 |-F- B; M ++ [l]; UP (L ++ [F])).
       apply IH with (m:= L_weight L);eauto using WeightLeq.
       apply LPos1 with (L:= [l] ++ (M ++ [F]));auto.
       rewrite app_assoc_reverse.
       solve_permutation.
-      
+
       apply lexpPosUnion;auto.
       apply AsynchronousFlexpPos;auto.
       assert((M ++ [l]) ++ [F] =mul= (M ++ [F]) ++ [l]) by solve_permutation.
       rewrite H1;auto.
-      
+
       destruct H1 as [n'  [IHn IHd]].
-      exists (S n');split;auto. omega. simpl. eapply tri_store;auto.
+      exists (S n');split;auto. lia. simpl. eapply tri_store;auto.
 Qed.
 
 
@@ -972,5 +972,3 @@ Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> lexpPos N
     rewrite H5.
     eassumption.
 Qed.
-
-

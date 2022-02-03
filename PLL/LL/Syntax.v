@@ -101,7 +101,7 @@ Proof.
 	            rewrite <- IHF; reflexivity. 
 Qed.
 
-Hint Rewrite neg2pos ng_involutive : core.
+#[export] Hint Rewrite neg2pos ng_involutive : core.
 
 (** Decidability of equality on formulas *)
 Lemma LExp_eq_dec : forall A B: lexp, {A = B} + {A <> B}.
@@ -178,31 +178,31 @@ Proof.
     unfold eqVar;unfold VarEq; 
       destruct (Var_eq_dec); auto. 
 Qed.
-Hint Resolve eqLExp_refl : core.
+#[export] Hint Resolve eqLExp_refl : core.
 
 Lemma eq_then_eqLExp: forall A B, A = B -> eqLExp A B.
 Proof. intros; rewrite H; auto. Qed.
 
 Lemma eqLExp_then_eq: forall A B,  eqLExp A B -> A = B.
-Proof. 
+Proof.
   induction A; induction B; intros; try reflexivity; try auto; try inversion H.
   apply eqExpA in H1; rewrite H1; auto.
   apply eqExpP in H1; rewrite H1; auto.
-  
+
   rewrite IHA1 with (B:=B1); auto.
-  rewrite IHA2 with (B:=B2); auto.  
+  rewrite IHA2 with (B:=B2); auto.
   rewrite IHA1 with (B:=B1); auto.
-  rewrite IHA2 with (B:=B2); auto.   
+  rewrite IHA2 with (B:=B2); auto.
   rewrite IHA1 with (B:=B1); auto.
   rewrite IHA2 with (B:=B2); auto.
   rewrite IHA1 with (B:=B1); auto.
   rewrite IHA2 with (B:=B2); auto.
 
   rewrite IHA with (B:=B); auto.
-  rewrite IHA with (B:=B); auto.     
+  rewrite IHA with (B:=B); auto.
 Qed.
 
-Hint Resolve eqLExp_then_eq eq_then_eqLExp : core.
+#[export] Hint Resolve eqLExp_then_eq eq_then_eqLExp : core.
 
 
 Lemma tns_eq f1 f2 g1 g2 : f1 ** g1 = f2 ** g2 <-> f1=f2/\g1=g2.
@@ -265,17 +265,17 @@ Proof.
   simpl in H; auto.
   subst; auto. 
 Qed.
-Hint Resolve tns_eq par_eq pls_eq wth_eq bng_eq qst_eq atp_eq atn_eq : core.
+#[export] Hint Resolve tns_eq par_eq pls_eq wth_eq bng_eq qst_eq atp_eq atn_eq : core.
 
 Lemma eqLExp_symm: forall x y, eqLExp x y -> eqLExp y x.
 Proof. intros. apply eqLExp_then_eq in H; auto. Qed.
-Hint Resolve eqLExp_symm : core.
+#[export] Hint Resolve eqLExp_symm : core.
 
 Lemma eqLExp_trans: forall x y z, eqLExp x y -> eqLExp y z -> eqLExp x z.
 Proof. intros;
          apply eqLExp_then_eq in H; 
          apply eqLExp_then_eq in H0; subst; auto. Qed.
-Hint Resolve eqLExp_trans : core.
+#[export] Hint Resolve eqLExp_trans : core.
 
 
 Add Parametric Relation : lexp eqLExp
@@ -283,7 +283,7 @@ Add Parametric Relation : lexp eqLExp
     symmetry proved by eqLExp_symm
     transitivity proved by eqLExp_trans as eq_linear.
 
-Instance eqLExp_Equivalence : Equivalence eqLExp.
+#[export] Instance eqLExp_Equivalence : Equivalence eqLExp.
 Proof.
   exact eq_linear. Qed.
 
@@ -320,7 +320,7 @@ Lemma lweight_dual : forall F: lexp, lexp_weight F = lexp_weight F°.
 Proof.
   induction F; auto; simpl;
     try rewrite IHF1; try rewrite IHF2; auto.
-Qed.  
+Qed.
 
 Lemma lweight_dual_plus : forall F G, lexp_weight F + lexp_weight G = lexp_weight F° + lexp_weight G°.
 Proof.
@@ -328,7 +328,7 @@ Proof.
   rewrite lweight_dual with (F:=F).
   rewrite lweight_dual with (F:=G).
   auto.
-Qed. 
+Qed.
 
 Lemma not_eqLExp_sym : forall x y: lexp, ~ eqLExp x y -> ~ eqLExp y x.
 Proof.
@@ -339,31 +339,31 @@ Qed.
 
 Generalizable All Variables.
 
-Instance tns_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Tensor.
+#[export] Instance tns_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Tensor.
 Proof. intros a b ab c d cd. firstorder. Qed.
 
-Instance par_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Par.
+#[export] Instance par_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Par.
 Proof. intros a b ab c d cd. firstorder. Qed.
 
-Instance pls_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Plus.
+#[export] Instance pls_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) Plus.
 Proof. intros a b ab c d cd. firstorder. Qed.
 
-Instance wth_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) With.
+#[export] Instance wth_morph : Proper (eqLExp ==> eqLExp ==> eqLExp) With.
 Proof. intros a b ab c d cd. firstorder. Qed.
 
-Instance bng_morph : Proper (eqLExp ==> eqLExp) Bang.
+#[export] Instance bng_morph : Proper (eqLExp ==> eqLExp) Bang.
 Proof. intros a b ab. firstorder. Qed.
 
-Instance qst_morph : Proper (eqLExp ==> eqLExp) Quest.
+#[export] Instance qst_morph : Proper (eqLExp ==> eqLExp) Quest.
 Proof. intros a b ab. firstorder. Qed.
 
-Instance atm_morph : Proper (eqVar ==> eqLExp) Atom.
+#[export] Instance atm_morph : Proper (eqVar ==> eqLExp) Atom.
 Proof. intros a b ab. firstorder. Qed.
 
-Instance prp_morph : Proper (eqVar ==> eqLExp) Perp.
+#[export] Instance prp_morph : Proper (eqVar ==> eqLExp) Perp.
 Proof. intros a b ab. firstorder. Qed.
 
-Instance lexp_morph : Proper (eqLExp ==> eqLExp ==> iff)  eqLExp.
+#[export] Instance lexp_morph : Proper (eqLExp ==> eqLExp ==> iff)  eqLExp.
 Proof. intros a b ab c d cd. firstorder. 
        refine (eqLExp_trans _ _ _ _ cd). 
        refine (eqLExp_trans _ _ _ _ H).
@@ -373,7 +373,6 @@ Proof. intros a b ab c d cd. firstorder.
        auto.
 Qed.
 
-Instance dual_morph : Proper (eqLExp ==> eqLExp) dual_LExp.
+#[export] Instance dual_morph : Proper (eqLExp ==> eqLExp) dual_LExp.
 Proof. intros a b ab. apply eqLExp_then_eq in ab. 
        rewrite ab. auto. Qed.
-

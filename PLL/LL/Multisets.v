@@ -13,17 +13,17 @@ Require Export Coq.Setoids.Setoid.
 Require Export Coq.Sorting.PermutSetoid.
 Require Export Coq.Sets.Multiset.
 Require Export List.
-Require Export Omega.
+Require Export PeanoNat Lia.
 Require Export Eqset.
 Export ListNotations.
 
 Module MultisetList (EQ : Eqset_dec).
-  
+
   Definition A := EQ.A.
   Definition eqA_dec := EQ.eqA_dec.
   Definition eq_dec := EQ.eq_dec.
   Definition eqA := EQ.eqA.
-  
+
   (*   Fixpoint countIn (a: A) (l: list A) : nat :=
     match l with
       | nil => 0
@@ -34,7 +34,7 @@ Module MultisetList (EQ : Eqset_dec).
         end
     end.
    *)
-  
+
   Fixpoint removeElem (el: A) (l: list A) : list A :=
     match l with
     | nil => nil
@@ -44,7 +44,7 @@ Module MultisetList (EQ : Eqset_dec).
       | right _ => hd::removeElem el tl
       end
     end. 
-  
+
   Fixpoint removeAll (l m: list A) : list A :=
     match m with
     | nil => l
@@ -56,14 +56,14 @@ Module MultisetList (EQ : Eqset_dec).
   Definition empty : Multiset := nil.
   Definition singleton a : Multiset := a :: nil.
   Definition union := app (A:=A).
-  
-  
+
+
   Definition mult := count_occ eq_dec.
   Definition meq X Y := forall a, mult X a = mult Y a.
 
   Definition rem := removeElem.
   Definition diff := removeAll. 
-  
+
   Definition member x M := mult M x > 0. 
 
   Notation "X =mul= Y" := (meq X Y) (at level 70).
@@ -71,12 +71,12 @@ Module MultisetList (EQ : Eqset_dec).
   Notation "X / Y" := (diff X Y) .
   Notation "x # M" := (mult M x)(at level 10). 
   Notation "x € M" := (member x M) (at level  10). 
-  
+
   Lemma in_countIn : forall a l, In a l -> a # l > 0.
   Proof.
-    intros. apply count_occ_In; auto. 
+    intros. apply count_occ_In; auto.
   Qed.
-  
+
   (** count_occ_inv_nil *)
 
   Lemma empty_empty : forall M, (forall x, x # M = 0) -> M = [].
@@ -85,25 +85,25 @@ Module MultisetList (EQ : Eqset_dec).
     eapply (count_occ_inv_nil eq_dec); eauto.
   Qed.
 
-  
+
   (** count_occ_nil *)
 
   Lemma countIn_nil : forall (x : A), x # [] = 0%nat.
   Proof. auto. Qed. 
-  
+
   (** count_occ_not_In *)
-  
+
   Lemma countIn_not_In: forall x l, ~ In x l <-> x # l = 0%nat.
   Proof.
     intros.
     apply count_occ_not_In.
   Qed.
-  
+
   (** count_occ_inv_nil  *)
 
   Theorem countIn_inv_nil : forall (l : list A), (forall x:A, x # l = 0%nat) <-> l = [].
   Proof.
-    intros. apply count_occ_inv_nil. 
+    intros. apply count_occ_inv_nil.
   Qed.
 
   (** count_occ_cons_eq *)
@@ -125,9 +125,9 @@ Module MultisetList (EQ : Eqset_dec).
   Lemma countIn_In: forall x l, In x l <-> x # l > 0.
   Proof.
     intros. apply count_occ_In.
-  Qed.  
+  Qed.
 
-  Hint Resolve in_eq 
+  #[export] Hint Resolve in_eq 
        in_cons 
        not_in_cons 
        in_nil
@@ -142,14 +142,14 @@ Module MultisetList (EQ : Eqset_dec).
     destruct (eq_dec a x); destruct (eq_dec a y); auto.
     rewrite H in e. contradiction.
     rewrite <- H in e. contradiction.
-  Qed.  
+  Qed.
 
   Lemma meq_multeq: forall M N, M =mul= N -> (forall x, x # M = x # N).
   Proof. auto. Qed.  
-  
+
   Lemma multeq_meq: forall M N, (forall x, x # M = x # N) -> M =mul= N.
   Proof. auto. Qed.
-  
+
   Lemma diff_empty_l : forall M: list A, [] / M = [].
   Proof.
     induction M; auto.
@@ -162,20 +162,20 @@ Module MultisetList (EQ : Eqset_dec).
 
   Lemma empty_mult: forall x, x # [] = 0%nat.
   Proof. auto. Qed.
-  
+
   Lemma union_mult: forall x M N, x # (M ++ N) = (x # M + x # N).
   Proof.
     induction M; auto.
     intros; simpl. destruct (eq_dec a x); auto. rewrite IHM. auto.
   Qed.
-  
+
   Lemma union_mult2: forall x a N, x # (a :: N) = (x # [a] + x # N).
   Proof.
     intros.
     change (a::N) with ([a] ++ N).
     apply union_mult.
   Qed.
-  
+
   Lemma mult_remove_in : forall x a M,
       x = a -> (x # (rem a M)) = ((x # M) - 1)%nat.
   Proof.
@@ -202,7 +202,7 @@ Module MultisetList (EQ : Eqset_dec).
     destruct (eq_dec a x); subst; auto.
     contradiction.
     simpl.
-    destruct (eq_dec a x); subst; auto.  
+    destruct (eq_dec a x); subst; auto.
   Qed.
 
   Lemma remove_perm_single : forall x a b M,
@@ -295,7 +295,7 @@ Module MultisetList (EQ : Eqset_dec).
   Proof.
     induction N.
     (* induction base *)
-    simpl; intros; omega.
+    simpl; intros; lia.
     (* induction step *)
     intro x; simpl.
     destruct (eq_dec a x); simpl.
@@ -303,7 +303,7 @@ Module MultisetList (EQ : Eqset_dec).
     fold rem.
     rewrite diff_mult_step_eq; auto.
     rewrite (IHN x).
-    omega.
+    lia.
     (* x <> a *)
     fold rem.
     rewrite diff_mult_step_neq; auto.
@@ -311,18 +311,18 @@ Module MultisetList (EQ : Eqset_dec).
 
   Lemma singleton_mult_in: forall x y, y = x -> x # [y] = 1%nat.
   Proof. intros. simpl. destruct (eq_dec y x); [trivial | contradiction]. Qed.
-  
+
   Lemma singleton_mult_notin: forall x y, y <> x -> x # [y] = 0%nat.
   Proof. intros. simpl. destruct (eq_dec y x); [ contradiction | trivial]. Qed.
-  
-  Hint Unfold meq 
+
+  #[export] Hint Unfold meq 
        empty
        singleton
        mult
        union
        diff : core .
 
-  Hint Resolve mult_eqA_compat 
+  #[export] Hint Resolve mult_eqA_compat 
        meq_multeq
        multeq_meq
        empty_mult
@@ -331,18 +331,18 @@ Module MultisetList (EQ : Eqset_dec).
        singleton_mult_in
        singleton_mult_notin : core .
 
-  Hint Rewrite empty_mult
+  #[export] Hint Rewrite empty_mult
        union_mult
        diff_mult using trivial : core.
-  
-  
+
+
   (*   Parameter mset_ind_type: forall P : Multiset -> Type,
         P empty -> (forall M a, P M -> P (M ++ [a])) -> forall M, P M. *)
 
   Lemma rem_to_diff : forall a M, rem a M =mul= M / [a].
   Proof. auto. Qed.
 
-  
+
   Ltac mset_unfold := repeat progress unfold member.
 
   Ltac try_solve_meq :=
@@ -361,7 +361,7 @@ Module MultisetList (EQ : Eqset_dec).
                                    try rewrite countIn_nil
                                  (*               try rewrite count_occ_nil *)
                                  )
-            ; try omega
+            ; try lia
             ; try congruence
             ; try solve [auto]
        )
@@ -402,7 +402,7 @@ Module MultisetList (EQ : Eqset_dec).
 
 
 
-  
+
   Lemma meq_refl : forall M, M =mul= M.
   Proof.  solve_meq. Qed.
 
@@ -413,57 +413,57 @@ Module MultisetList (EQ : Eqset_dec).
     forall M N P, M =mul= N -> N =mul= P -> M =mul= P.
   Proof. solve_meq_ext. Qed.
 
-  
-  Hint Resolve meq_refl meq_sym meq_trans : core.
 
-  Instance meq_Equivalence : Equivalence meq.
+  #[export] Hint Resolve meq_refl meq_sym meq_trans : core.
+
+  #[export] Instance meq_Equivalence : Equivalence meq.
   Proof.
     split; eauto.
   Qed.
-  
-  Instance union_morph : Proper (meq ==> meq ==> meq) union.
+
+  #[export] Instance union_morph : Proper (meq ==> meq ==> meq) union.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance insert_morph : Proper (eq ==> meq ==> meq) cons.
+  #[export] Instance insert_morph : Proper (eq ==> meq ==> meq) cons.
 
   Proof. intros a b ab c d cd.  subst.
          change (b::c) with ([b] ++ c).
          change (b::d) with ([b] ++ d).
          rewrite cd.  auto. Qed.
 
-  Instance member_morph : Proper (eq ==> meq ==> iff) member.
+  #[export] Instance member_morph : Proper (eq ==> meq ==> iff) member.
 
   Proof. intros a b ab L1 L2 H; subst. unfold member. rewrite H. intuition. Qed.
 
 
-  Instance union_morph': Proper (meq ==> meq ==> iff) (meq).
+  #[export] Instance union_morph': Proper (meq ==> meq ==> iff) (meq).
   Proof.
     intros a b ab c d cd; split;
       solve_meq_ext.
-  Qed.  
+  Qed.
 
-  Instance mult_morph : Proper (meq ==> eq ==> eq) mult.
-
-  Proof. intros a b ab c d cd. solve_meq_ext. Qed.
-
-  Instance diff_morph : Proper (meq ==> meq ==> meq) diff.
+  #[export] Instance mult_morph : Proper (meq ==> eq ==> eq) mult.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance remove_morph : Proper (eq ==> meq ==> meq) removeAll.
+  #[export] Instance diff_morph : Proper (meq ==> meq ==> meq) diff.
 
   Proof. intros a b ab c d cd. solve_meq_ext. Qed.
 
-  Instance rem_morph : Proper (eq ==> meq ==> meq) rem.
+  #[export] Instance remove_morph : Proper (eq ==> meq ==> meq) removeAll.
+
+  Proof. intros a b ab c d cd. solve_meq_ext. Qed.
+
+  #[export] Instance rem_morph : Proper (eq ==> meq ==> meq) rem.
 
   Proof. intros a b ab c d cd; subst. 
          assert (rem b c =mul= c / [b]) as H1 by auto. 
          assert (rem b d =mul= d / [b]) as H2 by auto. 
          rewrite H1, H2, cd; auto. Qed.
-  
+
   (*  Section MultisetLemmas. *)
-  
+
   (*      Lemma mset_ind : forall P : Multiset -> Prop,
       P empty -> (forall M a, P M -> P (M ++ [a])) -> forall M, P M.
 
@@ -471,7 +471,7 @@ Module MultisetList (EQ : Eqset_dec).
 
     Lemma mset_ind_set : forall P : Multiset -> Set,
         P empty -> (forall M a, P M -> P (M ++ [a])) -> forall M, P M.
-  
+
     Proof. exact mset_ind_type. Qed. *)
 
   Lemma meq_cons_app a M : a :: M =mul= [a] ++ M.
@@ -495,7 +495,7 @@ Module MultisetList (EQ : Eqset_dec).
     Proof.
       intros; subst. apply rem_a.
     Qed.
-    
+
     Lemma rem_not_ab : forall a b, b <> a -> rem a ([b]) =mul= [b].
     Proof.
       intros; simpl.
@@ -525,7 +525,7 @@ Module MultisetList (EQ : Eqset_dec).
       symmetry in e.
       contradiction.
     Qed.
-    
+
     Lemma rem_aM_cons : forall a M, rem a (a :: M) =mul= M.
     Proof.
       intros.
@@ -540,24 +540,23 @@ Module MultisetList (EQ : Eqset_dec).
     Lemma rem_to_union_cons: forall L M x, M =mul= x :: L -> L =mul= (rem x M).
     Proof.
       intros. rewrite H. rewrite rem_aM_cons. auto.
-    Qed.     
+    Qed.
 
-    Hint Resolve rem_a rem_ab rem_not_ab rem_aM_app rem_abM_app rem_not_abM_app rem_aM_cons : core.
-  End facts_remove.    
+  End facts_remove.
 
 
-  
+
   Lemma member_singleton (x y : A) : x € [y] -> x = y.
   Proof.
     unfold member; intros.
     case (eq_dec x y); [trivial | intro x_neq_y].
     assert (x # [y] = 0%nat); [auto | idtac].
-    rewrite H0 in H; omega.
+    rewrite H0 in H; lia.
   Qed.
 
 
-  
-  
+
+
   Lemma emp_mult : forall M, M =mul= [] <-> M = [].
   Proof.
     split; intros; subst; auto.
@@ -567,7 +566,7 @@ Module MultisetList (EQ : Eqset_dec).
 
   Lemma union_perm M N P : M ++ N ++ P =mul= M ++ P ++ N.
   Proof. solve_meq. Qed.
-  Hint Resolve union_perm : core.
+  #[export] Hint Resolve union_perm : core.
 
   Lemma union_nil M : M ++ [] =mul= M.
   Proof. solve_meq. Qed.
@@ -586,31 +585,31 @@ Module MultisetList (EQ : Eqset_dec).
   Proof.
     unfold member; intros mult_x_M M_is_empty.
     absurd (x # M = 0%nat).
-    omega.
+    lia.
     assert (x # [] = 0%nat); [auto | idtac].
     assert (x # M = x # []); [apply meq_multeq; trivial | idtac].
-    omega.
+    lia.
   Qed.
-  
+
   Lemma member_union_l a M N : a € M -> a € (M ++ N).
-  Proof. unfold member; intro H. rewrite union_mult. omega. Qed.
+  Proof. unfold member; intro H. rewrite union_mult. lia. Qed.
 
   Lemma member_union_r a M N : a € N -> a € (M ++ N).
-  Proof. unfold member; intro H. rewrite union_mult. omega. Qed.       
-  
+  Proof. unfold member; intro H. rewrite union_mult. lia. Qed.       
+
   Lemma mult_insert : forall M a, (a # (M ++ [a])) > 0.
   Proof.
     intros M a.
     replace (a # (M ++ [a])) with ((a # M) + (a # [a]))%nat.
     replace (a # [a]) with 1%nat.
-    omega.
+    lia.
     symmetry; auto.
     auto.
   Qed.
 
   Lemma singleton_member a : a € [a].
   Proof.
-    unfold member. assert (a # [a] = 1%nat); [idtac | omega].
+    unfold member. assert (a # [a] = 1%nat); [idtac | lia].
     apply singleton_mult_in; auto with sets.
   Qed.
 
@@ -619,10 +618,10 @@ Module MultisetList (EQ : Eqset_dec).
   Lemma member_insert_cons a M : a € (a :: M).
   Proof. change (a :: M) with ([a] ++ M). apply member_union_l. apply singleton_member. Qed. 
   Lemma member_diff_member a M N : a € (M / N) -> a € M.
-  Proof. unfold member. rewrite (diff_mult M N). omega. Qed.
-  Hint Resolve singleton_member  member_insert_app member_insert_cons: core.
+  Proof. unfold member. rewrite (diff_mult M N). lia. Qed.
+  #[export] Hint Resolve singleton_member  member_insert_app member_insert_cons: core.
   Lemma diff_member_ly_rn a M N : a € M -> ~a € N -> a € (M / N).
-  Proof. unfold member; intros H H0. rewrite diff_mult. omega. Qed.
+  Proof. unfold member; intros H H0. rewrite diff_mult. lia. Qed.
 
   Lemma diff_remove_both a M N :
     a € M -> a € N -> M / N =mul= (rem a M) / (rem a N).
@@ -639,7 +638,7 @@ Module MultisetList (EQ : Eqset_dec).
   Qed.
 
   Lemma member_union a M N : a € (M ++ N) -> a € M \/ a € N.
-  Proof. unfold member. rewrite (union_mult _ M N). omega. Qed.
+  Proof. unfold member. rewrite (union_mult _ M N). lia. Qed.
 
   Lemma member_meq_union a M N M' N' :
     M ++ N =mul= M' ++ N' -> (a € M \/ a € N) -> ~a € N' -> a € M'.
@@ -649,7 +648,7 @@ Module MultisetList (EQ : Eqset_dec).
             = ((a#M') + (a#N'))%nat).
     rewrite <- !union_mult.
     apply meq_multeq; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma meq_union_meq M N P : M ++ P =mul= N ++ P -> M =mul= N.
@@ -659,7 +658,7 @@ Module MultisetList (EQ : Eqset_dec).
             = ((x#N) + (x#P))%nat).
     rewrite <- !union_mult.
     apply meq_multeq; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma meq_union_meq2 M N P : P ++ M =mul= P ++ N -> M =mul= N.
@@ -669,14 +668,14 @@ Module MultisetList (EQ : Eqset_dec).
             = ((x#P) + (x#N))%nat).
     rewrite <- !union_mult.
     apply meq_multeq; trivial.
-    omega.
+    lia.
   Qed.
-  
-  Hint Resolve meq_union_meq meq_union_meq2 : core .
-  
+
+  #[export] Hint Resolve meq_union_meq meq_union_meq2 : core .
+
   Lemma meq_meq_union M N P : M =mul= N -> M ++ P =mul= N ++ P.
   Proof. solve_meq. Qed.
-  Hint Resolve meq_meq_union : core.
+  #[export] Hint Resolve meq_meq_union : core.
   Lemma meq_ins_ins_eq a a' M M' :
     M ++ [a] =mul= M' ++ [a'] -> a = a' -> M =mul= M'.
   Proof.
@@ -696,7 +695,7 @@ Module MultisetList (EQ : Eqset_dec).
     erewrite  <- (singleton_mult_notin _ _ H0).
     rewrite <- !union_mult.
     apply meq_multeq; trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma meq_ins_rem a M : a € M -> M =mul= (rem a M) ++ [a].
@@ -712,7 +711,7 @@ Module MultisetList (EQ : Eqset_dec).
     assert (x#M = a#M).
     apply mult_eqA_compat; auto.
     rewrite mult_remove_in; auto.
-    omega.
+    lia.
     (* ~ x =A= a *)
     rewrite !singleton_mult_notin; auto.
     rewrite mult_remove_not_in; auto.
@@ -725,8 +724,8 @@ Module MultisetList (EQ : Eqset_dec).
     eapply meq_union_meq with (P:=[a]).
     rewrite union_comm_app, (union_comm_app N _).
     auto.
-  Qed.     
-  Hint Resolve insert_meq : core.
+  Qed.
+  #[export] Hint Resolve insert_meq : core.
 
   Lemma meq_insert_remove a M : a € M -> a :: (rem a M) =mul= M.
   Proof.
@@ -760,23 +759,23 @@ Module MultisetList (EQ : Eqset_dec).
       symmetry.
       apply meq_remove_insert. 
     Qed. *)
-  
+
   Lemma meq_diff_meq M N P : M =mul= N -> M / P =mul= N / P.
-  
+
   Proof. solve_meq. Qed.
-  
+
   (*  Section Decidability. *)
 
   Lemma member_dec a M : {a € M}+{~a € M}.
-  
+
   Proof.
     intros; case (Compare_dec.zerop (a # M)); intro.
-    right; mset_unfold. omega.
+    right; mset_unfold. lia.
     left; auto.
   Qed.
-  
+
   Lemma empty_dec : forall M, {M =mul= empty}+{~ M =mul= empty}.
-  
+
   Proof.
     induction M; intros.
     left; solve_meq.
@@ -784,12 +783,12 @@ Module MultisetList (EQ : Eqset_dec).
     absurd (a # (a :: M) = a # []); auto.
     rewrite empty_mult; rewrite union_mult2.
     set (w := singleton_member a); unfold member in w.
-    omega.
+    lia.
   Qed.
-  
-  (*       
+
+  (*
  End Decidability. *)
-  
+
   (*     Lemma insert_diff a M N :
        a :: M / N =mul= empty -> a € N /\ M / rem a N =mul= empty.
 
@@ -807,14 +806,14 @@ Module MultisetList (EQ : Eqset_dec).
       Check diff_remove_both.
       symmetry.
       erewrite diff_remove_both with (a:=a); auto.
-      
+
        erewrite member_insert. a M).  H0).
       solve_meq.
     Qed.
    *)
   Lemma diff_MM_empty M : M / M =mul= [].
   Proof. solve_meq. Qed.
-  
+
   Lemma ins_meq_union M N P a :
     M ++ [a] =mul= N ++ P -> a € N -> M =mul= (N / [a]) ++ P.
   Proof.
@@ -833,7 +832,7 @@ Module MultisetList (EQ : Eqset_dec).
     rewrite singleton_mult_in; auto.
     assert (((x#M) + 1)%nat = ((x#N) + (x#P))%nat).
     rewrite <- (singleton_mult_in _ _ (symmetry x_a)); trivial.
-    omega.
+    lia.
     (* ~ x =A= a *)
     rewrite union_mult.
     rewrite diff_mult.
@@ -841,7 +840,7 @@ Module MultisetList (EQ : Eqset_dec).
     rewrite (singleton_mult_notin _ _ H2).
     assert (((x#M) + 0)%nat = ((x#N) + (x#P))%nat).
     rewrite <- (singleton_mult_notin _ _ H2); trivial.
-    omega.
+    lia.
   Qed.
 
   Lemma mem_memrem M a b : a <> b -> a € M -> a € (M / [b]).
@@ -856,7 +855,7 @@ Module MultisetList (EQ : Eqset_dec).
   Proof.
     unfold not; intros.
     absurd (x # M = 0%nat).
-    unfold member in H; omega.
+    unfold member in H; lia.
     erewrite meq_multeq with (N:=[]); auto.
   Qed.
 
@@ -886,13 +885,13 @@ Module MultisetList (EQ : Eqset_dec).
     destruct (eq_dec a x).
     rewrite singleton_mult_in; trivial.
     erewrite mult_eqA_compat with (y:=a); auto.
-    unfold member in H; omega.
+    unfold member in H; lia.
     rewrite singleton_mult_notin; trivial.
-    omega.
+    lia.
   Qed.
 
   (*  End MultisetLemmas. *)
-  (*  
+  (*
  Section Multiset. *)
 
   Lemma multiset_meq_non_empty : forall M,
@@ -924,18 +923,18 @@ Module MultisetList (EQ : Eqset_dec).
     rewrite union_mult.
     assert ((x # l) > 0).
     apply (IHl x); trivial.
-    omega.
+    lia.
   Qed.
 
 
   (*   End Multiset. *)
-  
+
   Add Parametric Relation : Multiset meq
       reflexivity proved by meq_refl
       symmetry proved by meq_sym
       transitivity proved by meq_trans as eq_ms.
 
-  
+
   (** Compatibility of Multiset and Permutation *)
   (* Lemma meq_nil : [] =mul= [].
 Proof. solve_meq. Qed.
@@ -947,26 +946,26 @@ Proof. solve_meq. Qed.
   Lemma not_eq_zero : forall a x,
       a <> x -> x # [a] = 0%nat. 
   Proof. intros. simpl. case (eq_dec a x); [contradiction | trivial]. Qed.
-  
+
   Lemma union_mult_step_eq : forall M N a x,
       a = x -> x # ( [a] ++ (M ++ N)) = x # (M ++ N) + 1.
   Proof.
     intros M N a x x_a.
     rewrite union_mult. 
-    rewrite eq_step; auto. omega.
+    rewrite eq_step; auto. lia.
   Qed.
 
   Lemma eq_then_meq: forall M N,
       M = N -> M =mul= N.
   Proof. intros; destruct M; subst; apply multeq_meq; auto. Qed.
-  
+
   Lemma union_left : forall M N1 N2, N1 =mul= N2 -> (N1 ++ M) =mul= (N2 ++ M).
   Proof. solve_meq. Qed.
 
   Lemma union_right : forall M N1 N2, N1 =mul= N2 -> (M ++ N1) =mul= (M ++ N2).
   Proof. solve_meq. Qed.
 
-  Hint Resolve union_left union_right : core.
+  #[export] Hint Resolve union_left union_right : core.
 
   Lemma union_rotate x y z : x ++ (y ++ z) =mul= z ++ (x ++ y).
   Proof. solve_meq. Qed.
@@ -987,8 +986,8 @@ Proof. solve_meq. Qed.
 
   Lemma union_perm_left'' x a z : (a :: x) ++ z  =mul= a :: (x ++ z).
   Proof. auto. Qed.
-  
-  Hint Resolve union_rotate 
+
+  #[export] Hint Resolve union_rotate 
        union_reverse 
        meq_congr 
        union_perm_left 
@@ -1001,18 +1000,18 @@ Proof. solve_meq. Qed.
   Lemma multiset_twist2 x y z t : x ++ ((y ++ z) ++ t) =mul= (y ++ (x ++ z)) ++ t.
   Proof. solve_meq. Qed.
 
-  Hint Resolve multiset_twist1 multiset_twist2 : core .
+  #[export] Hint Resolve multiset_twist1 multiset_twist2 : core .
 
   Lemma treesort_twist1 x y z t u :
     u =mul= (y ++ z) ->
     x ++ (u ++ t) =mul= (y ++ (x ++ t)) ++ z.
-  Proof. 
-    intros. 
+  Proof.
+    intros.
     apply multeq_meq; intros.
     apply meq_multeq with (x:=x0) in H.
     rewrite !union_mult.
     rewrite !union_mult in H.
-    omega.
+    lia.
   Qed.
 
   Lemma treesort_twist2 x y z t u :
@@ -1024,15 +1023,15 @@ Proof. solve_meq. Qed.
     apply meq_multeq with (x:=x0) in H.
     rewrite !union_mult.
     rewrite !union_mult in H.
-    omega.
+    lia.
   Qed.
 
-  Hint Resolve treesort_twist1 treesort_twist2 : core.
+  #[export] Hint Resolve treesort_twist1 treesort_twist2 : core.
 
   Lemma my_p x y z t : ((x ++ y) ++ z) ++ t =mul= t ++ (z ++ (x ++ y)).
   Proof. solve_meq. Qed.
 
-  Hint Resolve my_p : core.
+  #[export] Hint Resolve my_p : core.
 
   Lemma meq_skip : forall a M1 M2, M1 =mul= M2 -> a :: M1 =mul= a :: M2.
   Proof. intros. change (a :: M1 =mul= a :: M2) with ([a] ++ M1 =mul= [a] ++ M2). 
@@ -1047,7 +1046,7 @@ Proof. solve_meq. Qed.
     apply multeq_meq; intros.
     apply meq_multeq with (x:=x) in H.
     rewrite !union_mult.
-    omega.
+    lia.
   Qed.
 
   Lemma meq_swap_cons a b M : (a :: b:: M) =mul= (b :: a :: M).
@@ -1058,13 +1057,13 @@ Proof. solve_meq. Qed.
   Lemma union_rotate_cons a b c M : (a :: b :: c :: M) =mul= (c :: a :: b :: M).
   Proof. change ((a :: b :: c :: M) =mul= (c :: a :: b :: M)) with 
          (([a] ++ [b] ++ [c] ++ M) =mul= ([c] ++ [a] ++ [b] ++ M)). solve_meq. Qed.
-  
-  Hint Resolve meq_skip meq_swap meq_swap_cons union_rotate_cons : core.
+
+  #[export] Hint Resolve meq_skip meq_swap meq_swap_cons union_rotate_cons : core.
 
 
   Lemma pair_app (F G: A) : [F; G] = [F]++[G].
   Proof. auto. Qed.
-  
+
   Ltac app_normalize_aux :=
     try rewrite !pair_app; 
     repeat
@@ -1085,13 +1084,13 @@ Proof. solve_meq. Qed.
     intros. rewrite app_assoc.
     auto.
   Qed.
-  Hint Resolve union_assoc_cons: core.
-  
+  #[export] Hint Resolve union_assoc_cons: core.
+
   Ltac app_normalize := repeat (
                             rewrite <- !union_assoc_cons ||
                             rewrite <- !app_assoc || 
                             rewrite app_nil_l); auto.
-  
+
 
   Lemma perm_cons_single a b: a::[b] =mul= b::[a].
   Proof. 
@@ -1099,13 +1098,13 @@ Proof. solve_meq. Qed.
     ([a] ++ [b] =mul= [b] ++ [a]). 
     rewrite union_comm_app.
     auto. Qed.
-  
+
   Lemma perm_cons a b L: a::b::L =mul= b::a::L.
   Proof. 
     change (a :: b :: L =mul= b :: a :: L) with
     ([a] ++ [b] ++ L =mul= [b] ++ [a] ++ L). auto. Qed.
 
-  Hint Resolve perm_cons_single perm_cons : core.
+  #[export] Hint Resolve perm_cons_single perm_cons : core.
 
   Lemma union_middle : forall M N1 N2 : list A, N1 =mul= N2 -> N1 ++ M =mul= M ++ N2.
   Proof.
@@ -1114,7 +1113,7 @@ Proof. solve_meq. Qed.
     auto.
   Qed.
 
-  
+
   Ltac perm_simplify := app_normalize; repeat (
                                            rewrite app_nil_r || auto ||
                                            match goal with
@@ -1151,10 +1150,10 @@ Proof. solve_meq. Qed.
       | |- ?a::?M =mul= _ => change (a :: M) with
                              ([a] ++ M) ; try rewrite !union_perm_left'              
       end.
-  
+
   Ltac solve_permutation := 
-    solve [auto | solv_P; unfold meq; intro; rewrite !union_mult; omega | timeout 3 solver_permute ].
-  
+    solve [auto | solv_P; unfold meq; intro; rewrite !union_mult; lia | timeout 3 solver_permute ].
+
   Lemma In_union_or : forall x N M, (x € (N ++ M)) <->  x € M \/ x € N.
   Proof.
     split; intros;
@@ -1202,7 +1201,7 @@ Proof. solve_meq. Qed.
     firstorder.
   Qed.
 
-  
+
   (** Properties about  diff *)
 
   Lemma nil_rem: forall M, [] / M = [].
@@ -1217,7 +1216,7 @@ Proof. solve_meq. Qed.
     apply mult_remove_not_in with (M:=M) in H.
     rewrite H; auto.
   Qed.
-  
+
   (*  Lemma permut_remove_hd :
     forall l l1 l2 a,
        [a] ++ l =mul= l1 ++ ([a] ++ l2) -> l =mul= l1 ++ l2.
@@ -1230,10 +1229,10 @@ Proof. solve_meq. Qed.
     apply multeq_meq. intro x.
     rewrite diff_mult.
     rewrite !union_mult.
-    omega.
+    lia.
 Qed. *)
-  
-  
+
+
   Lemma rem_skip : forall a M1 M2, M1 =mul= M2 -> (rem a M1) =mul= (rem a M2).
   Proof.
     intros.
@@ -1249,7 +1248,7 @@ Qed. *)
     symmetry in e.
     contradiction.
   Qed.
-  
+
   Lemma principal : forall L M M0 a b,
       a <> b -> L =mul= a :: M -> L =mul= b :: M0 -> 
       M0 =mul= a :: (rem a M0) /\ M =mul= b :: (rem b M) .
@@ -1273,7 +1272,7 @@ Qed. *)
     case (eq_dec b b); intros; auto.
     contradiction.
   Qed.
-  
+
   Lemma seconda : forall L M M0 N a b,
       a <> b -> L =mul= a :: M -> L =mul= b :: (M0 ++ N) -> 
       exists L', M0 ++ N =mul= a :: L'.
@@ -1321,10 +1320,10 @@ Qed. *)
     rewrite P2 in P1.
     revert L X M N P1 P2 P3.
     induction B; intros; auto.
-    
+
     eapply IHB with (L:= B ++ N); auto.
     change (a :: B) with ([a] ++ B) in *.
-    
+
     apply rem_to_union_app in P1.
     rewrite P1.
     simpl.
@@ -1380,7 +1379,7 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     exact I1.
     exact I2.
     auto.
-    
+
     assert (a € (M0 ++ N)). 
     rewrite H. apply In_union_or. 
     right. apply In_to_in.  firstorder.
@@ -1411,7 +1410,7 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     exists x; auto.   
   Qed.
   Arguments solsls [M N X a].
-  Hint Resolve solsls : core .
+  #[export] Hint Resolve solsls : core .
   Lemma solsls2 : forall M N X Y a,
       M ++ N =mul= a :: Y -> 
       M =mul= a :: X -> Y =mul= N ++ X.
@@ -1419,14 +1418,14 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     intros M N X Y a P1 P2.
     symmetry in P1.
     rewrite P2 in P1.
-    
+
     apply rem_to_union_app in P1.
     rewrite union_comm_app, P1.
     symmetry. apply rem_aM_cons. 
   Qed.
 
   Arguments solsls2 [M N X Y a].
-  Hint Resolve solsls2: core.
+  #[export] Hint Resolve solsls2: core.
   Lemma member_unit : forall a b,
       b = a <-> a € [b].
   Proof.
@@ -1438,7 +1437,7 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     apply In_to_in in H.
     firstorder.
   Qed.
-  
+
   Lemma member_due : forall a b L,
       b <> a -> a € ([b] ++ L) -> a € L.
   Proof.
@@ -1448,7 +1447,7 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     apply member_unit in a_b.
     contradiction.
   Qed.
-  
+
   Lemma se_i3 : forall A B,
       A = B <-> [A] =mul= [B].
   Proof.
@@ -1494,7 +1493,7 @@ Proof. intros. compute. case (eq_dec a x); [contradiction | trivial].
     intros.
     rewrite union_comm_app; auto.
   Qed.
-  
+
   Lemma seconda_sec' : forall M M0 a b,
       b <> a -> a :: M =mul= b :: M0 -> 
       exists L, M0 =mul= a :: L /\  M =mul= b :: L.
@@ -1560,8 +1559,8 @@ Qed.  *)
     simpl.
     destruct (eq_dec a b); auto.
     symmetry in e. contradiction.
-  Qed.  
-  
+  Qed.
+
   Lemma resolvers2: forall a b M, a :: M =mul= [b] -> b = a /\ M = [].
   Proof.
     intros.
@@ -1569,7 +1568,7 @@ Qed.  *)
     split.
     apply meq_cons_In in H;
       apply member_unit; auto.
-    
+
     assert (M =mul= []).
     destruct (empty_dec M); auto.
     destruct (eq_dec a b);
@@ -1580,8 +1579,8 @@ Qed.  *)
     rewrite union_mult, singleton_mult_in in H; auto.
     simpl in H.
     inversion H.
-    
-    apply emp_mult in H0; auto.   
+
+    apply emp_mult in H0; auto.
   Qed.
 
   Lemma resolvers: forall a b c M, a :: M =mul= [b; c] -> 
@@ -1591,23 +1590,23 @@ Qed.  *)
     assert ([a] ++ M =mul= [b] ++ [c]) by auto.
     symmetry in H.
     apply rem_to_union_app in H.
-    
+
     (*  simpl in *. *)
     case (eq_dec a c); intros.
     right; auto.
     case (eq_dec a b); intros.
     left; auto.
-    
+
     assert (exists L, [c] =mul= [a] ++ L /\  M =mul= [b] ++ L).
-    
+
     eapply seconda_sec'; auto.
     repeat destruct H1.
-    
+
     symmetry in H1.
     apply meq_cons_In in H1.
     apply member_unit in H1.
     right; auto.
-  Qed.           
+  Qed.
 
   Lemma resolvers3: forall a b, [a] =mul= [b] <-> b = a.
   Proof.
@@ -1635,7 +1634,7 @@ Qed.  *)
     rewrite H in H0.
     eapply singleton_notempty; eauto.
   Qed.
-  
+
   Lemma permut_remove_hd :
     forall l l1 l2 a,
       [a] ++ l =mul= l1 ++ ([a] ++ l2) -> l =mul= l1 ++ l2.
@@ -1692,7 +1691,7 @@ Qed.  *)
       apply seconda_sec'; auto.
   Qed.
 
-  
+
   Lemma DestructMSet2_aux a L M: L =mul= [a] ++ M -> 
                                  exists T1 T2, L = T1 ++ [a] ++ T2.
   Proof.
@@ -1713,7 +1712,7 @@ Qed.  *)
 
   Lemma DestructMSet2' l L l' L' x:  L =mul= l' :: x -> L' =mul= l :: x ->
                                      (exists L1 L2 L1' L2', L= L1 ++ [l'] ++ L2 /\ L' = L1' ++ [l] ++ L2').
-  Proof.          
+  Proof.
     intros.
     apply DestructMSet2_aux in H.
     apply DestructMSet2_aux in H0.
@@ -1736,7 +1735,7 @@ Qed.  *)
       do 2 destruct H.
       assert (L' =mul= l :: x) by auto.
       assert (L =mul= l' :: x) by auto.
-      
+
       apply DestructMSet2_aux in H.
       apply DestructMSet2_aux in H0.
       do 2 destruct H.
@@ -1750,7 +1749,7 @@ Qed.  *)
       apply right_union in H1.
       apply right_union in H2.
       rewrite H1, H2; auto.
-  Qed.  
+  Qed.
 
   Lemma EmptyMS : forall a (M:list A), [] <> M ++ [a].
   Proof.
