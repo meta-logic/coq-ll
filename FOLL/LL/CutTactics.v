@@ -14,8 +14,8 @@ Require Export Lia.
 Export ListNotations.
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r: core .
-#[local] Hint Resolve Max.le_max_l: core .
+#[local] Hint Resolve Nat.le_max_r: core .
+#[local] Hint Resolve Nat.le_max_l: core .
 
 Module CTactics (DT : Eqset_dec_pol).
   Module Export Sys :=  SqBasic DT.
@@ -24,10 +24,10 @@ Module CTactics (DT : Eqset_dec_pol).
 
   Ltac aux_bases :=
     match goal with
-    | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
-      refine (plus_is_O _ _ (symmetry Hcut))
-    | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
-      refine (plus_is_O _ _ Hcut)     
+    | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] =>
+      refine (proj1 (Nat.eq_add_0 _ _) (symmetry Hcut))
+    | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] =>
+      refine (proj1 (Nat.eq_add_0 _ _) Hcut)
     end.
 
   Ltac simpl_bases :=
@@ -530,28 +530,28 @@ match goal with
     + eapply sig3_one; eassumption.
     + eapply sig3_top; eassumption.
     + eapply sig3_bot; eauto.
-    + eapply sig3_par; eauto. 
+    + eapply sig3_par; eauto.
     +
       case (Nat.max_spec n m); intros Hmax;
         destruct Hmax as [lt Hmax].
       refine (sig3_tensor H1 _ _);
-        apply H with (D:=D); auto;    
-          rewrite  Hmax; try apply Gt.gt_S_le; auto.
+        apply H with (D:=D); auto;
+          rewrite  Hmax; try apply Nat.succ_le_mono; auto.
       refine (sig3_tensor H1 _ _);
-        apply H with (D:=D); auto;    
+        apply H with (D:=D); auto;
           rewrite Hmax; auto.
-    + eapply sig3_plus1; eauto. 
-    + eapply sig3_plus2; eauto. 
+    + eapply sig3_plus1; eauto.
+    + eapply sig3_plus2; eauto.
     +
       case (Nat.max_spec n m); intros Hmax;
         destruct Hmax as [lt Hmax].
       refine (sig3_with H1 _ _);
-        apply H with (D:=D); auto;    
-          rewrite  Hmax; try apply Gt.gt_S_le; auto.
+        apply H with (D:=D); auto;
+          rewrite  Hmax; try apply Nat.succ_le_mono; auto.
       refine (sig3_with H1 _ _);
-        apply H with (D:=D); auto;    
+        apply H with (D:=D); auto;
           rewrite Hmax; auto.
-    + 
+    +
       assert (B ++ D =mul= (F :: B0) ++ D) by auto.
       eapply sig3_copy; eauto.
     +
@@ -565,7 +565,7 @@ match goal with
       inversion H1; subst;
         eapply sig3_CUT.
       eapply sig3_cut with (F:=F); eauto.
-      
+
       eapply sig3_ccut with (F:=F); eauto.
       change (F° :: B ++ D) with ((F° :: B) ++ D).
       eapply H; auto.
@@ -585,9 +585,9 @@ match goal with
     change (F :: F :: B) with ([F] ++ F :: B).
     rewrite union_comm.
     apply height_preserving_weakning_sig3.
-    auto. 
+    auto.
   Qed.
-  
+
   Lemma ClassicalSet' : forall n c B L F, 
       n |~> c ; F :: F :: B ; L -> n |~> c ; F :: B ; L .
   Proof.
@@ -601,10 +601,10 @@ match goal with
       case (Nat.max_spec n m); intros Hmax;
         destruct Hmax as [lt Hmax].
       refine (sig3_tensor H1 _ _);
-        apply H ; auto;    
-          rewrite  Hmax; try apply gt_S_le; auto.
+        apply H ; auto;
+          rewrite  Hmax; try apply Nat.succ_le_mono; auto.
       refine (sig3_tensor H1 _ _);
-        apply H; auto;    
+        apply H; auto;
           rewrite Hmax; auto.
     +
       refine (sig3_plus1 H1 _).
@@ -616,12 +616,12 @@ match goal with
       case (Nat.max_spec n m); intros Hmax;
         destruct Hmax as [lt Hmax].
       refine (sig3_with H1 _ _);
-        apply H; auto;    
-          rewrite  Hmax; try apply gt_S_le; auto.
+        apply H; auto;
+          rewrite  Hmax; try apply Nat.succ_le_mono; auto.
       refine (sig3_with H1 _ _);
-        apply H; auto;    
+        apply H; auto;
           rewrite Hmax; auto.
-    + 
+    +
       destruct (FEqDec F0 F); subst.
       refine (sig3_copy _ H2 _); auto.
       remember (F :: B) as D.
@@ -630,7 +630,7 @@ match goal with
       clear H1.
       repeat destruct H0.
       apply eq_then_meq in HeqD.
-      rewrite HeqD in H3. 
+      rewrite HeqD in H3.
       refine (sig3_copy H1 H2 _).
       rewrite HeqD.
       apply H; auto.   

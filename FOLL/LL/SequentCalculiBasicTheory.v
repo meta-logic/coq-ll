@@ -23,8 +23,8 @@ Set Implicit Arguments.
 Module SqBasic (DT : Eqset_dec_pol).
 
   Module Export Sys :=  SqSystems DT.
-  #[export] Hint Resolve Max.le_max_r : core .
-  #[export] Hint Resolve Max.le_max_l : core .
+  #[export] Hint Resolve Nat.le_max_r : core .
+  #[export] Hint Resolve Nat.le_max_l : core .
   #[export] Hint Constructors sig2h : core .
   #[export] Hint Constructors sig2hc : core .
   #[export] Hint Constructors sig2hcc : core .

@@ -9,7 +9,7 @@ Require Export SequentCalculi.
 Require Export Coq.Arith.PeanoNat.
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 (** Simplification Lemmas *)
 
@@ -110,7 +110,7 @@ Arguments sig3_exchange [n c B1 B2 L1 L2].
 Theorem height_preserving_weakning_sig2h: forall n B D L, 
     n |-- B; L -> n |-- B ++ D; L.
 Proof.
-  induction n as [|n'] using strongind; 
+  induction n as [|n'] using strongind;
     intros B D L Hsig2h;
     inversion Hsig2h; subst.
   +
@@ -120,17 +120,17 @@ Proof.
   +
     refine (sig2h_top _ H).
   +
-    refine (sig2h_bot H1 _); auto. 
+    refine (sig2h_bot H1 _); auto.
   +
     refine (sig2h_par H1 _); auto.
   +
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2h_tensor H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2h_tensor H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto; 
         rewrite Hmax; auto.
   +
     refine (sig2h_plus1 H1 _).
@@ -142,23 +142,23 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2h_with H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2h_with H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   +
     assert (B ++ D =mul= (F :: B0) ++ D) by auto.
     refine (sig2h_copy H0 H2 _).
-    apply H with (D:=D); auto.  
+    apply H with (D:=D); auto.
   +
     refine (sig2h_quest H1 _).
     assert (F :: B ++ D = (F :: B) ++ D) by auto.
     rewrite H0.
-    apply H with (D:=D); auto.   
+    apply H with (D:=D); auto.
   +
     refine (sig2h_bang H1 _).
-    apply H with (D:=D); auto. 
+    apply H with (D:=D); auto.
 Qed.
 
 Theorem height_preserving_weakning_sig2h': forall n B L, n |-- []; L -> n |-- B; L.
@@ -172,7 +172,7 @@ Qed.
 Theorem height_preserving_weakning_sig2hc: forall n B D L, 
     n |-c B; L -> n |-c B ++ D; L.
 Proof.
-  induction n as [|n'] using strongind; 
+  induction n as [|n'] using strongind;
     intros B D L Hsig2hc;
     inversion Hsig2hc; subst.
   +
@@ -187,16 +187,16 @@ Proof.
     refine (sig2hc_par H1 _); auto.
   +
     refine (sig2hc_cut H1 _ _); auto.
-    eapply H with (L:= F :: M); auto.  
-    eapply H with (L:=  F° :: N); auto. 
+    eapply H with (L:= F :: M); auto.
+    eapply H with (L:=  F° :: N); auto.
   +
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2hc_tensor H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2hc_tensor H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   +
     refine (sig2hc_plus1 H1 _).
@@ -208,23 +208,23 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2hc_with H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2hc_with H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   +
     assert (B ++ D =mul= (F :: B0) ++ D) by auto.
     refine (sig2hc_copy H0 H2 _).
-    apply H with (D:=D); auto.  
+    apply H with (D:=D); auto.
   +
     refine (sig2hc_quest H1 _).
     assert (F :: B ++ D = (F :: B) ++ D) by auto.
     rewrite H0.
-    apply H with (D:=D); auto.    
+    apply H with (D:=D); auto.
   +
     refine (sig2hc_bang H1 _).
-    apply H with (D:=D); auto. 
+    apply H with (D:=D); auto.
 Qed.
 
 Theorem height_preserving_weakning_sig2hc': forall n B L, n |-c []; L -> n |-c B; L.
@@ -246,16 +246,16 @@ Proof.
   +
     refine (sig2hcc_one _ H).
   +
-    refine (sig2hcc_top _ H). 
+    refine (sig2hcc_top _ H).
   +
-    refine (sig2hcc_bot H1 _); auto. 
+    refine (sig2hcc_bot H1 _); auto.
   +
     refine (sig2hcc_par H1 _); auto.
   +
     refine (sig2hcc_cut H1 _ _); auto.
     eapply H with (L:= F :: M); auto. 
     eapply H with (L:= F° :: N); auto. 
-    
+
   +
     refine (sig2hcc_ccut H1 _ _).
     eapply H with (L:= (! F) :: M); auto.
@@ -265,10 +265,10 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2hcc_tensor H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2hcc_tensor H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   +
     refine (sig2hcc_plus1 H1 _).
@@ -280,23 +280,23 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig2hcc_with H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig2hcc_with H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto; 
         rewrite Hmax; auto.
   +
     assert (B ++ D =mul= (F :: B0) ++ D) by auto.
     refine (sig2hcc_copy H0 H2 _).
-    apply H with (D:=D); auto.  
+    apply H with (D:=D); auto.
   +
     refine (sig2hcc_quest H1 _).
     assert (F :: B ++ D = (F :: B) ++ D) by auto.
     rewrite H0.
-    apply H with (D:=D); auto.    
+    apply H with (D:=D); auto.
   +
     refine (sig2hcc_bang H1 _).
-    apply H with (D:=D); auto. 
+    apply H with (D:=D); auto.
 Qed.
 
 Theorem height_preserving_weakning_sig2hcc': forall n B L, n |-cc []; L -> n |-cc B; L.
@@ -372,10 +372,10 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig3_tensor H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig3_tensor H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   + plus1.
   + plus2.
@@ -383,10 +383,10 @@ Proof.
     case (Nat.max_spec n m); intros Hmax;
       destruct Hmax as [lt Hmax].
     refine (sig3_with H1 _ _);
-      apply H with (D:=D); auto;    
-        rewrite  Hmax; try apply Gt.gt_S_le; auto.
+      apply H with (D:=D); auto;
+        rewrite  Hmax; try apply Nat.succ_le_mono; auto.
     refine (sig3_with H1 _ _);
-      apply H with (D:=D); auto;    
+      apply H with (D:=D); auto;
         rewrite Hmax; auto.
   + 
     assert (B ++ D =mul= (F :: B0) ++ D) by auto.
@@ -394,7 +394,7 @@ Proof.
   +
     assert (F :: B ++ D = (F :: B) ++ D) by auto.
     eapply sig3_quest; eauto.
-    rewrite H0; eauto.   
+    rewrite H0; eauto.
   + bang.
   +
     inversion H1; subst;

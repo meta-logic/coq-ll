@@ -3,26 +3,7 @@
 (** ** Sets, Decidable Sets and Polarities
 *)
 
-Require Import Arith.
-
-(* Auxilarly arithmetic results *)
-Lemma GtZero : forall n, n >0 -> exists n', n = S n'.
-Proof.
-  intros.
-  destruct n.
-  inversion H.
-  exists n;auto.
-Qed.
-
-Lemma plus_le_reg_r: forall n m q : nat, n + q <= m + q -> n <= m.
-Proof.
-  intros.
-  assert (n+q = q + n) by (apply plus_comm).
-  assert (m+q = q + m) by (apply plus_comm).
-  rewrite H0 in H. rewrite H1 in H.
-  eapply plus_le_reg_l in H.
-  assumption.
-Qed.
+Require Import PeanoNat.
 
 (** Just a set *)
 
@@ -57,7 +38,3 @@ Module NatSet <: Eqset_dec_pol.
     | S (S n) => isPositive n
     end.
 End NatSet.
-
-
-
-

@@ -24,7 +24,8 @@ Ltac EquivPosCase H IH m L Hinv :=
   match goal with
     [_ : AsynchronousF _ = false |- _] =>
     inversion H; subst;
-    apply IH  with(m:=L_weight L) in Hinv;auto  using le_plus_r;
+    apply IH with(m:=L_weight L) in Hinv;
+      auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n));
     destruct Hinv;
     eexists;
     simpl; eapply tri_store;auto;
@@ -41,7 +42,7 @@ Proof.
   generalize dependent M .
   generalize dependent n .
   generalize dependent w .
-  
+
   induction w as [| w' IH] using strongind ; intros n M B L' L H Hw  ;  destruct L as [|l].
   + simpl. simpl in H.
     eexists.
@@ -68,7 +69,7 @@ Proof.
       simpl. eapply tri_par;auto.
       eassumption.
       simpl.
-      apply plus_assoc_reverse.
+      symmetry; apply Nat.add_assoc.
     ++ (* WITH *)
       apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
       apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
@@ -261,7 +262,7 @@ Proof.
       simpl. eapply tri_par;auto.
       eassumption.
       simpl.
-      apply plus_assoc_reverse.
+      symmetry; apply Nat.add_assoc.
     ++ (* WITH *)
       apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
       apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
@@ -289,7 +290,8 @@ Ltac EquivAuxSyncPosCases IH F H8 :=
     [ H1 : _ |-F- _ ; ?M ++ [?F] ; UP ((?G :: ?L) ++ _) |- _ ] =>
     inversion H1;subst;
     assert ( (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
-    eapply TriExchange with (M':= (M ++ [G]) ++ [F]) in H8; auto using le_plus_r, le_plus_l;
+    eapply TriExchange with (M':= (M ++ [G]) ++ [F]) in H8;
+      auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)), Nat.le_add_r;
     apply IH  with  (m:=L_weight L) in H8 ;auto;
     destruct H8;
     eexists; simpl; eapply tri_store;auto; eassumption
@@ -331,11 +333,13 @@ Proof.
     ++ (* Tensor *) 
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [l1 ** l2] =mul=  (M ++ [l1 ** l2]) ++ [F]) by solve_permutation.
-      eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8; auto using le_plus_r.
-      apply IH  with  (m:=L_weight L) in H8 ;auto using le_plus_r.
+      eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+      apply IH  with (m:=L_weight L) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
       destruct H8.
       eexists; simpl; eapply tri_store;auto; eassumption.
-      
+
     ++ (* PAR *)
       inversion H1;subst.
       apply IH  with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L)) in H6;auto.
@@ -343,13 +347,15 @@ Proof.
       eexists.
       simpl. eapply tri_par;auto;eassumption.
       simpl.
-      apply plus_assoc_reverse.
+      symmetry; apply Nat.add_assoc.
       inversion H7.
     ++ (* OPLUS *) (* Tactic should solve this one *)
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [l1 ⊕ l2] =mul=  (M ++[l1 ⊕ l2]) ++ [F]) by solve_permutation.
-      eapply TriExchange with (M':= (M ++ [l1 ⊕ l2]) ++ [F]) in H8; auto using le_plus_r.
-      apply IH  with  (m:=L_weight L) in H8 ;auto using le_plus_r.
+      eapply TriExchange with (M':= (M ++ [l1 ⊕ l2]) ++ [F]) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+      apply IH with (m:=L_weight L) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
       destruct H8.
       eexists; simpl; eapply tri_store;auto;eassumption.
     ++ (* WITH *)
@@ -366,11 +372,13 @@ Proof.
     ++ (* BANG *) (* Tactic should solve this one *)
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [! l] =mul=  (M ++ [! l]) ++ [F]) by solve_permutation.
-      eapply TriExchange with (M':= (M ++ [! l]) ++ [F]) in H8; auto using le_plus_r.
-      apply IH  with  (m:=L_weight L) in H8 ;auto using le_plus_r.
+      eapply TriExchange with (M':= (M ++ [! l]) ++ [F]) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+      apply IH with (m:=L_weight L) in H8;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
       destruct H8.
       eexists; simpl; eapply tri_store;auto;eassumption.
-      
+
     ++  (* QUEST *)
       inversion H1;subst.
       apply IH  with(m:=L_weight L) in H6;auto.
@@ -420,7 +428,7 @@ Proof.
       simpl. eapply tri_par;auto.
       eassumption.
       simpl.
-      apply plus_assoc_reverse.
+      symmetry; apply Nat.add_assoc.
     ++ (* WITH *)
       apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L)) in H5;auto.
       apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L)) in H7;auto.
@@ -442,7 +450,7 @@ Proof.
       eexists.
       simpl. eapply tri_quest ;auto.
       eassumption.
-      apply le_plus_r.
+      rewrite Nat.add_comm; apply Nat.le_add_r.
 Qed.
 
 
@@ -918,9 +926,9 @@ Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; 
       destruct H7 as [m'  [IHn' IHd']].
       simpl.
 
-      exists (S (Init.Nat.max n' m'));split;auto. simpl.
+      exists (S (Nat.max n' m'));split;auto. simpl.
       apply le_n_S.
-      rewrite Max.succ_max_distr.
+      rewrite Nat.succ_max_distr.
       apply Nat.max_le_compat;auto.
 
       eapply tri_with;auto.

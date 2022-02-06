@@ -62,15 +62,15 @@ Module MultisetList (EQ : Eqset_dec).
   Definition meq X Y := forall a, mult X a = mult Y a.
 
   Definition rem := removeElem.
-  Definition diff := removeAll. 
+  Definition diff := removeAll.
 
-  Definition member x M := mult M x > 0. 
+  Definition member x M := mult M x > 0.
 
   Notation "X =mul= Y" := (meq X Y) (at level 70).
   Notation "X <>mul Y" := (~meq X Y) (at level 50).
   Notation "X / Y" := (diff X Y) .
-  Notation "x # M" := (mult M x)(at level 10). 
-  Notation "x € M" := (member x M) (at level  10). 
+  Notation "x # M" := (mult M x)(at level 10).
+  Notation "x € M" := (member x M) (at level  10).
 
   Lemma in_countIn : forall a l, In a l -> a # l > 0.
   Proof.
@@ -128,8 +128,8 @@ Module MultisetList (EQ : Eqset_dec).
   Qed.
 
   #[export] Hint Resolve in_eq 
-       in_cons 
-       not_in_cons 
+       in_cons
+       not_in_cons
        in_nil
        in_split
        in_inv : core .
@@ -145,7 +145,7 @@ Module MultisetList (EQ : Eqset_dec).
   Qed.
 
   Lemma meq_multeq: forall M N, M =mul= N -> (forall x, x # M = x # N).
-  Proof. auto. Qed.  
+  Proof. auto. Qed.
 
   Lemma multeq_meq: forall M N, (forall x, x # M = x # N) -> M =mul= N.
   Proof. auto. Qed.

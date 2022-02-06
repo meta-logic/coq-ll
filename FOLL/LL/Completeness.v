@@ -1011,7 +1011,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
     Proof with solveF.
       unfold RDown.
       intros.
-      symmetry in H0. apply plus_is_O in H0.
+      symmetry in H0. apply Nat.eq_add_0 in H0.
       destruct H0;subst.
       inversion H4;try(contradiction_multiset) ...
       apply AppSingleton in H0;subst;simpl in *.
@@ -1025,7 +1025,7 @@ Module InvLemmas (DT : Eqset_dec_pol).
     Proof with solveF.
       unfold RUp.
       intros.
-      symmetry in H. apply plus_is_O in H.
+      symmetry in H. apply Nat.eq_add_0 in H.
       destruct H;subst.
       inversion H2;subst ...
       destruct L;destruct L';simpl in *.
@@ -1409,8 +1409,8 @@ Module InvLemmas (DT : Eqset_dec_pol).
         simpl_union_context.
         +++ rewrite union_comm in HL1.
             rewrite HL1 in H7. rewrite H.
-            assert(HRI: RInd (S m + m0)).  apply IH. simpl. apply le_n_S.
-            rewrite Nat.add_comm. apply plus_le_compat_r ...
+            assert(HRI: RInd (S m + m0)).  apply IH. simpl. apply -> Nat.succ_le_mono.
+            rewrite Nat.add_comm. apply Nat.add_le_mono_r ...
             destruct HRI as [HUp  HDown];auto ...
             eapply HDown in H7  ...
             apply AdequacyTri1 in H3.
@@ -1420,8 +1420,8 @@ Module InvLemmas (DT : Eqset_dec_pol).
             assumption.
         +++ rewrite union_comm in HL2.
             rewrite HL2 in H3. rewrite H.
-            assert(HRI: RInd (S m + n)).  apply IH. simpl. apply le_n_S.
-            rewrite Nat.add_comm. apply plus_le_compat_r ...
+            assert(HRI: RInd (S m + n)).  apply IH. simpl. apply -> Nat.succ_le_mono.
+            rewrite Nat.add_comm. apply Nat.add_le_mono_r ...
             destruct HRI as [HUp  HDown] ...
             eapply HDown in H3 ...
             apply AdequacyTri1 in H7.

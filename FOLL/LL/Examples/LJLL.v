@@ -21,8 +21,8 @@ Require Export LL.Multisets.
 Require Export LL.StrongInduction.
 Require Export LL.FLLMetaTheory.
 
-#[local] Hint Resolve Max.le_max_r : core .
-#[local] Hint Resolve Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r : core .
+#[local] Hint Resolve Nat.le_max_l : core .
 
 
 Module PL.

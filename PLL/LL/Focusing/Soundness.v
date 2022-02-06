@@ -18,7 +18,7 @@ Require Import Coq.Program.Equality.
 
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 Theorem Soundness : forall B n  M A ,
     lexpPos M ->

@@ -25,8 +25,8 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
   Ltac EquivPosCase H IH m L Hinv :=
     match goal with
       [_ : AsynchronousF _ = false |- _] =>
-
-      apply IH  with(m:=L_weight L) in Hinv;auto  using le_plus_r;
+      apply IH with(m:=L_weight L) in Hinv;
+        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n));
       simpl;eapply tri_store;auto
     end.
 
@@ -218,7 +218,8 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
               [ H : |-F- _; (_ ++ [?F]) ++ [?G]; UP (?L ++ ?L') |- |-F- _ ; _ ; UP ( ?G :: ?L  ++ ?F :: ?L')] =>
               assert (Hch:  (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
               rewrite Hch in H;
-              apply IH  with (m:=  L_weight L) in H;auto using le_plus_r
+              apply IH  with (m:=  L_weight L) in H;
+                auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n))
             end).
       ++ (* bot *)
         apply tri_bot.
@@ -261,13 +262,16 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         try(
             match goal with
               [ Hx : _ |-F- _ ++ [?F]; _ ++ [_]; UP (?L ++ ?L') |- _] =>
-              apply IH  with (m:=  L_weight L) in Hx;auto using le_plus_r
+              apply IH  with (m:=  L_weight L) in Hx;
+                auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n))
             end).
       ++ (* bot *)
         apply tri_bot.
-        apply IH  with (m:=  L_weight L) in H5;auto using le_plus_r.
+        apply IH  with (m:=  L_weight L) in H5;
+          auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
       ++ (* par *)
-        apply IH  with (L:=F0 :: G :: L)  (m:=  Exp_weight F0 + Exp_weight G + L_weight L) in H7;auto using le_plus_r.
+        apply IH  with (L:=F0 :: G :: L)  (m:=  Exp_weight F0 + Exp_weight G + L_weight L) in H7;
+          auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
         simpl. lia.
       ++ (* with *)
         apply IH  with (L:=F0 :: L)  (m:=  Exp_weight F0 + L_weight L) in H8;auto;try(autounfold;simpl;lia).
@@ -445,7 +449,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
       ++ (* case 2 *)
         destruct Heq as [L1 [L2 [L1' [L2' Heq]]]].
         destruct Heq as [Heq [Heq1 Heq2]];subst.
-        inversion H;subst. 
+        inversion H;subst.
         +++ (* top *)
           eapply EquivAuxTop with (L:= a :: L1').
         +++ (* bottom *)
@@ -472,9 +476,8 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
                          (L' := [a] ++ L1' ++ [G ] ++ L2') in H7 ...
 
           apply EquivAuxWith with (L := a :: L1'); simpl;auto .
-          simpl in Heqw. inversion Heqw. auto.
-          simpl. rewrite plus_assoc_reverse. apply le_plus_r.
-          simpl in Heqw. inversion Heqw.  autounfold. lia.
+          unfold Exp_weight; lia.
+          unfold Exp_weight; lia.
         +++ (* quest *)
           eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H5 ...
           eapply AdequacyTri2 in H5. destruct H5.
@@ -484,13 +487,9 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
           eapply IH with (m:= L_weight(L1 ++ a :: L2))(L:=L1 ++ a :: L2) (L' := [a] ++ L1' ++ L2') in H7 ...
           eapply EquivAuxSync with (L:=a :: L1');eauto.
           simpl in Heqw. rewrite L_weightApp in Heqw. simpl in Heqw.
-          rewrite L_weightApp. 
+          rewrite L_weightApp.
           generalize(exp_weight0  l);intro.
-          apply GtZero in H1.
-          destruct H1. 
-          rewrite H1 in Heqw. simpl in Heqw.
-          inversion Heqw. 
-          simpl. autounfold. lia.
+          simpl; lia.
         +++ (* forall *)
           assert(forall x, |-F- B; M; UP ((a :: L1' ) ++ [Subst FX x] ++ L2')) ...
           intro x.
@@ -587,16 +586,14 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         destruct H7 as [m'  [IHn' IHd']].
         simpl.
         exists (S (Init.Nat.max n' m'));split ...
-        apply le_n_S.
-        rewrite Max.succ_max_distr.
-        apply Nat.max_le_compat;auto.
+        lia.
         autounfold. lia.
         autounfold. lia.
       ++  (* quest *)
         apply IH with (m:= L_weight  L) in H5;auto.
         destruct H5 as [n'  [IHn IHd]].
         exists (S n');split;auto. lia. simpl; eauto.
-        lia. 
+        lia.
       ++ (* Store *) 
         MReplaceIn ((M ++ [F]) ++ [l]) ((M ++ [l]) ++ [F]) H7.
         apply IH with (m:= L_weight L) in H7;auto.

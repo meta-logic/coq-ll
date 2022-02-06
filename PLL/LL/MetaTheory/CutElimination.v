@@ -10,7 +10,7 @@ Require Export CutCases.
 Require Export llTactics.
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 Lemma ap_cut_free B L M1 M2 v :
   0%nat = lexp_weight (v ⁺) ->

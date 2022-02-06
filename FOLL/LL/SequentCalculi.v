@@ -84,7 +84,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   Module Export SxLL := FormulasLL DT.
   Export DT.
 
-  #[export] Hint Resolve Max.le_max_r  Max.le_max_l : core .
+  #[export] Hint Resolve Nat.le_max_r  Nat.le_max_l : core .
   #[export] Hint Constructors IsNegativeAtom IsPositiveAtom : core .
 
 

@@ -23,7 +23,7 @@ Require Import StructuralRulesTriSystem.
 
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 (** Automatization for multiset reasoning  *)
 Ltac simpl_union_context := 
@@ -620,10 +620,10 @@ Module InvPlus.
         apply resolvers2 in H0. intuition. inversion H1.
       ++ (* H0 inconsistent *)
         apply eq_then_meq in H0.
-        contradiction_multiset. 
+        contradiction_multiset.
       ++ (* H0 inconsistent *)
-        apply eq_then_meq in H0. 
-        contradiction_multiset.     
+        apply eq_then_meq in H0.
+        contradiction_multiset.
       ++ (* Top *)
         eapply tri_top.
     + inversion H0;subst.
@@ -651,7 +651,7 @@ Module InvPlus.
           eapply solsls2 with (M:=N);eauto.
 
           eapply TriExchange with (M' := L2 ++ [F ⊕ G]  ) in H3;auto.
-          apply H in H3; auto using Max.le_max_l.
+          apply H in H3; auto using Nat.le_max_l.
           eapply tri_tensor with (N:=L2 ++ [ G ⊕F]) (M:=M0);auto. rewrite H1.
           solve_permutation.
           eauto.
@@ -681,9 +681,9 @@ Module InvPlus.
         +++ subst.
             rewrite HeqM.
             eapply tri_dec1 with (F:= G ⊕ F);auto.
-            
+
             inversion H4;subst.
-            
+
             eapply tri_plus2. rewrite app_nil_r. assumption.
             eapply tri_plus1. rewrite app_nil_r. assumption.
             inversion H3.
@@ -692,7 +692,7 @@ Module InvPlus.
             apply H in H4;auto.
             rewrite H3.
             eapply tri_dec1 with (F:=F0);eauto.
-            
+
       ++ (* decide B *)
         eapply tri_dec2;eauto.
   Qed.
@@ -723,7 +723,7 @@ Module InvPlus.
   Lemma RUp0 : RUp 0.
     unfold RUp.
     intros.
-    
+
     destruct L.
     + inversion H0;subst.
       eexists.
@@ -785,7 +785,7 @@ Module InvPlus.
           rewrite HeqM.
           rewrite app_nil_r.
           eassumption.
-          
+
           rewrite H0 in H1.
           rewrite meq_cons_append in H1.
           assert(Hn : S n0 <= S n0) by auto.
@@ -801,7 +801,7 @@ Module InvPlus.
           apply LPos1 in H2;auto.
           inversion H2.
           auto. 
-          
+
         +++  (* DEC 2 *)
           assert(Hn : S n0 <= S n0) by auto.
           generalize(IH (S n0) Hn);intros.
@@ -813,7 +813,7 @@ Module InvPlus.
           eexists.
           rewrite H0. 
           eapply tri_dec2 with (F:=F0);eauto.
-          
+
     +   (* L is not empty *)
       inversion HD1;subst. 
       ++   
@@ -1102,12 +1102,12 @@ Module InvPlus.
           solve_permutation.
           eauto.
           eauto.
-          
-          
+
+
         +++ simpl in H0.
             intuition.
-            
-            
+
+
       ++ (* Oplus *)
         inversion HD1;subst.
         generalize(IH (S n0) ( le_n (S n0)));intros.

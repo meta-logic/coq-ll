@@ -940,9 +940,6 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       intros.
       simpl in H.
       generalize (exp_weight0 l);intro.
-      apply GtZero in H0.
-      destruct H0.
-      rewrite H0 in H.
       lia.
     Qed.
 

@@ -70,7 +70,7 @@ Require Export List.
 Export ListNotations.
 Set Implicit Arguments.
 
-#[local] Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 (** Dyadic system  (one-sided) *)
 Reserved Notation " '|--' B ';' L" (at level 80).
