@@ -2,7 +2,7 @@
 https://github.com/brunofx86/LL *)
 
 (** ** Atomic Propositions
-    
+
 Atomic propositions in LL are represented by the type [var] 
 
 [Parameter var: Set.]
@@ -23,8 +23,8 @@ Set Implicit Arguments.
 Parameter var: Set.
 
 (** Decidability of equality on atomic propositions *)
-Axiom Var_eq_dec : forall x y : var, {x = y} + {x <> y}.   
-Hint Resolve Var_eq_dec : core .
+Axiom Var_eq_dec : forall x y : var, {x = y} + {x <> y}.
+#[export] Hint Resolve Var_eq_dec : core .
 
 (** Equality on atomic propositions *)
 Definition VarEq (x y: var):= 
@@ -68,7 +68,7 @@ Proof.
   contradiction.
 Qed.
 
-Hint Resolve eqVar_refl eqVar_symm eqVar_trans : core .
+#[export] Hint Resolve eqVar_refl eqVar_symm eqVar_trans : core .
 
 (** [eqVar] is an equivalence relation *)
 Add Parametric Relation : var eqVar
@@ -105,7 +105,7 @@ Proof.
   contradiction.
 Qed.
 
-Hint Resolve eqVar_refl' eqVar_symm' eqVar_trans' : core .
+#[export] Hint Resolve eqVar_refl' eqVar_symm' eqVar_trans' : core .
 
 Theorem eqVar_then_eq : forall x y, VarEq x y = true -> x = y.
 Proof.
@@ -115,4 +115,4 @@ Proof.
   inversion H.
 Qed.
 
-Hint Resolve eqVar_then_eq : core .
+#[export] Hint Resolve eqVar_then_eq : core .

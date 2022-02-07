@@ -8,19 +8,17 @@ Require Export LL.MetaTheory.StructuralRules.
 Require Export Coq.Init.Logic.
 Require Export Coq.Arith.Wf_nat.
 Require Export Coq.Program.Equality.
-Require Export Coq.Arith.Plus.
-Require Export Omega.
+Require Export Coq.Arith.PeanoNat.
+Require Export Lia.
 Export ListNotations.
 Set Implicit Arguments.
-
-Hint Resolve Max.le_max_r Max.le_max_l :core.
 
 Ltac aux_bases :=
   match goal with
   | [ Hcut : 0%nat = plus ?n1 ?n2 |- _ ] => 
-    refine (plus_is_O _ _ (symmetry Hcut))
+    refine (proj1 (Nat.eq_add_0 _ _) (symmetry Hcut))
   | [ Hcut : plus ?n1 ?n2 = 0%nat |- _ ] => 
-    refine (plus_is_O _ _ Hcut)     
+    refine (proj1 (Nat.eq_add_0 _ _) Hcut)
   end.
 
 Ltac simpl_bases :=
@@ -42,7 +40,7 @@ Ltac cut_free :=
 
 Ltac simpl_cases0 := 
   match goal with
-  | [ H : ?a :: ?M1 =mul= [?b] |- _ ] => 
+  | [ H : ?a :: ?M1 =mul= [?b] |- _ ] =>
     apply resolvers2 in H;
     let He := fresh "He" in 
     let Hm := fresh "Hm" in   
@@ -163,59 +161,13 @@ Ltac resolve_rewrite :=
   repeat
     match goal with
     | [ P : ?M =mul= _ |- _ ] => 
-      rewrite P; auto; try solve_permutation    
+      rewrite P; auto; try solve_permutation
     end.
 
 
 Ltac resolve_max :=
   simpl;
-  try omega;
-  repeat
-    match goal with
-    | [  |- ?n <= ?n ] => 
-      auto
-    | [  |- ?n <= S ?n ] =>         
-      apply le_S
-    | [  |- ?n <= S (max ?n _) ] =>         
-      apply le_S   
-    | [  |- ?n <= S (max _ ?n) ] =>         
-      apply le_S                
-    | [  |- ?m <= max _ ?m ] => 
-      apply Max.le_max_r
-    | [  |- ?n <= max ?n _ ] => 
-      apply Max.le_max_l 
-    | [  |- _ <= _ + 0 ] => 
-      rewrite <- plus_n_O
-    | [  |- _ + 0 <= _ ] => 
-      rewrite <- plus_n_O      
-    | [  |- 0 + _ <= _ ] => 
-      rewrite plus_O_n
-    | [  |- _ <= 0 + _ ] => 
-      rewrite plus_O_n
-    | [  |- _ + ?X <= max _ _ + ?X ] => 
-      apply plus_le_compat_r    
-    | [  |- ?X + _ <= max _ _ + ?X ] => 
-      rewrite Nat.add_comm;  
-      apply plus_le_compat_r         
-    | [  |- ?X + _ <= ?X + max _ _] => 
-      apply plus_le_compat_l    
-    | [  |- ?m + ?X <= ?X + max _ _] => 
-      rewrite Nat.add_comm    
-    | [  |- _ + S _ <= _ ] => 
-      rewrite <- plus_n_Sm
-    | [  |- _ <= _ + S _ ] => 
-      rewrite <- plus_n_Sm
-    | [  |- S _ <= S _ ] => 
-      apply le_n_S  
-    | [  |- max _ 0 <= _ ] => 
-      rewrite Max.max_0_r 
-    | [  |- _ <= max _ 0 ] => 
-      rewrite Max.max_0_r   
-    | [  |- max 0 _ <= _ ] => 
-      rewrite Max.max_0_l 
-    | [  |- _ <= max 0 _ ] => 
-      rewrite Max.max_0_l                                                
-    end.
+  try lia.
 
 Lemma tab_top_left L B M1 M2 T:
   L =mul= M1 ++ M2 -> 
@@ -453,7 +405,7 @@ match goal with
       Hn1 : ?n' |~> ?c1 ; ?B; {{?b}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M1 =mul= {{⊥}} U ?x0 |- _ ] =>  
-      solve [refine (tab_bot_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega]
+      solve [refine (tab_bot_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia]
  | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?n |~> ?c2 ; ?B; ?M,
@@ -461,7 +413,7 @@ match goal with
       Hn1 : ?n' |~> ?c1 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M2 =mul= {{⊥}} U ?x0  |- _ ] =>  
-      solve [refine (tab_bot_right _ _ _ _ _ P _ _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega]  end.
+      solve [refine (tab_bot_right _ _ _ _ _ P _ _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia]  end.
  *)
 
 Lemma union_rotate_cons a b c M : (a :: b :: c :: M) =mul= (c :: a :: b :: M).
@@ -678,7 +630,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?a}} U ?x0,
       H4 : ?M1 =mul= {{?F $ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_par_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega]   
+      solve [refine (tab_par_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?n |~> 0 ; ?B; ({{?F}} U {{?G}}) U ?M,
@@ -686,7 +638,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M2 =mul= {{?F $ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_par_right _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega] 
+      solve [refine (tab_par_right _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia] 
         end.
  *)
 Lemma tab_plus1_left_zero L B M1 M2 M T h n1 n2 F G a:
@@ -928,7 +880,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?a}} U ?x0,
       H4 : ?M1 =mul= {{?F ⊕ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_plus1_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega]   
+      solve [refine (tab_plus1_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?n |~> 0 ; ?B; {{?F}} U ?M,
@@ -936,7 +888,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M2 =mul= {{?F ⊕ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_plus1_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try omega] 
+      solve [refine (tab_plus1_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max; try lia] 
         end.
  *)
 
@@ -1159,7 +1111,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?a}} U ?x0,
       H4 : ?M1 =mul= {{?F ⊕ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_plus2_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try omega]   
+      solve [refine (tab_plus2_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?n |~> 0 ; ?B; {{?G}} U ?M,
@@ -1167,7 +1119,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M2 =mul= {{?F ⊕ ?G}} U ?x0 |- _ ] =>  
-      solve [refine (tab_plus2_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try omega] 
+      solve [refine (tab_plus2_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try lia] 
         end.
  *)
 Lemma tab_quest_left_zero L B M1 M2 M T h n1 n2 F a:
@@ -1377,7 +1329,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?a}} U ?x0,
       H4 : ?M1 =mul= {{Quest ?F}} U ?x0 |- _ ] =>  
-      solve [refine (tab_quest_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try omega]   
+      solve [refine (tab_quest_left _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?n |~> 0 ; {{?F}} U ?B; ?M,
@@ -1385,7 +1337,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H0 : ?M =mul= {{?b}} U ?x0,
       H4 : ?M2 =mul= {{Quest ?F}} U ?x0 |- _ ] =>  
-      solve [refine (tab_quest_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try omega] 
+      solve [refine (tab_quest_right _ _ _ _ _ _ P _ H4 H1 Hn1 Hn2); eauto; resolve_max;  try lia] 
         end.
  *)
 Lemma tab_copy_left_zero L L0 B B0 M1 M2 h n1 n2 F a:
@@ -1596,14 +1548,14 @@ match goal with
       H5 : ?n |~> 0 ; ?B;  {{?F}} U ({{?a}} U ?M1),
       Hn2 : ?n' |~> 0 ; ?B; {{?b}} U ?M2,
       Hn1 : ?n0 |~> 0 ;?B; {{?a}} U ?M1 |- _ ] => 
-      solve [refine (tab_copy_left _ _ _ P H4 _ Hn1 Hn2); eauto; resolve_max; try omega]   
+      solve [refine (tab_copy_left _ _ _ P H4 _ Hn1 Hn2); eauto; resolve_max; try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H4 : ?F € ?B,
       H5 : ?n |~> 0 ; ?B;  {{?F}} U ({{?b}} U ?M2),
       Hn2 : ?n' |~> 0 ; ?B; {{?b}} U ?M2,
       Hn1 : ?n0 |~> 0 ;?B; {{?a}} U ?M1 |- _ ] => 
-      solve [refine (tab_copy_right _ _ _ _ _ _ P H4 _ Hn1 Hn2); eauto; resolve_max; try omega] 
+      solve [refine (tab_copy_right _ _ _ _ _ _ P H4 _ Hn1 Hn2); eauto; resolve_max; try lia] 
         end. 
 
 
@@ -2097,7 +2049,7 @@ match goal with
       Hn2 : ?n' |~> 0 ; ?B; {{?b}} U ?M2,
       H0 : ?M U ?N =mul= {{?a}} U ?x,
       H4 : ?M1 =mul= {{?F ** ?G}} U ?x |- _ ] =>   
-      solve [refine (tab_tensor_left _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max;  try omega]   
+      solve [refine (tab_tensor_left _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max;  try lia]   
    | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?m  |~> 0 ; ?B; {{?F}} U ?M,
@@ -2106,7 +2058,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H5 : ?M U ?N =mul= {{?b}} U ?x,
       H4 : ?M2 =mul= {{?F ** ?G}} U ?x |- _ ] =>
-      solve [refine (tab_tensor_right _ _ _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max; try omega] 
+      solve [refine (tab_tensor_right _ _ _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max; try lia] 
    end.
  *)
 Lemma tab_with_left_zero' L B M1 M2 M T n1 n2 n3 F G I J a:
@@ -2459,7 +2411,7 @@ Proof.
     
     eexists;
     refine (sig3_with _ Ht1 Ht2);
-    resolve_rewrite.   
+    resolve_rewrite.
 Qed.
 Arguments tab_with_right_unit [L B M1 M2 M T n1 n2 n3 F G I a].
 (*
@@ -2473,7 +2425,7 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H5 : ?M =mul= {{?a}} U ?x,
       H4 : ?M1 =mul= {{?F & ?G}} U ?x |- _ ] =>   
-      solve [refine (tab_with_left _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max;  try omega]   
+      solve [refine (tab_with_left _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max;  try lia]   
   | [  
       P : ?L =mul= ?M1 U ?M2,
       H1 : ?m |~> 0 ; ?B; {{?F}} U ?M,
@@ -2482,9 +2434,9 @@ match goal with
       Hn1 : ?n' |~> 0 ; ?B; {{?a}} U ?M1,
       H5 : ?M =mul= {{?b}} U ?x,
       H4 : ?M2 =mul= {{?F & ?G}} U ?x |- _ ] =>
-      solve [refine (tab_with_right _ _ _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max; try omega] 
+      solve [refine (tab_with_right _ _ _ _ _ _ P _ H4 H1 H2 Hn1 Hn2); eauto; resolve_max; try lia] 
         end.
-        
+
 
 Lemma bang_eq : forall x y, eqLExp (! x) (! y) -> eqLExp x y.
 Proof.

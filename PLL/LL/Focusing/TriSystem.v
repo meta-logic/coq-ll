@@ -91,8 +91,8 @@ Proof.
       eapply tri_top.
   + inversion H0;subst.
     ++ (* tensor *)
-      apply H  with (M':=N) (B':= B') in H5;auto.
-      apply H  with (M':=M0) (B':= B') in H6;auto.
+      apply H  with (M':=N) (B':= B') in H5;auto; try lia.
+      apply H  with (M':=M0) (B':= B') in H6;auto; try lia.
       apply tri_tensor with (F:=F)(G:=G) (N:=N)(M:=M0);auto.
       rewrite <- H1.
       assumption.
@@ -117,8 +117,8 @@ Proof.
       eapply H  with (M':=M') (B':=B')in H4;auto.
       eapply tri_par;auto.
     ++ (* with *)
-      eapply H  with (M':=M') (B':=B')in H4;auto.
-      eapply H  with (M':=M') (B':=B')in H5;auto.
+      eapply H  with (M':=M') (B':=B')in H4;auto; try lia.
+      eapply H  with (M':=M') (B':=B')in H5;auto; try lia.
       eapply tri_with;auto.
     ++ (* ? *)
       eapply H  with (M':=M')(B':=B' ++ [F])in H4;auto.
@@ -141,16 +141,16 @@ Qed.
 
 
 Generalizable All Variables.
-Instance Tri_morph : Proper (meq ==> meq ==> eq ==> iff) (TriSystem n).
-Proof. 
-  intros n A B Hab C D Hcd X Y Hxy; subst.
+#[export] Instance Tri_morph n : Proper (meq ==> meq ==> eq ==> iff) (TriSystem n).
+Proof.
+  intros A B Hab C D Hcd X Y Hxy; subst.
   split;intro.
   + apply TriExchange with (B:=A) (M:=C);auto.
   + apply TriExchange with (B:=B) (M:=D);auto.
 Qed.
-Instance Tri_morph' : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystem n).
-Proof. 
-  intros n A B Hab C D Hcd X Y Hxy; subst.
+#[export] Instance Tri_morph' n : Proper (meq ==> meq ==> @eq Arrow ==> iff) (TriSystem n).
+Proof.
+  intros A B Hab C D Hcd X Y Hxy; subst.
   split;intro.
   + apply TriExchange with (B:=A) (M:=C);auto.
   + apply TriExchange with (B:=B) (M:=D);auto.
@@ -160,7 +160,8 @@ Example myExample l' L1' L2' B M :
   (exists m : nat, m |-F- B; M; UP ((l' :: L1') ++ [⊤] ++ L2')) ->
   exists m : nat, m |-F- B; M; UP (l' :: L1' ++ [⊤] ++ L2').
 Proof.
-  intros.
+  intros [n H].
   assert (l' :: L1' ++ [⊤] ++ L2' = (l' :: L1') ++ [⊤] ++ L2') by auto. 
   rewrite H0.
-Abort.
+  exists n; apply H.
+Qed.

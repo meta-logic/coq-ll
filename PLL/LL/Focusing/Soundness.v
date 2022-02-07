@@ -18,6 +18,8 @@ Require Import Coq.Program.Equality.
 
 Set Implicit Arguments.
 
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
+
 Theorem Soundness : forall B n  M A ,
     lexpPos M ->
     n |-F- B ; M ; A  -> exists m, m |-- B ; M ++ (Arrow2LL A).
@@ -76,7 +78,7 @@ Theorem Soundness : forall B n  M A ,
         rewrite union_comm_app in H0.
         eauto.
 
-        
+
       ++ (* oplus2 *)
         apply H in H2;auto.
         inversion H2.
@@ -176,4 +178,3 @@ Theorem Soundness : forall B n  M A ,
         rewrite (union_comm_cons).
         eauto.
   Qed.
-

@@ -14,14 +14,14 @@ Section StrongIndPrinciple.
   Hypothesis P0: P O.
 
   Hypothesis Pn: forall n, (forall m, m<=n -> P m) -> P (S n).
-  
+
   Lemma strind_hyp : forall n, (forall m, ((m <= n) -> P m)).
   Proof.
     induction n; intros m H;inversion H;auto.
   Qed.
   (** Strong induction principle *)
   Theorem strongind: forall n, P n.
-  Proof. 
+  Proof.
     induction n; auto.
     apply Pn.
     apply strind_hyp.

@@ -70,7 +70,7 @@ Require Export List.
 Export ListNotations.
 Set Implicit Arguments.
 
-Hint Resolve Max.le_max_r Max.le_max_l : core .
+#[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 (** Dyadic system  (one-sided) *)
 Reserved Notation " '|--' B ';' L" (at level 80).
@@ -99,11 +99,11 @@ Inductive sig2: list lexp -> list lexp -> Prop :=
 | sig2_quest: forall B L M F , L =mul= (? F) :: M  ->
                                |-- F :: B ; M -> 
                                             |-- B ; L
-                                                      
+
 | sig2_bang: forall B F L , L =mul= [! F] ->
                             |--  B ; [F] ->
                                      |--  B ; L
-                                                
+
 where "|-- B ; L" := (sig2 B L).
 
 Lemma sig2_der_compat : forall B1 B2 L1 L2, B1 =mul= B2 -> L1 =mul= L2 -> |-- B1 ; L1 -> |-- B2 ; L2.
@@ -130,16 +130,16 @@ Proof.
   eapply sig2_plus2; eassumption.
   assert (|-- B2 ; F :: M) by solve [apply IHsig2_1; auto].
   assert (|-- B2 ; G :: M) by solve [apply IHsig2_2; auto].
-  eapply sig2_with; eassumption.  
+  eapply sig2_with; eassumption.
   assert (|-- B2 ; L) by solve [apply IHsig2; auto].
-  eapply sig2_copy; eassumption.  
+  eapply sig2_copy; eassumption.
   assert (|-- F :: B2; M) by solve [apply IHsig2; auto].
-  eapply sig2_quest; eassumption.  
+  eapply sig2_quest; eassumption.
   assert (|-- B2; [F]) by solve [apply IHsig2; auto].
-  eapply sig2_bang; eassumption.        
+  eapply sig2_bang; eassumption.
 Qed.
 
-Instance sig2_der_morphism :
+#[export] Instance sig2_der_morphism :
   Proper (meq ==> meq ==> iff) (sig2).
 Proof.
   unfold Proper; unfold respectful. 
@@ -158,7 +158,7 @@ Inductive sig2h: nat -> list lexp -> list lexp -> Prop :=
 | sig2h_one : forall B L, L =mul= [1] -> 0 |-- B ; L 
 | sig2h_top : forall B L M, L =mul= Top :: M -> 0 |-- B ; L
 | sig2h_bot : forall B L M n, L =mul= Bot :: M -> n |-- B ; M -> S n |-- B ; L
-| sig2h_par : forall B L M F G n, L =mul= (F $ G) :: M -> n |-- B ; F :: G :: M -> S n |-- B ; L 
+| sig2h_par : forall B L M F G n, L =mul= (F $ G) :: M -> n |-- B ; F :: G :: M -> S n |-- B ; L
 | sig2h_tensor : forall B L M N F G n m, 
     L =mul= (F ** G) :: (M ++ N)  ->
     m |-- B ; F :: M ->
@@ -178,11 +178,11 @@ Inductive sig2h: nat -> list lexp -> list lexp -> Prop :=
 | sig2h_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                   n |-- F :: B ; M -> 
                                                  S n |-- B ; L
-                                                               
+
 | sig2h_bang : forall B F L n, L =mul= [! F] ->
                                n |--  B ; [F] ->
                                           S n |--  B ; L
-                                                         
+
 where "n |-- B ; L" := (sig2h n B L).
 
 Lemma sig2h_der_compat : forall n (B1 B2 L1 L2 : list lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-- B1 ; L1 -> n |-- B2 ; L2.
@@ -231,11 +231,11 @@ Proof.
 Qed.
 
 Generalizable All Variables.
-Instance sig2h_der_morphism :
+#[export] Instance sig2h_der_morphism n :
   Proper (meq ==> meq ==> iff) (sig2h n).
 Proof.
   unfold Proper; unfold respectful. 
-  intros n B1 B2 PB L1 L2 PL.
+  intros B1 B2 PB L1 L2 PL.
   split; intro H.
   refine (sig2h_der_compat PB PL H).
   refine (sig2h_der_compat (symmetry PB) (symmetry PL) H).
@@ -264,7 +264,7 @@ Inductive sig2hc: nat -> list lexp -> list lexp -> Prop :=
     L =mul= (F & G) :: M ->
     m |-c B ; F :: M ->
               n |-c B ; G :: M -> S (max n m) |-c B ; L
-                                                        
+
 | sig2hc_copy: forall B D L M F n, 
     D =mul= F :: B -> L =mul= F :: M ->
     n |-c D ; L -> 
@@ -273,11 +273,11 @@ Inductive sig2hc: nat -> list lexp -> list lexp -> Prop :=
 | sig2hc_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                    n |-c F :: B ; M -> 
                                                   S n |-c B ; L
-                                                                
+
 | sig2hc_bang : forall B F L n, L =mul= [! F] ->
                                 n |-c  B ; [F] ->
                                            S n |-c  B ; L
-                                                          
+
 where "n |-c B ; L" := (sig2hc n B L).
 
 Lemma sig2hc_der_compat : forall n (B1 B2 L1 L2 : list lexp), B1 =mul= B2 -> L1 =mul= L2 -> n |-c B1 ; L1 -> n |-c B2 ; L2.
@@ -319,22 +319,22 @@ Proof.
       apply H with (L1:= F :: M) (B1:=B1); auto.
       apply H with (L1:= G :: M) (B1:=B1); auto.
     + 
-      refine (sig2hc_copy H2 H3 _).   
-      apply H with (L1:= L) (B1:=B1); auto. 
+      refine (sig2hc_copy H2 H3 _).
+      apply H with (L1:= L) (B1:=B1); auto.
     +
       refine (sig2hc_quest H2 _).
-      apply H with (L1:= M) (B1:= F :: B1); auto. 
+      apply H with (L1:= M) (B1:= F :: B1); auto.
     +
       refine (sig2hc_bang H2 _).
-      apply H with (L1:= [F]) (B1:=B1); auto. 
+      apply H with (L1:= [F]) (B1:=B1); auto.
 Qed.
 
 Generalizable All Variables.
-Instance sig2hc_der_morphism :
+#[export]  Instance sig2hc_der_morphism n :
   Proper (meq ==> meq ==> iff) (sig2hc n).
 Proof.
   unfold Proper; unfold respectful. 
-  intros n B1 B2 PB L1 L2 PL.
+  intros B1 B2 PB L1 L2 PL.
   split; intro H.
   refine (sig2hc_der_compat PB PL H).
   refine (sig2hc_der_compat (symmetry PB) (symmetry PL) H).
@@ -367,7 +367,7 @@ Inductive sig2hcc: nat -> list lexp -> list lexp -> Prop :=
     L =mul= (F & G) :: M ->
     m |-cc B ; F :: M ->
                n |-cc B ; G :: M -> S (max n m) |-cc B ; L
-                                                           
+
 | sig2hcc_copy: forall B D L M F n, 
     D =mul= F :: B -> L =mul= F :: M ->
     n |-cc D ; L -> 
@@ -376,7 +376,7 @@ Inductive sig2hcc: nat -> list lexp -> list lexp -> Prop :=
 | sig2hcc_quest : forall B L M F n, L =mul= (? F) :: M  ->
                                     n |-cc F :: B ; M -> 
                                                     S n |-cc B ; L
-                                                                   
+
 | sig2hcc_bang : forall B F L n, L =mul= [! F] ->
                                  n |-cc  B ; [F] ->
                                              S n |-cc  B ; L
@@ -424,23 +424,23 @@ Proof.
       refine (sig2hcc_with H2 _ _).
       apply H with (L1:= F :: M) (B1:=B1); auto.
       apply H with (L1:= G :: M) (B1:=B1); auto.
-    + 
-      refine (sig2hcc_copy H2 H3 _).   
-      apply H with (L1:= L) (B1:=B1); auto. 
+    +
+      refine (sig2hcc_copy H2 H3 _).
+      apply H with (L1:= L) (B1:=B1); auto.
     +
       refine (sig2hcc_quest H2 _).
-      apply H with (L1:= M) (B1:= F :: B1); auto. 
+      apply H with (L1:= M) (B1:= F :: B1); auto.
     +
       refine (sig2hcc_bang H2 _).
-      apply H with (L1:= [F]) (B1:=B1); auto. 
-Qed. 
+      apply H with (L1:= [F]) (B1:=B1); auto.
+Qed.
 
 Generalizable All Variables.
-Instance sig2hcc_der_morphism :
+#[export] Instance sig2hcc_der_morphism n :
   Proper (meq ==> meq ==> iff) (sig2hcc n).
 Proof.
-  unfold Proper; unfold respectful. 
-  intros n B1 B2 PB L1 L2 PL.
+  unfold Proper; unfold respectful.
+  intros B1 B2 PB L1 L2 PL.
   split; intro H.
   refine (sig2hcc_der_compat PB PL H).
   refine (sig2hcc_der_compat (symmetry PB) (symmetry PL) H).
@@ -504,7 +504,7 @@ Proof.
 
   - inversion H0; subst; try rewrite PL in H3; try rewrite PL in H2;
       try rewrite PB in H3; try rewrite PB in H2.
-    +  
+    +
       refine (sig3_bot H2 _); auto.
       apply H with (L1:= M) (B1:=B1); auto.
     +
@@ -550,17 +550,16 @@ Proof.
 Qed.
 
 Generalizable All Variables.
-Instance sig3_der_morphism :
+#[export] Instance sig3_der_morphism n c :
   Proper (meq ==> meq ==> iff) (sig3 n c).
 Proof.
   unfold Proper; unfold respectful. 
-  intros n c B1 B2 PB L1 L2 PL.
+  intros B1 B2 PB L1 L2 PL.
   split; intro H.
   refine (sig3_der_compat PB PL H).
   refine (sig3_der_compat (symmetry PB) (symmetry PL) H).
 Qed.
-
-Hint Constructors sig2h sig2hc sig2hcc sig3 : core.
+#[export] Hint Constructors sig2h sig2hc sig2hcc sig3 : core.
 
 Theorem sig2_iff_sig2h :  forall B L, |-- B ; L <-> exists m, m |-- B ; L .
 Proof.
@@ -591,25 +590,25 @@ Proof.
     inversion Hsig2h; subst.
     assert (|-- B; M) by solve [eapply H; auto].
     eapply sig2_bot; eassumption.
-    assert (|-- B; F :: G :: M) by solve [eapply H; auto].   
+    assert (|-- B; F :: G :: M) by solve [eapply H; auto].
     eapply sig2_par; eassumption.
-    assert (|-- B; F :: M) by solve [eapply H with (m0:=m); auto].  
-    assert (|-- B; G :: N) by solve [eapply H with (m0:=n); auto].    
+    assert (|-- B; F :: M) by solve [apply H with m; auto].
+    assert (|-- B; G :: N) by solve [apply H with n; auto].
     eapply sig2_tensor; eassumption.
-    assert (|--  B; F :: M) by solve [eapply H; auto].   
+    assert (|--  B; F :: M) by solve [eapply H; auto].
     eapply sig2_plus1; eassumption.
-    assert (|--  B; G :: M) by solve [eapply H; auto].   
+    assert (|--  B; G :: M) by solve [eapply H; auto].
     eapply sig2_plus2; eassumption.
-    assert (|-- B; F :: M) by solve [eapply H with (m0:=m); auto].  
-    assert (|-- B; G :: M) by solve [eapply H with (m0:=n); auto].  
-    eapply sig2_with; eassumption. 
+    assert (|-- B; F :: M) by solve [apply H with m; auto].
+    assert (|-- B; G :: M) by solve [apply H with n; auto].
+    eapply sig2_with; eassumption.
     assert (|--  B; L0) by solve [eapply H; auto].
     eapply sig2_copy ; eassumption.
-    assert (|-- F :: B; M) by solve [eapply H; auto].    
-    eapply sig2_quest; eassumption. 
-    assert (|-- B; [F]) by solve [eapply H; auto].    
-    eapply sig2_bang; eassumption. 
-Qed.                          
+    assert (|-- F :: B; M) by solve [eapply H; auto].
+    eapply sig2_quest; eassumption.
+    assert (|-- B; [F]) by solve [eapply H; auto].
+    eapply sig2_bang; eassumption.
+Qed.
 
 Theorem sig2hc_then_sig2hcc: forall n B L, sig2hc n B L -> sig2hcc n B L.
 Proof.
@@ -704,23 +703,23 @@ Proof.
       refine (sig3_ccut _ _ _ H0 H4); auto.
     ***
       assert (exists c : nat, m |~> c ; B; F :: M) as Hn1 by solve [eapply H; auto].
-      assert (exists c : nat, n0 |~> c ; B; G :: N) as Hn2 by solve [eapply H; auto].     
+      assert (exists c : nat, n0 |~> c ; B; G :: N) as Hn2 by solve [eapply H; auto].
       destruct Hn1, Hn2.
       eexists.
       refine (sig3_tensor H1 H0 H4).
-    ***                  
+                      ***
       assert (exists c : nat, n |~> c ; B; F :: M) as Hn by solve [eapply H; auto].
       destruct Hn.
       eexists.
       refine (sig3_plus1 H1 H0).
-    ***                  
+                      ***
       assert (exists c : nat, n |~> c ; B; G :: M) as Hn by solve [eapply H; auto].
       destruct Hn.
       eexists.
-      refine (sig3_plus2 H1 H0).                        
+      refine (sig3_plus2 H1 H0).
     ***
       assert (exists c : nat, m |~> c ; B; F :: M) as Hn1 by solve [eapply H; auto].
-      assert (exists c : nat, n0 |~> c ; B; G :: M) as Hn2 by solve [eapply H; auto].      
+      assert (exists c : nat, n0 |~> c ; B; G :: M) as Hn2 by solve [eapply H; auto].
       destruct Hn1, Hn2.
       eexists.
       refine (sig3_with H1 H0 H4).
@@ -734,13 +733,13 @@ Proof.
       assert (exists c : nat, n |~> c ; F :: B; M) as Hn by solve [eapply H; auto].
       destruct Hn.
       eexists.
-      refine (sig3_quest H1 H0).               
+      refine (sig3_quest H1 H0).
     ***
       assert (exists c : nat, n |~> c ; B; [F]) as Hn by solve [eapply H; auto].
       destruct Hn.
       eexists.
       refine (sig3_bang H1 H0).
-Qed.        
+Qed.
 
 
 Theorem sig3_then_sig2hcc :  forall B L n c, 
@@ -770,21 +769,21 @@ Proof.
       assert (m |-cc B; F :: M) as Hc1 by
             solve [eapply H; auto; eassumption].
       assert (n0 |-cc B; G :: N) as Hc2 by
-            solve [eapply H; auto; eassumption].        
+            solve [eapply H; auto; eassumption].
       refine (sig2hcc_tensor H1 Hc1 Hc2).
-    ***                  
+                      ***
       assert (n |-cc B; F :: M) as Hc by
             solve [eapply H; auto; eassumption].
       refine (sig2hcc_plus1 H1 Hc).
-    ***                  
+                      ***
       assert (n |-cc B; G :: M) as Hc by
             solve [eapply H; auto; eassumption].
-      refine (sig2hcc_plus2 H1 Hc).                        
+      refine (sig2hcc_plus2 H1 Hc).
     ***
       assert (m |-cc B; F :: M) as Hc1 by
             solve [eapply H; auto; eassumption].
       assert (n0 |-cc B; G :: M) as Hc2 by
-            solve [eapply H; auto; eassumption].       
+            solve [eapply H; auto; eassumption].
       refine (sig2hcc_with H1 Hc1 Hc2).
     ***
       assert (n |-cc B; L0) as Hc by
@@ -793,7 +792,7 @@ Proof.
     ***
       assert (n |-cc F :: B; M) as Hc by
             solve [eapply H; auto; eassumption].
-      refine (sig2hcc_quest H1 Hc).               
+      refine (sig2hcc_quest H1 Hc).
     ***
       assert (n |-cc B; [F]) as Hc by
             solve [eapply H; auto; eassumption].
@@ -803,15 +802,15 @@ Proof.
       assert (m |-cc B; F :: M) as Hc1 by
             solve [eapply H; auto; eassumption].
       assert (n0 |-cc B; F° :: N) as Hc2 by
-            solve [eapply H; auto; eassumption]. 
+            solve [eapply H; auto; eassumption].
       refine (sig2hcc_cut H3 Hc1 Hc2).
 
       assert (m |-cc B; (! F) :: M) as Hc1 by
             solve [eapply H; auto; eassumption].
       assert (n0 |-cc F° :: B; N) as Hc2 by
-            solve [eapply H; auto; eassumption].        
+            solve [eapply H; auto; eassumption].
       refine (sig2hcc_ccut _ Hc1 Hc2); auto.
-Qed.        
+Qed.
 
 Theorem sig3_iff_sig2hcc :  forall B L, 
     (exists n c, n |~> c ; B ; L) <-> exists m, m |-cc B ; L.
@@ -825,4 +824,4 @@ Proof.
     destruct H.
     eexists.
     eapply sig2hcc_then_sig3; eauto.
-Qed.    
+Qed.

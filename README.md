@@ -5,7 +5,7 @@ We formalize in Coq different sequent calculi for propositional and first order 
 
 More details in <a href="https://www.sciencedirect.com/science/article/pii/S157106611830080X">this paper </a>.
 
-This package is free software; you can redistribute it and/or modify it under the terms of GNU Lesser General Public License (see the COPYING file). 
+This package is free software; you can redistribute it and/or modify it under the terms of GNU Lesser General Public License (see the COPYING file).
 
 Author  <a href="mailto: bruno_xavier86@yahoo.com.br">Bruno Xavier</a>
 and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
@@ -13,12 +13,12 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested in Coq 8.10. No extra library is needed for compilation. 
+The project was tested in Coq 8.14. No extra library is needed for compilation.
 
 There are two main directories
 
- - PLL : Formalizing propositional linear logic. 
- - FOLL : Formalizing first order linear logic. 
+ - PLL : Formalizing propositional linear logic.
+ - FOLL : Formalizing first order linear logic.
 
  In both directories, the source files can be compiled with
 
