@@ -583,7 +583,7 @@ Proof.
 
       inversion Heqw. subst.
       simpl in H.
-      inversion H; (try now intuition); subst.
+      inversion H; try discriminate; subst.
       apply IH with (m:= L_weight L)in H4 ;auto.
       destruct H4.
 
@@ -605,7 +605,7 @@ Proof.
     ++ (* par *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;(try now intuition); subst.
+      inversion H; try discriminate; subst.
       apply IH with (L:= l1 :: l2 :: L) (m:= plus (plus (exp_weight l1)  (exp_weight l2)) ( L_weight L))in H4 ; auto.
       destruct H4.
 
@@ -628,7 +628,7 @@ Proof.
     ++ (* with *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;(try now intuition); subst.
+      inversion H; try discriminate; subst.
       apply IH with (L:= l1 :: L) (m:= plus (exp_weight l1) (L_weight L))in H5 ;auto.
       apply IH with (L:= l2 :: L) (m:= plus (exp_weight l2) (L_weight L))in H7 ;auto.
 
@@ -657,7 +657,7 @@ Proof.
     ++ (* quest *)
       inversion Heqw. subst.
       simpl in H.
-      inversion H;(try now intuition); subst.
+      inversion H; try discriminate; subst.
       apply IH with (m:= L_weight L)in H4 ;auto.
       destruct H4.
 
@@ -969,14 +969,10 @@ Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> lexpPos N
     eexists.
     rewrite app_nil_r.
     eauto.
-  + inversion H;subst; try(
-                           inversion H0;
-                           simpl in H1;
-                           intuition).
-    apply H3 in H7.
-    destruct H7. 
+  + inversion H; subst; inversion H0; try discriminate.
+    apply (IHN H2) in H7.
+    destruct H7.
     eexists.
-    assert( M ++ a :: N =mul=  (M ++ [a]) ++ N) by solve_permutation.
-    rewrite H5.
+    assert( M ++ a :: N =mul=  (M ++ [a]) ++ N) as -> by solve_permutation.
     eassumption.
 Qed.

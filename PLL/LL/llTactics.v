@@ -497,9 +497,8 @@ Proof.
   rewrite union_comm_app in H. 
   rewrite PM in H.
   rewrite <- union_assoc_app in H.
-  refine (HI _ _ _ _ _ _); 
-    [ | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); auto; try resolve_rewrite];
-    resolve_max.
+  refine (HI _ _ _ _ _ _);
+    [ auto | change (0%nat) with (plus 0 0); refine (sig3_cut _ _ _ Hn1 H); [ auto | auto | ] ].
   app_normalize_aux.
   rewrite <- (my_p _ _ _ M1).
   solve_permutation.

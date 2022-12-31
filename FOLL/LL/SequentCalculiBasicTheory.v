@@ -915,15 +915,11 @@ easily conclude the goal [G].
       eexists.
       rewrite app_nil_r.
       eauto.
-    + inversion H;subst; try(
-                             inversion H0;
-                             simpl in H1;
-                             intuition).
-      apply H3 in H7.
+    + inversion H; subst; inversion H0; try discriminate H1.
+      apply (IHN H2) in H7.
       destruct H7.
       eexists.
-      assert( (M ++ [a]) ++ N =mul=  M ++ a :: N) by solve_permutation.
-      rewrite <- H5.
+      assert( (M ++ [a]) ++ N =mul=  M ++ a :: N) as <- by solve_permutation.
       eauto.
   Qed.
 

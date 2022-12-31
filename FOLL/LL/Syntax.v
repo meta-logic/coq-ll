@@ -161,8 +161,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   (** We assume equality on formulas to be decidable *)
   Axiom FEqDec : forall (F G: Lexp ),  {F = G} + {F <> G}.
   Lemma not_eqLExp_sym : forall x y: Lexp,  x <> y -> y <> x.
-  Proof. intuition.
-  Qed.
+  Proof. auto. Qed.
 
   (* Case analysis on a formula *)
   Ltac caseLexp F :=
@@ -550,64 +549,64 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
     (* Simplification of terms *)
     Lemma EqAtom : forall A , (fun T : Type => atom (A T)) = Atom (A) .
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqPerp : forall A , (fun T : Type => perp (A T)) = Perp (A) .
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqTop :  (fun T : Type => top) = Top .
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqBot :  (fun T : Type => bot) = Bot.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqOne :  (fun T : Type => one) = One.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqZero :  (fun T : Type => zero) = Zero .
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqTensor :  forall F G, (fun T : Type => tensor (F T)  (G T)) = Tensor F G.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqPar :  forall F G, (fun T : Type => par (F T)  (G T)) = Par F G.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqPlus :  forall F G, (fun T : Type => oplus (F T)  (G T)) = Plus F G.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqWith :  forall F G, (fun T : Type => witH (F T)  (G T)) = With F G.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqBang :  forall F, (fun T : Type => bang (F T) ) = Bang F.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqQuest :  forall F, (fun T : Type => quest (F T) ) = Quest F.
-    Proof. intuition.  Qed.
+    Proof. auto. Qed.
 
     Lemma EqEx :  forall FX, (fun T : Type => ex (FX T) ) = Ex FX.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqFx :  forall FX, (fun T : Type => fx (FX T) ) = Fx FX.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqA0 : forall n , (fun T : Type => a0 n ) = A0 n.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqA1 : forall n t , (fun T : Type => a1 n (t T)) = A1 n t.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqA2 : forall n t t' , (fun T : Type => a2 n (t T) (t' T)) = A2 n t t'.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqCte : forall t , (fun T : Type => cte t ) = Cte t.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqFC1 : forall n t , (fun T : Type => fc1 n (t T) ) = FC1 n t.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
     Lemma EqFC2 : forall n t t' , (fun T : Type => fc2 n (t T) (t' T)) = FC2 n t t'.
-    Proof. intuition. Qed.
+    Proof. auto. Qed.
 
   End EqualityFormulas. 
 
@@ -1021,8 +1020,8 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Lemma Flatten_dual : forall T (F: lexp (term T)), flatten F = dual_LExp(flatten ( dual_LExp F)).
       intros.
       induction F;simpl;try(destruct a);try(reflexivity);
-        try(simpl;rewrite IHF1;rewrite IHF2; intuition);
-        try(simpl;rewrite IHF; intuition).
+        try(simpl;rewrite IHF1;rewrite IHF2; auto);
+        try(simpl;rewrite IHF; auto).
 
       assert(Hs : (fun x : T => flatten (f (var x))) =  (fun x : T => dual_LExp (flatten (dual_LExp (f (var x))))))
         by (extensionality x; generalize(H (var x));auto);rewrite Hs; reflexivity.
@@ -1208,7 +1207,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       + intro HN.
         apply AsyncEqL in HN.
         rewrite H in HN.
-        intuition.
+        discriminate HN.
     Qed.
 
     Inductive posOrNegAtom : lexp unit -> Prop :=
@@ -1249,21 +1248,21 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Lemma ApropPosNegAtom : forall A: AProp, IsPositiveAtom (Atom A) \/ IsNegativeAtom(Atom A).
       intros.
       assert(HC : ClosedA A3) by apply ax_closedA.
-      inversion HC;remember(isPositive n); destruct b;intuition;[left | right |left | right];constructor;auto.
+      inversion HC;remember(isPositive n); destruct b;auto;[left | right |left | right];constructor;auto.
     Qed.
 
     Lemma ApropPosNegAtom' : forall A: AProp, IsPositiveAtom (Perp A) \/ IsNegativeAtom(Perp A).
       intros.
       assert(HC : ClosedA A3) by apply ax_closedA.
-      inversion HC;remember(isPositive n); destruct b;intuition; [right | left | right | left] ; constructor;auto.
+      inversion HC;remember(isPositive n); destruct b;auto; [right | left | right | left] ; constructor;auto.
     Qed.
 
     Lemma NotAsynchronousPosAtoms : forall F, ~ Asynchronous  F -> PosFormula F \/ IsPositiveAtom F \/ IsNegativeAtom F.
       intros.
-      caseLexp F;intuition;try (left;constructor);
+      caseLexp F;auto;try (left;constructor);
         [idtac | idtac | (contradict H;subst;auto) .. ].
-      generalize( ApropPosNegAtom  A3); intro HA3;destruct HA3;intuition.
-      generalize( ApropPosNegAtom'  A3); intro HA3;destruct HA3;intuition.
+      generalize( ApropPosNegAtom  A3); intro HA3;destruct HA3;auto.
+      generalize( ApropPosNegAtom'  A3); intro HA3;destruct HA3;auto.
     Qed.
 
     Lemma NegPosAtomContradiction: forall F, PosOrNegAtom F ->  IsPositiveAtom F -> False.
@@ -1272,13 +1271,13 @@ Module Syntax_LL (DT : Eqset_dec_pol).
         rewrite <- H2 in H;
         inversion H;
         rewrite <- H4  in H1;
-        intuition.
+        discriminate.
     Qed.
 
     Lemma  IsNegativePosOrNegAtom : forall F,  IsNegativeAtom F -> PosOrNegAtom F.
     Proof.
       intros.
-      inversion H;constructor;auto. 
+      inversion H;constructor;auto.
     Qed.
 
     Lemma PosOrNegAtomAsync : forall F, PosOrNegAtom F ->  AsynchronousF F = false.
@@ -1529,7 +1528,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
       intros.
       inversion H;intro; try(do 2 LexpSubst);try(constructor);auto;
         inversion H2;try(LexpContr);
-          try(do 2 LexpSubst); try( rewrite <- H4  in H0); intuition.
+          try(do 2 LexpSubst); try( rewrite <- H4  in H0); discriminate.
     Qed.
 
 

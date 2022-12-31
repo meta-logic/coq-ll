@@ -155,7 +155,7 @@ Module InvCopy.
         (* Decide 2 *)
         rewrite union_comm_app in H0.
         simpl_union_context;subst.
-        simpl in H. intuition.
+        discriminate H.
         assert (Hn : S n0 <= S n0) by auto.
         generalize (IH (S n0) Hn);intros.
         destruct H3.
@@ -176,19 +176,19 @@ Module InvCopy.
       ++ (* bot *)
         inversion HD1;subst.
         eexists. eapply tri_dec2 with (F:= ⊥);auto. eapply tri_rel;auto. apply tri_bot. eassumption.
-        simpl in H4. intuition.
+        discriminate H4.
       ++ (* Par *)
         inversion HD1;subst.
         eexists. eapply tri_dec2 with (F:= F0 $ G);auto. eapply tri_rel;auto. apply tri_par. eassumption.
-        simpl in H4. intuition.
+        discriminate H4.
       ++ (* With *)
         inversion HD1;subst.
         eexists. eapply tri_dec2 with (F:= F0 & G);auto. eapply tri_rel;auto. apply tri_with; eassumption.
-        simpl in H4. intuition.
+        discriminate H4.
       ++ (* quest *)
         inversion HD1;subst.
         eexists. eapply tri_dec2 with (F:= ? F0);auto. eapply tri_rel;auto. apply tri_quest. eassumption.
-        simpl in H4. intuition.
+        discriminate H4.
       ++
         (* Store *)
         inversion HD1;subst.
@@ -336,8 +336,7 @@ Module InvCopy.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_bot;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
 
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
@@ -360,8 +359,7 @@ Module InvCopy.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_par;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -397,7 +395,7 @@ Module InvCopy.
         destruct H6. simpl in H6.
         eexists.
         eapply tri_rel;auto. eapply tri_with;auto; eassumption.
-        inversion H5. intuition.
+        discriminate H5.
 
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
@@ -424,8 +422,7 @@ Module InvCopy.
         eapply tri_rel;auto.  eapply tri_quest;auto.
         rewrite Mequiv. eassumption.
 
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -447,21 +444,18 @@ Module InvCopy.
         apply eq_then_meq in H.
         contradiction_multiset.
 
-        simpl in H0. 
-        intuition.
+        discriminate H0.
 
       ++ (* 0 *)
         inversion HD1;subst.
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
       ++ (* one *)
         inversion HD1;subst.
         apply eq_then_meq in H2.
         contradiction_multiset.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
       ++ (* Tensor *)
         inversion HD1;subst.
         assert (Ht : M++[F] =mul= [F] ++ M) by eauto.
@@ -527,8 +521,7 @@ Module InvCopy.
           eassumption.
           eassumption.
 
-        +++ simpl in H0.
-            intuition.
+        +++ discriminate H0.
 
 
       ++ (* Oplus *)
@@ -557,16 +550,14 @@ Module InvCopy.
         destruct H1.
         eexists.
         eapply tri_plus2;eauto.
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
       ++ (* bang *)
         inversion HD1;subst.
         apply eq_then_meq in H.
         contradiction_multiset.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
   Qed.
 
 
@@ -617,7 +608,7 @@ Module InvPlus.
         apply eq_then_meq in H0. 
         symmetry in H0.
         rewrite union_comm_app in H0.
-        apply resolvers2 in H0. intuition. inversion H1.
+        apply resolvers2 in H0 as [H1 H2]. discriminate H1.
       ++ (* H0 inconsistent *)
         apply eq_then_meq in H0.
         contradiction_multiset.
@@ -922,8 +913,7 @@ Module InvPlus.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_bot;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
 
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
@@ -946,8 +936,7 @@ Module InvPlus.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_par;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -983,7 +972,7 @@ Module InvPlus.
         destruct H6. simpl in H6.
         eexists.
         eapply tri_rel;auto. eapply tri_with;auto; eassumption.
-        inversion H5. intuition.
+        discriminate H5.
 
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
@@ -1006,8 +995,7 @@ Module InvPlus.
         eexists.
         eapply tri_rel;auto. eapply tri_quest;auto. eassumption.
 
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -1024,22 +1012,19 @@ Module InvPlus.
         apply EmptyMS in H.
         contradiction.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
 
       ++ (* 0 *)
         inversion HD1;subst.
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
       ++ (* one *)
         inversion HD1;subst.
         apply eq_then_meq in H2.
         contradiction_multiset.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
       ++ (* Tensor *)
         inversion HD1;subst.
         assert (Ht : M++[F] =mul= [F] ++ M) by solve_permutation.
@@ -1104,8 +1089,7 @@ Module InvPlus.
           eauto.
 
 
-        +++ simpl in H0.
-            intuition.
+        +++ discriminate H0.
 
 
       ++ (* Oplus *)
@@ -1134,18 +1118,16 @@ Module InvPlus.
         destruct H1.
         eexists.
         eapply tri_plus2;eauto.
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
       ++ (* bang *)
         inversion HD1;subst.
         apply eq_then_meq in H.
         contradiction_multiset.
         
-        simpl in H0.
-        intuition.
+        discriminate H0.
   Qed.
-  
+
 
   Theorem InvPlus' : forall n, RInd n.
     intro n.
@@ -1198,7 +1180,7 @@ Module InvTensor.
         apply eq_then_meq in H0. 
         symmetry in H0.
         rewrite union_comm_app in H0.
-        apply resolvers2 in H0; intuition. inversion H1.
+        apply resolvers2 in H0 as [H1 H2]. discriminate H1.
       ++ (* H0 inconsistent *)
         apply eq_then_meq in H0.
         contradiction_multiset. 
@@ -1419,10 +1401,10 @@ Module InvTensor.
       eexists. eapply tri_dec2 with (F:=F0)  ;eauto.
   Qed.
 
-  
 
-  
-  
+
+
+
   Theorem InvTensorAuxNilNilPosPos:
     forall  n n1 n2 B M1 M2 F G ,
       (forall m : nat, m <= n -> RInd m) ->
@@ -1475,8 +1457,8 @@ Module InvTensor.
           by (rewrite H9; solve_permutation).
         eexists. eapply tri_dec1 with (F:=F1);eauto.
         rewrite app_assoc.
-        apply TensorComm ;auto.
-        eapply TriExchange;eauto.
+        apply TensorComm.
+        eapply TriExchange; [ eassumption | reflexivity | ]. solve_permutation.
       ++ (* case F0 <> F , F1 = G *)
         destruct Heq1 as [M1']. destruct H6.
         assert (Hn: S (S (S(n2 + n3))) <= n ) by lia.
@@ -1495,7 +1477,7 @@ Module InvTensor.
         assert(HeqMul: (M1 ++ M2) ++ [F ** F1]  =mul= [F0] ++ (M1' ++ M2  ++ [F ** F1])) by(
                                                                                              rewrite H9; solve_permutation).
         eexists. eapply tri_dec1 with (F:=F0);eauto.
-        
+
       ++ (* case both are different *)
         destruct Heq1 as [M1']. destruct H6.
         destruct Heq2 as [M2']. destruct H10.
@@ -1529,7 +1511,7 @@ Module InvTensor.
       eexists.
       apply TensorComm;auto.
       eapply tri_dec2 with (F:=F1);eauto.
-      eapply TriExchange;eauto.
+      eapply TriExchange; [ eassumption | reflexivity | ]. solve_permutation.
     + (* DEC 1 / DEC 2*)
       assert (Hn: S (S (S(n2 + n3))) <= n ) by lia.
       generalize (IH (S (S (S (n2+ n3)))) Hn) as IH';intros.
@@ -1556,7 +1538,7 @@ Module InvTensor.
       destruct H6.
       eexists.
       rewrite <- app_assoc.
-      eapply tri_dec2 with (F:=F0);eauto.
+      eapply tri_dec2 with (F:=F0); eauto.
   Qed.
 
 
@@ -1678,7 +1660,8 @@ Module InvTensor.
         (* F and G are NotPosOrPosAtom *)
         eexists.
         eapply tri_dec1 with (F := F ** G) ;eauto.
-        eapply tri_tensor with (F:=F) (M:=M2) (N:=M1);auto. solve_permutation.
+        eapply tri_tensor with (F:=F) (M:=M2) (N:=M1).
+        solve_permutation.
         eapply tri_rel; auto using NotPosOrPosAtomRelease;eassumption.
         eapply tri_rel; auto using NotPosOrPosAtomRelease;eassumption.
       ++ (* F is positive and G is Not *)
@@ -1752,7 +1735,7 @@ Module InvTensor.
         eapply LPos1;auto. firstorder.
 
         apply LPos1 with  (L:=[F] ++ M);auto.
-        simpl. intuition. solve_permutation.
+        simpl. solve_permutation.
         constructor;auto.
         apply PosOrPosAtomAsync;auto.
       ++ (* top *)
@@ -1776,8 +1759,7 @@ Module InvTensor.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_bot;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
 
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
@@ -1800,8 +1782,7 @@ Module InvTensor.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_par;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -1838,8 +1819,7 @@ Module InvTensor.
         destruct H6. simpl in H6.
         eexists.
         eapply tri_rel;auto. eapply tri_with;auto; eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -1863,8 +1843,7 @@ Module InvTensor.
         destruct H2. simpl in H2.
         eexists.
         eapply tri_rel;auto. eapply tri_quest;auto. eassumption.
-        simpl in H5.
-        intuition.
+        discriminate H5.
         apply LPos1 with (L:= [F] ++ M);eauto.
         constructor;auto using PosOrPosAtomAsync.
 
@@ -1883,21 +1862,18 @@ Module InvTensor.
 
         apply EmptyMS in H. contradiction.
 
-        simpl in H0. 
-        intuition.
+        discriminate H0.
 
       ++ (* 0 *)
         inversion HD1;subst.
-        simpl in H0.
-        intuition.
+        discriminate H0.
 
       ++ (* one *)
         inversion HD1;subst.
         apply eq_then_meq in H2.
         contradiction_multiset.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
       ++ (* Tensor *)
         inversion HD1;subst.
 
@@ -1962,8 +1938,7 @@ Module InvTensor.
           eassumption.
           rewrite H.
           solve_permutation.
-        +++ simpl in H0.
-            intuition.
+        +++ discriminate H0.
 
 
       ++ (* Oplus *)
@@ -1986,15 +1961,13 @@ Module InvTensor.
         destruct H1.
         eexists.
         eapply tri_plus2;eauto.
-        simpl in H0.
-        intuition.
+        discriminate H0.
       ++ (* bang *)
         inversion HD1;subst.
         apply eq_then_meq in H.
         contradiction_multiset.
 
-        simpl in H0.
-        intuition.
+        discriminate H0.
   Qed.
 
 

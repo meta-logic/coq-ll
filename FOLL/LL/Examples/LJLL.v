@@ -238,8 +238,8 @@ Proof with unfold Theory in *;solveF;simplifyG.
   eapply tri_ex with (t:= (FC1 pr (Cte (PL.atom 2)))).
   simpl.
 
-  eapply tri_tensor with (N:= [(A1 lf (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])           
-                         (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]) ...                              
+  eapply tri_tensor with (N:= [(A1 lf (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])
+                         (M:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺]); [ solveF | | ].
   apply Init1 ...
   apply tri_rel ...
   NegPhase.
@@ -249,8 +249,8 @@ Proof with unfold Theory in *;solveF;simplifyG.
   eapply tri_ex with (t:= FC1 pr (Cte (PL.atom 2))).
   eapply tri_tensor with
       (N:= [(A1 rg (FC2 cj (FC1 pr (Cte (PL.atom 1))) (FC1 pr (Cte (PL.atom 2))))) ⁺])
-      (M:=[Atom (A1 lf (FC1 pr (Cte (PL.atom 1)))) ; Atom (A1 lf (FC1 pr (Cte (PL.atom 2)) ))]);eauto ...
-  eapply Init1 ...
+      (M:=[Atom (A1 lf (FC1 pr (Cte (PL.atom 1)))) ; Atom (A1 lf (FC1 pr (Cte (PL.atom 2)) ))]); [ solveF | | ].
+  apply Init1 ...
   eapply tri_rel ...
   eapply tri_with ; eapply tri_store ...
 
@@ -673,7 +673,7 @@ Proof with solveF.
     eapply tri_tensor with (N:= [A1 rg (FC1 pr (Cte (PL.atom a))) ⁺ ; (A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺])
                            (M:= encodeList L');eauto.
     eapply tri_tensor with (N:=[(A1 rg (FC1 pr (Cte (PL.atom a)))) ⁺])
-                           (M:= [(A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺]) ...
+                           (M:= [(A1 lf (FC1 pr (Cte (PL.atom a)))) ⁺]); [ solveF | | ] .
     apply Init1 ...
     apply Init1 ...
     apply tri_rel...
@@ -681,9 +681,8 @@ Proof with solveF.
     apply multisetEncode in H. simpl in H.
     rewrite H. autounfold. simpl.
     eapply tri_dec2 with (F:= BLEFT);eauto.
-    eapply tri_tensor with (N:= [(A1 lf (Cte PL.bot)) ⁺] ) (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList L') ...
+    eapply tri_tensor with (N:= [(A1 lf (Cte PL.bot)) ⁺] ) (M:=  (A1 rg (encodeTerm F)) ⁺ :: encodeList L'); [ | apply Init1 | ]...
 
-    apply Init1 ...
   + (* Inductive Cases *) 
     inversion HD;subst;autounfold in *;simpl;autounfold;simpl;simplifyG.
     ++ (* Conj R *) 
@@ -1194,9 +1193,9 @@ Proof with solveF.
   apply AtomsTheoryFalse in H10.
   contradiction.
   
-  (* H3 is inconsisten *)
+  (* H3 is inconsistent *)
   inversion H3 ...
-  simpl in H6. intuition.
+  discriminate H6.
 Qed.
 
 
@@ -1251,7 +1250,7 @@ Proof with solveF.
   apply AtomsTheoryFalse in H7. contradiction.
   (* cannot be a release *)
   inversion H3;subst.
-  unfold lf in H7. simpl in H7. intuition.
+  discriminate H4.
 Qed.
 
 
@@ -1336,13 +1335,13 @@ Proof with solveF.
   apply AtomsTheoryFalse in H7. contradiction.
   (* cannot be a release *)
   inversion H2;subst.
-  unfold lf in H4. simpl in H4. intuition.
+  discriminate H4.
   
   (* cannot be from B *)
   apply AtomsTheoryFalse in H11. contradiction.
   (* cannot be a release *)
   inversion H2;subst.
-  unfold lf in H5. simpl in H5. intuition.
+  discriminate H5.
 Qed.
 
 
@@ -1397,7 +1396,7 @@ Proof with solveF.
   apply AtomsTheoryFalse in H7. contradiction.
   (* cannot be a release *)
   inversion H2;subst.
-  unfold lf in H3. simpl in H3. intuition.
+  discriminate H3.
 Qed.
 
 
@@ -1439,7 +1438,8 @@ Proof with solveF.
   (* cannot be from the theory *)
   apply AtomsTheoryFalse in H7 ; contradiction.
   (* cannot be a release *)
-  inversion H2... intuition.
+  inversion H2...
+  discriminate H3.
 Qed.
 
 Lemma InvDRIGHT2 :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW DRIGHT2 -> exists   G1 G2 n1, n =  (S (S (S ( S (S n1)))))  /\ F = PL.disj G1 G2 /\ n1 |-F- Theory; encodeFR G2 :: encodeList L ; UP [].
@@ -1479,7 +1479,8 @@ Proof with solveF.
   (* cannot be from the theory *)
   apply AtomsTheoryFalse in H7 ; contradiction.
   (* cannot be a release *)
-  inversion H2... intuition.
+  inversion H2.
+  discriminate H3.
 Qed.
 
 Lemma InvIRight :forall F L n,  n |-F- Theory; (encodeFR F) :: encodeList L; DW IRIGHT -> exists   G1 G2 n1, n =  (S (S (S ( S (S (S (S n1)))))))  /\ F = PL.impl G1 G2 /\ n1 |-F- Theory; encodeFR G2 :: encodeFL G1 :: encodeList L ; UP [].
@@ -1519,7 +1520,8 @@ Proof with solveF.
   (* cannot be from the theory *)
   apply AtomsTheoryFalse in H7. contradiction.
   (* Cabbot be  release *)
-  inversion H2;subst ... intuition.
+  inversion H2;subst.
+  discriminate H3.
 Qed.
 
 Theorem Completeness : forall L F, ( encodeSequent L F ) -> exists n, L |-P- n ; F.
