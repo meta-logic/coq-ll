@@ -380,10 +380,10 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
         apply IH  with (L:= F :: L) (m:= Exp_weight F + L_weight L) in Hp1;try(lia); subst;autounfold;simpl;try(lia); auto.
         apply IH  with (L:= G :: L) (m:= Exp_weight G + L_weight L) in Hp2;try(lia); subst;autounfold;simpl;try(lia); auto.
       ++  (* quest *)
-        assert(Hp: forall x,  |-F- B ++ [F]; M; UP (L ++ [Subst FX x] ++ L')) .
-        intro; generalize (H x); intro Hp'; inversion Hp'; subst;LexpContr;intuition ... auto.
-        apply IH  with (m:= L_weight  L) in Hp;auto. 
-        subst;inversion Hw';lia .
+        assert(Hp: forall x,  |-F- B ++ [F]; M; UP (L ++ [Subst FX x] ++ L')).
+        intro; generalize (H x); intro Hp'; inversion Hp'; subst;LexpContr... auto.
+        apply IH  with (m:= L_weight  L) in Hp;auto.
+        subst;inversion Hw';lia.
       ++ (* forall *)
         subst.
         assert(Hp: forall x x', |-F- B; M; UP ((Subst FX0 x') :: L ++ [Subst FX x] ++ L')).
