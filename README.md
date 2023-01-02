@@ -13,7 +13,7 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested in Coq 8.14. No extra library is needed for compilation.
+The project was tested in Coq 8.14 (and 8.17, thanks to Olivier Laurent!). No extra library is needed for compilation.
 
 There are two main directories
 
