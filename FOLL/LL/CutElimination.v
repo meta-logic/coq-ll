@@ -127,8 +127,8 @@ Module CElimination (DT : Eqset_dec_pol).
       n |~> 1 ; B ; L -> exists m, m |~> 0 ; B ; L.
   Proof.
     intros.
-    revert dependent B.
-    revert dependent L.
+    generalize dependent B.
+    generalize dependent L.
     induction n using strongind; intros.
     - inversion H.
     - inversion H0; subst. 
@@ -186,9 +186,9 @@ Module CElimination (DT : Eqset_dec_pol).
           eexists; eapply sig3_fx; eauto.
       + (* caso CUT *)
         clear H0. clear H.
-        revert dependent B.
-        revert dependent L.
-        revert dependent n.
+        generalize dependent B.
+        generalize dependent L.
+        generalize dependent n.
         
         dependent induction w using strongind;
           
