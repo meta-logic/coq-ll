@@ -943,7 +943,7 @@ Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; 
       assert(exists m0 : nat, m0 <= S n0 /\ m0 |-F- B; M ++ [l]; UP (L ++ [F])).
       apply IH with (m:= L_weight L);eauto using WeightLeq.
       apply LPos1 with (L:= [l] ++ (M ++ [F]));auto.
-      rewrite app_assoc_reverse.
+      rewrite <- app_assoc.
       solve_permutation.
 
       apply lexpPosUnion;auto.

@@ -36,8 +36,8 @@ Module SqBasic (DT : Eqset_dec_pol).
   Lemma sig2_der_compat : forall B1 B2 L1 L2 : list Lexp, B1 =mul= B2 -> L1 =mul= L2 -> |-- B1 ; L1 -> |-- B2 ; L2.
   Proof.
     intros B1 B2 L1 L2 PB PL H.
-    revert dependent B2.
-    revert dependent L2.  
+    generalize dependent B2.
+    generalize dependent L2.
     induction H; intros;
       try rewrite PB in *;
       try rewrite PL in *.
@@ -282,11 +282,11 @@ Module SqBasic (DT : Eqset_dec_pol).
       B1 =mul= B2 -> L1 =mul= L2 -> n |~> c ; B1 ; L1 -> n |~> c ; B2 ; L2.
   Proof.
     intros n c B1 B2 L1 L2 PB PL H.
-    revert dependent L1;
-      revert dependent L2;
-      revert dependent B1;
-      revert dependent B2;
-      revert dependent c; 
+    generalize dependent L1;
+      generalize dependent L2;
+      generalize dependent B1;
+      generalize dependent B2;
+      generalize dependent c;
       induction n using strongind; intros.
     - inversion H; subst.
       refine (sig3_init _ (transitivity (symmetry PL) H0)). 
@@ -445,8 +445,8 @@ Module SqBasic (DT : Eqset_dec_pol).
       n |-cc B ; L -> exists c, n |~> c ; B ; L.
   Proof.
     intros.
-    revert dependent B;
-      revert dependent L.
+    generalize dependent B;
+      generalize dependent L.
     induction n using strongind; intros L B Hyp.
     **
       inversion Hyp; subst; eexists.
@@ -536,9 +536,9 @@ Module SqBasic (DT : Eqset_dec_pol).
       n |~> c ; B ; L  -> n |-cc B ; L.
   Proof.
     intros.
-    revert dependent B;
-      revert dependent L;
-      revert dependent c.
+    generalize dependent B;
+      generalize dependent L;
+      generalize dependent c.
     induction n using strongind; intros c L B Hyp.
     **
       inversion Hyp; subst.
