@@ -4,18 +4,16 @@
 Some tactics to automatize part of the proof of cut-elimination 
  *)
 
-(*Add LoadPath "../". *)
 Require Export LL.SequentCalculiBasicTheory.
 Require Export Coq.Init.Logic.
 Require Export Coq.Arith.Wf_nat.
 Require Export Coq.Program.Equality.
-Require Export Coq.Arith.Plus.
 Require Export Lia.
 Export ListNotations.
 Set Implicit Arguments.
 
-#[local] Hint Resolve Nat.le_max_r: core .
-#[local] Hint Resolve Nat.le_max_l: core .
+#[local] Hint Resolve Nat.le_max_r: core.
+#[local] Hint Resolve Nat.le_max_l: core.
 
 Module CTactics (DT : Eqset_dec_pol).
   Module Export Sys :=  SqBasic DT.
