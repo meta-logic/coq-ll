@@ -219,7 +219,7 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
               assert (Hch:  (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
               rewrite Hch in H;
               apply IH  with (m:=  L_weight L) in H;
-                auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n))
+                auto using Nat.le_add_l
             end).
       ++ (* bot *)
         apply tri_bot.
@@ -263,15 +263,15 @@ Module FLLMetaTheory (DT : Eqset_dec_pol).
             match goal with
               [ Hx : _ |-F- _ ++ [?F]; _ ++ [_]; UP (?L ++ ?L') |- _] =>
               apply IH  with (m:=  L_weight L) in Hx;
-                auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n))
+                auto using Nat.le_add_l
             end).
       ++ (* bot *)
         apply tri_bot.
         apply IH  with (m:=  L_weight L) in H5;
-          auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+          auto using Nat.le_add_l.
       ++ (* par *)
         apply IH  with (L:=F0 :: G :: L)  (m:=  Exp_weight F0 + Exp_weight G + L_weight L) in H7;
-          auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+          auto using Nat.le_add_l.
         simpl. lia.
       ++ (* with *)
         apply IH  with (L:=F0 :: L)  (m:=  Exp_weight F0 + L_weight L) in H8;auto;try(autounfold;simpl;lia).

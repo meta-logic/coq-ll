@@ -25,7 +25,7 @@ Ltac EquivPosCase H IH m L Hinv :=
     [_ : AsynchronousF _ = false |- _] =>
     inversion H; subst;
     apply IH with(m:=L_weight L) in Hinv;
-      auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n));
+      auto using Nat.le_add_l;
     destruct Hinv;
     eexists;
     simpl; eapply tri_store;auto;
@@ -291,7 +291,7 @@ Ltac EquivAuxSyncPosCases IH F H8 :=
     inversion H1;subst;
     assert ( (M ++ [F]) ++ [G] =mul=  (M ++ [G]) ++ [F]) by solve_permutation;
     eapply TriExchange with (M':= (M ++ [G]) ++ [F]) in H8;
-      auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)), Nat.le_add_r;
+      auto using Nat.le_add_l, Nat.le_add_r;
     apply IH  with  (m:=L_weight L) in H8 ;auto;
     destruct H8;
     eexists; simpl; eapply tri_store;auto; eassumption
@@ -334,9 +334,9 @@ Proof.
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [l1 ** l2] =mul=  (M ++ [l1 ** l2]) ++ [F]) by solve_permutation.
       eapply TriExchange with (M':= (M ++ [l1 ** l2]) ++ [F]) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       apply IH  with (m:=L_weight L) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       destruct H8.
       eexists; simpl; eapply tri_store;auto; eassumption.
 
@@ -353,9 +353,9 @@ Proof.
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [l1 ⊕ l2] =mul=  (M ++[l1 ⊕ l2]) ++ [F]) by solve_permutation.
       eapply TriExchange with (M':= (M ++ [l1 ⊕ l2]) ++ [F]) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       apply IH with (m:=L_weight L) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       destruct H8.
       eexists; simpl; eapply tri_store;auto;eassumption.
     ++ (* WITH *)
@@ -373,9 +373,9 @@ Proof.
       inversion H1;subst.
       assert ( (M ++ [F]) ++ [! l] =mul=  (M ++ [! l]) ++ [F]) by solve_permutation.
       eapply TriExchange with (M':= (M ++ [! l]) ++ [F]) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       apply IH with (m:=L_weight L) in H8;
-        auto using (fun n m => eq_ind _ _ (Nat.le_add_r m n) _ (Nat.add_comm m n)).
+        auto using Nat.le_add_l.
       destruct H8.
       eexists; simpl; eapply tri_store;auto;eassumption.
 
