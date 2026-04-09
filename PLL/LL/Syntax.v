@@ -34,8 +34,8 @@ From Stdlib Require Export Relations.Relations.
 From Stdlib Require Export Classes.Morphisms.
 From Stdlib Require Import Logic.FunctionalExtensionality.
 From Stdlib Require Import Arith.EqNat.
+Require Import Multisets.
 Set Implicit Arguments.
-
 
 (** Syntax  and Notation *)
 Inductive lexp :=
@@ -62,8 +62,8 @@ Notation "A ⊕ B" := (Plus A B) (at level 50).
 Notation "A & B" := (With A B) (at level 50) .
 Notation "! A" := (Bang A) (at level 50) .
 Notation "? A" := (Quest A) (at level 50) .
-Notation "A ⁺" := (Atom A) (at level 10) .
-Notation "A ⁻" := (Perp A) (at level 10) .
+Notation "A ⁺" := (Atom A) .
+Notation "A ⁻" := (Perp A) .
 
 (** Dualilities   *)
 Fixpoint dual_LExp (X: lexp) :=

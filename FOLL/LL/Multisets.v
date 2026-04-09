@@ -17,6 +17,8 @@ From Stdlib Require Export PeanoNat Lia.
 Require Export LL.Eqset.
 Export ListNotations.
 
+Create Rewrite HintDb core.
+
 Module Type MultisetList (EQ : Eqset_dec).
 
   Import EQ.

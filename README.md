@@ -13,7 +13,7 @@ and <a href="mailto:carlos.olarte@gmail.com"> Carlos Olarte</a>
 
 ## Getting Started
 
-The project was tested with Rocq 9.0 (thanks to Olivier Laurent!). No extra library is needed for compilation.
+The project was tested with Rocq 9.2 (thanks to Olivier Laurent!). No extra library is needed for compilation.
 
 There are two main directories
 

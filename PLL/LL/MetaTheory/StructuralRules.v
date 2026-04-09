@@ -9,6 +9,8 @@ Require Export SequentCalculi.
 From Stdlib Require Export Arith.PeanoNat.
 Set Implicit Arguments.
 
+Create HintDb exchanges.
+
 #[local] Hint Resolve Nat.le_max_r Nat.le_max_l : core .
 
 (** Simplification Lemmas *)

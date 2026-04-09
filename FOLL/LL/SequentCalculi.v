@@ -144,7 +144,7 @@ Module SqSystems (DT : Eqset_dec_pol).
   (******************************************************)
   (** Triadic system with meassures *)
   (******************************************************)
-  Reserved Notation " n '|-F-' B ';' L ';' X " (at level 80).
+  Reserved Notation " n '|-F-' B ';' L ';' X " (at level 79).
   Inductive TriSystemh: nat -> list Lexp -> list Lexp -> Arrow -> Prop :=
   | trih_init1 : forall B A,  IsNegativeAtom A ->  0 |-F- B ; [(Dual_LExp A)] ; DW (A)
   | trih_init2 : forall B B' A,  IsNegativeAtom A -> B =mul= (Dual_LExp A) :: B' -> 0 |-F- B ; [] ; DW (A)

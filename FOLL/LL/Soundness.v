@@ -24,33 +24,33 @@ Module FFSoundness (DT : Eqset_dec_pol).
   Theorem Soundness : forall (B : list Lexp) n  (M : list Lexp) A ,
       LexpPos M ->
       n |-F- B ; M ; A  ->  |-- B ; M ++ (Arrow2LL A).
-  Proof with solveF.
+  Proof.
     intros B n M A MPos.
     generalize dependent B.
     generalize dependent M.
     generalize dependent A.
     induction n  using strongind;
       intros A M MPos B H1.
-    + inversionF H1;subst ...
-      eapply sig2_copy with (F:=  A3°);auto. 
+    + inversionF H1;subst ;solveF.
+      eapply sig2_copy with (F:=  A3°);auto.
 
     (* INDUCTIVE CASES *)
     + inversionF H1.
       ++ (* tensor *)
-        apply sig2_tensor with (N:=M0) (M:=N) (F:=F) (G:=G) ...
+        apply sig2_tensor with (N:=M0) (M:=N) (F:=F) (G:=G) ; solveF.
         MReplace (F :: N) ( N ++ (Arrow2LL (DW F) )) .
-        apply H with n0 ...
+        apply H with n0 ; solveF.
         MReplace (G :: M0) ( M0 ++ (Arrow2LL (DW G) )) .
-        apply H with m ...
+        apply H with m ; solveF.
       ++ (* oplus *)
-        apply H in H2 ...
+        apply H in H2 ; solveF.
         simpl in *.
-        eapply sig2_plus1 with (F:=F) (M:=M) ...
-        rewrite union_comm in H2 ...
+        eapply sig2_plus1 with (F:=F) (M:=M) ; solveF.
+        rewrite union_comm in H2 ; solveF.
       ++ (* oplus2 *)
-        apply H in H2 ...
+        apply H in H2 ; solveF.
         simpl in  *.
-        eapply sig2_plus2 with (G:=G) (M:=M) ...
+        eapply sig2_plus2 with (G:=G) (M:=M) ; solveF.
         rewrite union_comm in H2.
         eauto.
       ++ (* bang *)
@@ -66,52 +66,52 @@ Module FFSoundness (DT : Eqset_dec_pol).
       ++ (* par *)
         apply H in H2;auto.
         simpl in *.
-        eapply sig2_par ...
-        MReplace  (F :: G :: M ++ M0) (M ++ F :: G :: M0) ...
+        eapply sig2_par ; solveF.
+        MReplace  (F :: G :: M ++ M0) (M ++ F :: G :: M0). solveF.
       ++ (* with *)
-        apply H in H2 ...
-        apply H in H3 ...
+        apply H in H2 ; solveF.
+        apply H in H3 ; solveF.
         simpl in *.
-        apply sig2_with with (F:=F) (G:=G) (M:=M ++ M0) ...
-        MReplace ( F :: M ++ M0) ( M ++ F :: M0) ...
-        MReplace (G :: M ++ M0) ( M ++ G :: M0) ...
+        apply sig2_with with (F:=F) (G:=G) (M:=M ++ M0) ; solveF.
+        MReplace ( F :: M ++ M0) ( M ++ F :: M0) ; solveF.
+        MReplace (G :: M ++ M0) ( M ++ G :: M0). solveF.
       ++  (* ? *)
-        apply H in H2 ...
+        apply H in H2 ; solveF.
         simpl in *.
-        apply sig2_quest with (F:=F) (M := M ++ M0) ...
-        rewrite union_comm in H2 ...
+        apply sig2_quest with (F:=F) (M := M ++ M0) ; solveF.
+        rewrite union_comm in H2. solveF.
       ++ (* store *)
-        apply H in H3 ...
+        apply H in H3 ; solveF.
         simpl in *.
-        rewrite <- union_assoc in H3 ... 
+        rewrite <- union_assoc in H3. solveF.
       ++ (* decide *)
-        apply H in H4 ...
+        apply H in H4 ; solveF.
         simpl in *.
         rewrite app_nil_r.
         rewrite H3.
-        MReplace (F :: L') ( L' ++ [F])  ...
+        MReplace (F :: L') ( L' ++ [F]). solveF.
       ++ (* decide *)
-        apply H in H4 ...
+        apply H in H4 ; solveF.
         simpl in *.
         rewrite H3.
-        eapply sig2_copy with (F:=F) ...
-        rewrite H3 in H4 ...
-        MReplace ( (F::M)++[]) (M ++ [F]) ...
+        eapply sig2_copy with (F:=F) ; solveF.
+        rewrite H3 in H4.
+        MReplace ( (F::M)++[]) (M ++ [F]). solveF.
       ++ (* exists *)
         apply H in H2;auto.
         simpl in *.
         rewrite union_comm in H2.
-        rewrite union_comm ...
-        eapply sig2_ex ...
+        rewrite union_comm.
+        eapply sig2_ex ; solveF.
         eauto.
       ++ (* forall *)
         simpl in *.
-        eapply sig2_fx ...
+        eapply sig2_fx ; solveF.
         intro x.
         generalize (H2 x);intro.
-        apply H in H0 ...
+        apply H in H0 ; solveF.
         simpl in *.
-        MReplace (Subst FX x :: M ++ M0) ( M ++ Subst FX x :: M0) ...
+        MReplace (Subst FX x :: M ++ M0) ( M ++ Subst FX x :: M0). solveF.
   Qed.
 
 End FFSoundness.

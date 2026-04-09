@@ -242,10 +242,10 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Notation "A & B" := (With A B) (at level 50) .
     Notation "! A" := (Bang A) (at level 50) .
     Notation "? A" := (Quest A) (at level 50) .
-    Notation "A ⁺" := (Atom A) (at level 10) .
-    Notation "A ⁻" := (Perp A) (at level 10) .
-    Notation "'F{' FX '}'" := (Fx FX) (at level 10) .
-    Notation "'E{' FX '}'" := (Ex FX) (at level 10) .
+    Notation "A ⁺" := (Atom A) .
+    Notation "A ⁻" := (Perp A) .
+    Notation "'F{' FX '}'" := (Fx FX) .
+    Notation "'E{' FX '}'" := (Ex FX) .
     Notation "P °" := (Dual_LExp P) (at level 1, left associativity, format "P °").
     Notation"A -o B"    := (Imp A B) (at level 70).
   End LLNotation.
