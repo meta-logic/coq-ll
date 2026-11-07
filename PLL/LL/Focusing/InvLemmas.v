@@ -95,6 +95,7 @@ Module InvCopy.
 
 
   Lemma RUp0 : RUp 0.
+  Proof.
     unfold RUp.
     intros.
     
@@ -114,6 +115,7 @@ Module InvCopy.
 
 
   Theorem InvCopyAux1: forall  n , (forall m : nat, m <= n -> RInd m) -> RUp (S n).
+  Proof.
     intros n IH.
     unfold RUp.  intros B L1 F M1 HM1pos HD1.
     destruct L1.
@@ -289,6 +291,7 @@ Module InvCopy.
 
 
   Theorem InvCopyAux2: forall  n , (forall m : nat, m <= n -> RInd m) -> RDown (n).
+  Proof.
     intros n IH.
     unfold RDown.  intros B F M H  HM1pos HPosF  HD1.
     elim (DecPosOrPosAtom H);intro HHpos.
@@ -562,6 +565,7 @@ Module InvCopy.
 
 
   Theorem InvCopy' : forall n, RInd n.
+  Proof.
     intro n.
     induction n using strongind.
     + unfold RInd.
@@ -578,6 +582,7 @@ End InvCopy.
 Export InvCopy.
 
 Theorem InvCopy : forall B L F  M n,   n |-F- B ++ [F]  ;M ; UP (F :: L) -> lexpPos M  -> exists m, m|-F- B ++ [F] ; M  ; UP L .
+Proof.
   intros.
   apply EquivUpArrow with (L' := L ++ [F]) in H .
   destruct H.
@@ -597,6 +602,7 @@ Set Implicit Arguments.
 Module InvPlus.
 
   Lemma OPlusComm : forall B M F G X n, n |-F- B ; M ++ [F ⊕ G] ; X -> n |-F- B ; M ++ [G ⊕ F] ; X.
+  Proof.
     intros.
     generalize dependent B.
     generalize dependent M.
@@ -712,6 +718,7 @@ Module InvPlus.
 
 
   Lemma RUp0 : RUp 0.
+  Proof.
     unfold RUp.
     intros.
 
@@ -732,6 +739,7 @@ Module InvPlus.
 
 
   Lemma RDown0 : RDown 0.
+  Proof.
     unfold RDown.
     intros.
     inversion H2;subst.
@@ -746,6 +754,7 @@ Module InvPlus.
 
 
   Theorem InvPlusAux1: forall  n , (forall m : nat, m <= n -> RInd m) -> RUp (S n).
+  Proof.
     intros n IH.
     unfold RUp.  intros B L1 F G M1 HM1pos HD1.
     destruct L1.
@@ -866,6 +875,7 @@ Module InvPlus.
 
 
   Theorem InvPlusAux2: forall  n , (forall m : nat, m <= n -> RInd m) -> RDown (n).
+  Proof.
     intros n IH.
     unfold RDown.  intros B F G M H  HM1pos HPosF  HD1.
     elim (DecPosOrPosAtom H);intro HHpos.
@@ -1130,6 +1140,7 @@ Module InvPlus.
 
 
   Theorem InvPlus' : forall n, RInd n.
+  Proof.
     intro n.
     induction n using strongind.
     + unfold RInd.
@@ -1146,6 +1157,7 @@ End InvPlus.
 Export InvPlus.
 
 Theorem InvOplus1 : forall B L F G M n, n |-F- B;M ; UP (L ++ [F]) -> lexpPos M -> exists m, m|-F- B ; M ++ [F ⊕ G] ; UP L .
+Proof.
   intros.
   assert(HRn:  forall n, RUp n) by (apply InvPlus').
   generalize (HRn (n));intros.
@@ -1154,6 +1166,7 @@ Theorem InvOplus1 : forall B L F G M n, n |-F- B;M ; UP (L ++ [F]) -> lexpPos M 
 Qed.
 
 Theorem InvOplus2 : forall B L F G M n, n |-F- B;M ; UP (L ++ [G]) -> lexpPos M -> exists m, m|-F- B ; M ++ [F ⊕ G] ; UP L .
+Proof.
   intros.
   assert(HRn:  forall n, RUp n) by (apply InvPlus').
   generalize (HRn (n));intros.
@@ -1169,6 +1182,7 @@ Qed.
 (** Invertibility of the Tensor Rule *)
 Module InvTensor.
   Lemma TensorComm : forall B M F G X n, n |-F- B ; M ++ [F ** G] ; X -> n |-F- B ; M ++ [G ** F] ; X.
+  Proof.
     intros.
     generalize dependent B.
     generalize dependent M.
@@ -1284,6 +1298,7 @@ Module InvTensor.
 
 
   Lemma RUp0 : RUp 0.
+  Proof.
     unfold RUp.
     intros.
     assert(n = 0%nat) by lia.
@@ -1315,6 +1330,7 @@ Module InvTensor.
 
 
   Lemma RDown0 : RDown 0.
+  Proof.
     unfold RDown.
     intros.
     assert(n = 0%nat) by lia.
@@ -1346,6 +1362,7 @@ Module InvTensor.
                                       S n = plus n1 n2 ->
                                       lexpPos M1 -> lexpPos M2 ->
                                       exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP [].
+  Proof.
     intros n n1 n2 B M1 M2 F G IH HD1 HD2 HF HG Hnm  HM1pos HM2pos.
     apply PosOrPosAtomAsync in HF as HF'.
     inversion HD1;subst;simpl in *; try(inversion HF').
@@ -1414,6 +1431,7 @@ Module InvTensor.
                                       S n = plus n1 n2 ->
                                       lexpPos M1 -> lexpPos M2 ->
                                       exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP [].
+  Proof.
     intros n n1 n2 B M1 M2 F G IH HD1 HD2 HF HG Hnm  HM1pos HM2pos.
     apply PosOrPosAtomAsync in HF as HF'.
     apply PosOrPosAtomAsync in HG as HG'.
@@ -1550,7 +1568,7 @@ Module InvTensor.
                                     lexpPos M1 ->
                                     lexpPos M2 ->
                                     exists m : nat, m |-F- B; (M1 ++ M2) ++ [F ** G]; UP (L1 ++ l :: L2).
-
+  Proof.
     intros n n1 n2 B M1 M2 L1 l L2 F G HD1 HD2 IH Hnm HM1pos HM2pos.
     simpl in *.
     inversion HD2;subst.
@@ -1647,6 +1665,7 @@ Module InvTensor.
 
 
   Theorem InvTensorAux1: forall  n , (forall m : nat, m <= n -> RInd m) -> RUp (S n).
+  Proof.
     intros n IH.
     unfold RUp.  intros B L1 L2 F G M1 M2 n1 n2 Hnm HM1pos HM2pos HD1 HD2.
     destruct L1; destruct L2.
@@ -1708,7 +1727,7 @@ Module InvTensor.
 
 
   Theorem InvTensorAux2: forall  n , (forall m : nat, m <= n -> RInd m) -> RDown (n).
-
+  Proof.
     intros n IH.
     unfold RDown.  intros B F G M M' n1 n2 H Hnm HM1pos HM2pos HPosF  HD1 HD2.
     elim (DecPosOrPosAtom H);intro HHpos.
@@ -1972,6 +1991,7 @@ Module InvTensor.
 
 
   Theorem InvTensor' : forall n, RInd n.
+  Proof.
     intro n.
     induction n using strongind.
     + unfold RInd.
@@ -1990,6 +2010,7 @@ Export InvTensor.
 
 
 Theorem InvTensor : forall B L L' F G M M' n m, lexpPos M -> lexpPos M' -> n |-F- B;M ; UP ( L ++ [F]) -> m |-F- B;M' ; UP (L' ++ [G]) -> exists m, m|-F- B ; M ++ M' ++ [F ** G] ; UP (L ++ L').
+Proof.
   intros.
   assert(HRn:  forall n, RUp n) by (apply InvTensor').
   generalize (HRn (plus n m));intros.

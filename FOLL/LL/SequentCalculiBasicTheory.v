@@ -131,17 +131,21 @@ Module SqBasic (DT : Eqset_dec_pol).
   Qed.
 
   Lemma Sig2InitNegative:  forall B A, IsNegativeAtom A ->  |-- B; [A°; A].
+  Proof.
     intros.
     inversion H;try(rewrite AtomNeg);try(rewrite AtomPos); eapply sig2_init;eauto.
   Qed.
   Lemma Sig2InitNegative':  forall B A, IsNegativeAtom A ->  |-- B; [A; A°].
+  Proof.
     intros.
     inversion H;try(rewrite AtomNeg);try(rewrite AtomPos); eapply sig2_init;eauto.
   Qed.
   Lemma Sig2One: forall B, |-- B; [1].
+  Proof.
     intro. apply sig2_one;auto.
   Qed.
   Lemma Sig2Top: forall B M M', |-- B; M ++ ⊤ :: M'.
+  Proof.
     intros. eapply sig2_top;auto.
   Qed.
   #[export] Hint Resolve Sig2InitNegative Sig2InitNegative' Sig2One Sig2Top : core .
@@ -627,6 +631,7 @@ Module SqBasic (DT : Eqset_dec_pol).
   (* Triadic System theorems *)
 
   Theorem AdequacyTri1 : forall n B M X, n |-F- B ; M ; X -> |-F- B ; M ; X.
+  Proof.
     induction n using strongind;intros. 
     + inversion H;subst;eauto.
     (* inversion H0;subst;eauto. solves everything but it takes almost 1 min *)
@@ -672,6 +677,7 @@ easily conclude the goal [G].
   Axiom ax_subs_prop: forall B L M FX (P:nat -> Prop), (forall x : Term, exists n : nat, (P n) /\ n |-F- B; L; UP (Subst FX x :: M)) -> exists n, (P n) /\ forall x, n |-F- B; L; UP (Subst FX x :: M) .
 
   Theorem ax_subs_prop' : forall B L M FX , (forall x : Term, exists n : nat, n |-F- B; L; UP (Subst FX x :: M)) -> exists n, forall x, n |-F- B; L; UP (Subst FX x :: M) .
+  Proof.
     intros.
     assert(Hs: forall x : Term, exists n : nat, ((fun _ => True) n) /\ n |-F- B; L; UP (Subst FX x :: M)).
     intro x.
@@ -685,6 +691,7 @@ easily conclude the goal [G].
   Qed.
 
   Theorem AdequacyTri2 : forall B M X, |-F- B ; M ; X ->  exists n, n |-F- B ; M ; X.
+  Proof.
     intros.
     induction H;try( destruct IHTriSystem);try( destruct IHTriSystem1); try( destruct IHTriSystem2); eauto.
     apply ax_subs_prop' in H0.
@@ -785,6 +792,7 @@ easily conclude the goal [G].
   Qed.
 
   Theorem TriExchange : forall B B' M M' X, |-F-  B ; M ; X -> B =mul= B' -> M =mul= M' -> |-F- B' ; M' ; X.
+  Proof.
     intros.
     apply AdequacyTri2 in H.
     destruct H.
@@ -873,6 +881,7 @@ easily conclude the goal [G].
   Qed.
 
   Lemma TopDown : forall M B, |-F- B ; M ; DW (Top).
+  Proof.
     intros.
     apply tri_rel. constructor.
     apply tri_top.
@@ -901,12 +910,14 @@ easily conclude the goal [G].
       ); (try reflexivity); try now symmetry.
 
   Lemma StoreInversion : forall n B M F,  n |-F- B; M; UP [F] -> PosOrNegAtom F -> n -1 |-F- B ; M ++ [F] ; UP [].
+  Proof.
     intros.
     inversionF H.
     simpl. rewrite Nat.sub_0_r. auto.
   Qed.
 
   Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> LexpPos N -> exists m, m |-F- B ; M ++ N ; UP L.
+  Proof.
     intros.
     generalize dependent M.
     generalize dependent n.
@@ -924,6 +935,7 @@ easily conclude the goal [G].
   Qed.
 
   Lemma AppSingleton : forall (F G: Lexp) M, [F] = M ++ [G] -> M = [].
+  Proof.
     intros.
     destruct M;auto.
     simpl in H.

@@ -287,18 +287,14 @@ Module Syntax_LL (DT : Eqset_dec_pol).
   Proof. extensionality T.  apply @equal_f_dep. auto. Qed.
 
   Lemma AtomNeg : forall A, (A ⁻)° = A ⁺.
-    auto.
-  Qed.
+  Proof. auto. Qed.
   Lemma AtomPos : forall A, (A ⁺)° = A ⁻.
-    auto.
-  Qed.
+  Proof. auto. Qed.
 
 
 
   Lemma Neg2pos: forall A, Atom A = Dual_LExp (Perp A).
-  Proof.
-    auto.
-  Qed.
+  Proof. auto. Qed.
 
 
   Theorem Ng_involutive: forall F: Lexp, F = Dual_LExp (Dual_LExp F).
@@ -354,7 +350,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     fun T:Type  => flatten (S (term T) (X T)).
 
   Definition SubstL   (S : SubsL ) (X : Term)  : list Lexp := map (fun s => Subst s X) S.
-  #[export] Hint Unfold Subst  : core .
+  #[export] Hint Unfold Subst : core .
 
   (************************************************)
   (* Equality On LExp Formulas *)
@@ -362,102 +358,119 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
   Section EqualityFormulas. 
     Lemma AtomEq: forall A A', Atom A = Atom A' -> A = A'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma PerpEq: forall A A', Perp A = Perp A' -> A = A'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma ParEq1 : forall F G F0 G0,  F0 $ G0 = F $ G -> F = F0.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma ParEq2 : forall F G F0 G0,  F0 $ G0 = F $ G -> G = G0.
+    Proof.
       intros. extensionality T.
       apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma WithEq1 : forall F G F0 G0,  F0 & G0 = F & G -> F = F0.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma WithEq2 : forall F G F0 G0,  F0 & G0 = F & G -> G = G0.
+    Proof.
       intros. extensionality T.
       apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma TensorEq1 : forall F G F0 G0,  F0 ** G0 = F ** G -> F = F0.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma TensorEq2 : forall F G F0 G0,  F0 ** G0 = F ** G -> G = G0.
+    Proof.
       intros. extensionality T.
       apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma PlusEq1 : forall F G F0 G0,  F0 ⊕ G0 = F ⊕ G -> F = F0.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma PlusEq2 : forall F G F0 G0,  F0 ⊕ G0 = F ⊕ G -> G = G0.
+    Proof.
       intros. extensionality T.
       apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma BangEq : forall F F',  ! F = ! F'-> F = F'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma QuestEq : forall F F',  ? F = ? F'-> F = F'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma FxEq : forall F F',  F{ F } = F{ F' }-> F = F'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma ExEq : forall F F',  E{ F } = E{ F' }-> F = F'.
+    Proof.
       intros.
       extensionality T. apply @equal_f_dep with (x:=T) in H.
       inversion H. auto.
     Qed.
 
     Lemma CteEqt : forall t t',  Cte t = Cte t' -> t = t'.
+    Proof.
       intros.
       apply @equal_f_dep with (x:=unit) in H.
       inversion H;auto.
     Qed.
 
     Lemma F1Eqn : forall n n' t t',  FC1 n t = FC1 n' t' -> n = n'.
+    Proof.
       intros.
       apply @equal_f_dep with (x:=unit) in H.
       inversion H;auto.
     Qed.
 
     Lemma F1Eqt : forall n n' t t',  FC1 n t = FC1 n' t' -> t = t'.
+    Proof.
       intros.
       extensionality T.
       apply @equal_f_dep with (x:=T) in H.
@@ -465,12 +478,14 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma F2Eqn : forall n1 n2 t1 t1' t2 t2',  FC2 n1 t1 t2 = FC2 n2 t1' t2' -> n1 = n2.
+    Proof.
       intros.
       apply @equal_f_dep with (x:=unit) in H.
       inversion H;auto.
     Qed.
 
     Lemma F2Eqt1 : forall n1 n2 t1 t1' t2 t2',  FC2 n1 t1 t2 = FC2 n2 t1' t2' -> t1 = t1'.
+    Proof.
       intros.
       extensionality T.
       apply @equal_f_dep with (x:=T) in H.
@@ -478,6 +493,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma F2Eqt2 : forall n1 n2 t1 t1' t2 t2',  FC2 n1 t1 t2 = FC2 n2 t1' t2' -> t2 = t2'.
+    Proof.
       intros.
       extensionality T.
       apply @equal_f_dep with (x:=T) in H.
@@ -485,24 +501,28 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma Terms_cte_fc1 : forall t n t', Cte t <> FC1 n t'.
+    Proof.
       intros t n t' Hn.
       apply @equal_f_dep with (x:=unit) in Hn.
       inversion Hn.
     Qed.
 
     Lemma Terms_cte_fc2 : forall t n t' t'', Cte t <> FC2 n t' t''.
+    Proof.
       intros t n t' t'' Hn.
       apply @equal_f_dep with (x:=unit) in Hn.
       inversion Hn.
     Qed.
 
     Lemma Terms_fc1_fc2 : forall t n t' t'' n', FC1 n t <> FC2 n' t' t''.
+    Proof.
       intros t n t' t'' n' Hn.
       apply @equal_f_dep with (x:=unit) in Hn.
       inversion Hn.
     Qed.
 
     Lemma A0Inv : forall n m, A0 n = A0 m -> n = m.
+    Proof.
       intros.
       unfold A0 in H.
       apply @equal_f_dep with (x:=unit) in H.
@@ -510,6 +530,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma A1InvN : forall n m t t', A1 n t = A1 m t' -> n = m.
+    Proof.
       intros.
       unfold A1 in H.
       apply @equal_f_dep with (x:=unit) in H.
@@ -517,6 +538,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma A1InvT : forall n m t t', A1 n t = A1 m t' -> t = t'.
+    Proof.
       intros.
       unfold A1 in H.
       extensionality T.
@@ -525,6 +547,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma A2InvN : forall n m t1 t1' t2 t2', A2 n t1 t2 = A2 m t1' t2' -> n = m.
+    Proof.
       intros.
       unfold A2 in H.
       apply @equal_f_dep with (x:=unit) in H.
@@ -532,6 +555,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma A2InvT1 : forall n m t1 t1' t2 t2', A2 n t1 t2 = A2 m t1' t2' -> t1 = t1'.
+    Proof.
       intros.
       unfold A2 in H.
       extensionality T.
@@ -540,6 +564,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma A2InvT2 : forall n m t1 t1' t2 t2', A2 n t1 t2 = A2 m t1' t2' -> t2 = t2'.
+    Proof.
       intros.
       unfold A2 in H.
       extensionality T.
@@ -691,6 +716,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Theorem WeightDestruct0 : forall F:Lexp, 0%nat = Lexp_weight F ->
                                              (exists A, F = Atom A) \/ (exists A, F = Perp A) \/
                                              F = One \/ F = Bot \/ F = Zero \/ F = Top.
+    Proof.
       autounfold.
       intros.
       caseLexp F;firstorder; try(rewrite <- H2 in H; inversion H);
@@ -720,8 +746,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
         transitivity proved by wt_trans as wt_linear.
 
     Lemma wt_eq : forall F G, F = G -> Lexp_weight F = Lexp_weight G.
-      intros. rewrite H. auto.
-    Qed.
+    Proof. intros. rewrite H. auto. Qed.
 
 
     Lemma lweight_dual_unit : forall FX:Subs, lexp_weight (FX unit tt) = lexp_weight (dual_LExp (FX unit tt)).
@@ -795,6 +820,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
   Theorem  subs_uptoAtomsL  : forall (T T':Type) (t:T) (t' :T') (FX:SubsL),
       EqualUptoAtomsL  (map (fun s => (s T t) )  FX)  (map (fun s => (s T' t') )  FX).
+  Proof.
     intros.
     induction FX.
     +simpl;constructor.
@@ -853,6 +879,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem AsyncEq : forall F:Lexp , Asynchronous F <-> AsynchronousF F = true.
+    Proof.
       split. apply AsyncEqL. apply AsyncEqR.
     Qed.
 
@@ -897,6 +924,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     #[local] Hint Unfold Exp_weight : core .
 
     Theorem exp_weight0 : forall  F:Lexp , Exp_weight F > 0.
+    Proof.
       intros.
       unfold Exp_weight.
       induction F;simpl;lia.
@@ -943,6 +971,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma TermFlattenG: forall (t:Term) (T:Type) ,   flattenT (t (term T)) =  (t T).
+    Proof.
       intros.
       assert(ClosedT t) by apply ax_closedT.
       induction H; try(reflexivity).
@@ -951,6 +980,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma TermFlattenFun : forall t:Term , (fun T : Type => flattenT (t (term T))) = t.
+    Proof.
       intros.
       extensionality T.
       rewrite TermFlattenG;auto.
@@ -958,17 +988,20 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
     Lemma TermFlattenFun': forall t:Term ,
         (fun T:Type => flattenT (flattenT (t (term (term T))))) = t.
+    Proof.
       intros.
       extensionality T.
       do 2 rewrite TermFlattenG;auto.
     Qed.
 
     Lemma FlattenAtom : forall T, forall (A : aprop (term T)), exists A' ,  flatten (atom A) = atom A'.
+    Proof.
       intros.
       destruct A3;simpl;eauto.
     Qed.
 
     Lemma FlattenPerp : forall T, forall (A : aprop (term T)), exists A' ,  flatten (perp A) = perp A'.
+    Proof.
       intros.
       destruct A3;simpl;eauto.
     Qed.
@@ -976,6 +1009,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
 
 
     Lemma subs_weight_weak:  forall (FX:Subs) x, Exp_weight (Subst FX x) = exp_weight (FX unit tt) .
+    Proof.
       intros.
       autounfold. unfold Subst.
       assert (ClosedT x) by apply ax_closedT.
@@ -989,6 +1023,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem subs_weight : forall (FX : Subs) x y, Exp_weight(Subst FX x) = Exp_weight(Subst FX y).
+    Proof.
       intros.
       rewrite subs_weight_weak.
       rewrite subs_weight_weak.
@@ -996,6 +1031,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma subs_weight_weak':  forall (FX:Subs) x, Lexp_weight (Subst FX x) = (lexp_weight (FX unit tt)) .
+    Proof.
       intros.
       unfold Lexp_weight.
       unfold Subst.
@@ -1011,6 +1047,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem subs_weight' : forall (FX : Subs) x y, Lexp_weight(Subst FX x) = Lexp_weight(Subst FX y).
+    Proof.
       intros.
       rewrite subs_weight_weak'.
       rewrite subs_weight_weak'.
@@ -1018,6 +1055,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma Flatten_dual : forall T (F: lexp (term T)), flatten F = dual_LExp(flatten ( dual_LExp F)).
+    Proof.
       intros.
       induction F;simpl;try(destruct a);try(reflexivity);
         try(simpl;rewrite IHF1;rewrite IHF2; auto);
@@ -1030,6 +1068,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem SubsDual: forall (FX1 FX2 : Subs) t, (E{ FX1})° = F{ FX2} -> (Subst FX1 t)  = (Subst FX2 t)°.
+    Proof.
       intros.
       unfold Dual_LExp in *.
       simpl in *. 
@@ -1042,6 +1081,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem SubsDual': forall (FX1 FX2 : Subs) t, (F{ FX1})° = E{ FX2} -> (Subst FX1 t)  = (Subst FX2 t)°.
+    Proof.
       intros.
       unfold Dual_LExp in *.
       simpl in *.
@@ -1149,6 +1189,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma NegPosAtom : forall F, IsNegativeAtom F -> IsPositiveAtom F° .
+    Proof.
       intros.
       inversion H;try(constructor);auto.
     Qed.
@@ -1172,6 +1213,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     #[local] Hint Constructors release : core .
 
     Lemma IsPositiveAtomRelease: forall F, IsPositiveAtom F -> Release F.
+    Proof.
       intros.
       inversion H;
         constructor;auto.
@@ -1201,6 +1243,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Theorem AsyncEqNeg : forall F:Lexp , ~ Asynchronous F <-> AsynchronousF F = false.
+    Proof.
       split;intro H.
       + rewrite <- AsynchronousEquiv in  H.
         inversion H;reflexivity.
@@ -1240,24 +1283,28 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     #[local] Hint Unfold PosFormula : core .
 
     Lemma PosFormulaPosOrNegAtom : forall F, PosFormula F -> PosOrNegAtom F.
+    Proof.
       intros.
       unfold PosOrNegAtom.
       inversion H;constructor.
     Qed.
 
     Lemma ApropPosNegAtom : forall A: AProp, IsPositiveAtom (Atom A) \/ IsNegativeAtom(Atom A).
+    Proof.
       intros.
       assert(HC : ClosedA A3) by apply ax_closedA.
       inversion HC;remember(isPositive n); destruct b;auto;[left | right |left | right];constructor;auto.
     Qed.
 
     Lemma ApropPosNegAtom' : forall A: AProp, IsPositiveAtom (Perp A) \/ IsNegativeAtom(Perp A).
+    Proof.
       intros.
       assert(HC : ClosedA A3) by apply ax_closedA.
       inversion HC;remember(isPositive n); destruct b;auto; [right | left | right | left] ; constructor;auto.
     Qed.
 
     Lemma NotAsynchronousPosAtoms : forall F, ~ Asynchronous  F -> PosFormula F \/ IsPositiveAtom F \/ IsNegativeAtom F.
+    Proof.
       intros.
       caseLexp F;auto;try (left;constructor);
         [idtac | idtac | (contradict H;subst;auto) .. ].
@@ -1266,6 +1313,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma NegPosAtomContradiction: forall F, PosOrNegAtom F ->  IsPositiveAtom F -> False.
+    Proof.
       intros.
       inversion H0;
         rewrite <- H2 in H;
@@ -1288,179 +1336,217 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma NotAsyncAtom : forall A, ~ Asynchronous (A ⁺).
+    Proof.
       intros A3 Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncAtom' : forall A, ~ Asynchronous (A ⁻).
+    Proof.
       intros A3 Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncOne :  ~ Asynchronous (One).
+    Proof.
       intro Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncZero :  ~ Asynchronous (Zero).
+    Proof.
       intro Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncTensor : forall F G,  ~ Asynchronous (Tensor F G).
+    Proof.
       intros F G Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncPlus : forall F G,  ~ Asynchronous (Plus F G).
+    Proof.
       intros F G Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncBang : forall F ,  ~ Asynchronous (Bang F).
+    Proof.
       intros F Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotAsyncEx : forall FX ,  ~ Asynchronous (Ex FX).
+    Proof.
       intros FX Hn.
       inversion Hn;auto;LexpContr.
     Qed.
 
     Lemma NotPATop :  ~IsPositiveAtom (Top).
+    Proof.
       intros  Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPABot :  ~IsPositiveAtom (Bot).
+    Proof.
       intros  Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAOne :  ~IsPositiveAtom (One).
+    Proof.
       intros  Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAZero :  ~IsPositiveAtom (Zero).
+    Proof.
       intros  Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPATensor : forall F G, ~IsPositiveAtom (Tensor F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAPar : forall F G, ~IsPositiveAtom (Par F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAPlus : forall F G, ~IsPositiveAtom (Plus F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAWith : forall F G, ~IsPositiveAtom (With F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPABang : forall F , ~IsPositiveAtom (Bang F).
+    Proof.
       intros F Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAQuest : forall F , ~IsPositiveAtom (Quest F).
+    Proof.
       intros F Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAExists : forall FX, ~IsPositiveAtom (Ex FX).
+    Proof.
       intros FX Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma NotPAForall : forall FX, ~IsPositiveAtom (Fx FX).
+    Proof.
       intros FX Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeOne :  ~ IsNegativeAtom One.
+    Proof.
       intro Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeBot :  ~ IsNegativeAtom Bot.
+    Proof.
       intro Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeZero :  ~ IsNegativeAtom Zero.
+    Proof.
       intro Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeTop :  ~ IsNegativeAtom Top.
+    Proof.
       intro Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeTensor : forall F G, ~ IsNegativeAtom (Tensor F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativePar : forall F G, ~ IsNegativeAtom (Par F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeWith : forall F G, ~ IsNegativeAtom (With F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativePlus : forall F G, ~ IsNegativeAtom (Plus F G).
+    Proof.
       intros F G Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeBang : forall F, ~ IsNegativeAtom (! F).
+    Proof.
       intros F Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeQuest : forall F, ~ IsNegativeAtom (? F).
+    Proof.
       intros F Hn.
       inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeEx : forall F, ~ IsNegativeAtom (Ex F).
+    Proof.
       intros F Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma IsNegativeFx : forall F, ~ IsNegativeAtom (Fx F).
+    Proof.
       intros F Hn;inversion Hn;LexpContr.
     Qed.
 
     Lemma NotRelTensor: forall F G, ~ Release (F ** G).
+    Proof.
       intros F G Hn; inversion Hn.
     Qed.
 
     Lemma NotRelPlus: forall F G, ~ Release (F ⊕ G).
+    Proof.
       intros F G Hn; inversion Hn.
     Qed.
     Lemma NotRelBang: forall F , ~ Release (! F).
+    Proof.
       intros F Hn; inversion Hn.
     Qed.
 
     Lemma NotRelEx: forall F, ~ Release ( Ex F).
+    Proof.
       intros F Hn; inversion Hn.
     Qed.
 
     Lemma NotRelOne: ~ Release One.
+    Proof.
       intros Hn; inversion Hn.
     Qed.
 
     Lemma NotRelZero: ~ Release Zero.
+    Proof.
       intros Hn; inversion Hn.
     Qed.
 
@@ -1473,6 +1559,7 @@ Module Syntax_LL (DT : Eqset_dec_pol).
     Qed.
 
     Lemma NotAsynchronousPosAtoms' : forall G, ~Asynchronous G -> IsPositiveAtom G \/ (PosFormula G \/ IsNegativeAtom G).
+    Proof.
       intros G HG.
       apply NotAsynchronousPosAtoms in HG;tauto.
     Qed.
@@ -1724,6 +1811,7 @@ Module FormulasLL (DT : Eqset_dec_pol).
   Qed.
 
   Lemma LexpPosConc : forall M F, LexpPos M -> ~ Asynchronous F ->  LexpPos (M ++ [F]).
+  Proof.
     intros.
     assert(M ++ [F] =mul= [F] ++ M) by solve_permutation.
     rewrite H1.
@@ -1732,6 +1820,7 @@ Module FormulasLL (DT : Eqset_dec_pol).
   Qed.
 
   Lemma LexpPosCons : forall F L, LexpPos (F :: L) -> LexpPos L.
+  Proof.
     intros.
     inversion H.
     auto.
@@ -1739,6 +1828,7 @@ Module FormulasLL (DT : Eqset_dec_pol).
 
 
   Lemma LexpPosOrNegAtomConc : forall M F,  LexpPos M ->  PosOrNegAtom F ->  LexpPos (M ++ [F]).
+  Proof.
     intros.
     assert(HS : M ++ [F] =mul= [F] ++ M) by solve_permutation.
     rewrite HS.
