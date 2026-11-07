@@ -30,6 +30,7 @@ Set Implicit Arguments.
 
 
 Theorem CompletenessAux : forall B L n,  n |-- B ; L -> exists m, m |-F- B ; empty ; UP L.
+Proof.
   intros.
   generalize dependent B.
   generalize dependent L.
@@ -191,6 +192,7 @@ Qed.
 Theorem Completeness : forall B L M n,  n |-- B ; M ++ L ->
                                                   lexpPos M ->
                                                   exists m, m |-F- B ; M ; UP L.
+Proof.
   intros.
   assert (exists m, m |-F- B ; [] ; UP (M ++ L)).
   eapply CompletenessAux;eauto.

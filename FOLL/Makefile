@@ -7,7 +7,7 @@
 ##         #     GNU Lesser General Public License Version 2.1          ##
 ##         #     (see LICENSE file for the text of the license)         ##
 ##########################################################################
-## GNUMakefile for Rocq 9.2
+## GNUMakefile for Rocq 9.3.0
 
 # For debugging purposes (must stay here, don't move below)
 INITIAL_VARS := $(.VARIABLES)
@@ -27,6 +27,10 @@ MLGFILES          := $(COQMF_MLGFILES)
 MLPACKFILES       := $(COQMF_MLPACKFILES)
 MLLIBFILES        := $(COQMF_MLLIBFILES)
 METAFILE          := $(COQMF_METAFILE)
+ROCQPACKAGE       := $(COQMF_ROCQPACKAGE)
+LEGACYSUPPORT     := $(COQMF_LEGACY_SUPPORT)
+HAS_PACKAGE_LOGICAL_PATH := $(COQMF_HAS_PACKAGE_LOGICAL_PATH)
+PACKAGE_LOGICAL_PATH   := $(COQMF_PACKAGE_LOGICAL_PATH)
 CMDLINE_VFILES    := $(COQMF_CMDLINE_VFILES)
 INSTALLCOQDOCROOT := $(COQMF_INSTALLCOQDOCROOT)
 OTHERFLAGS        := $(COQMF_OTHERFLAGS)
@@ -43,6 +47,11 @@ OCAMLFIND         := $(COQMF_OCAMLFIND)
 CAMLFLAGS         := $(COQMF_CAMLFLAGS)
 HASNATDYNLINK     := $(COQMF_HASNATDYNLINK)
 OCAMLWARN         := $(COQMF_WARN)
+
+PACKAGE_FLAGS     := $(foreach pkg,$(COQMF_PACKAGES),-package $(pkg))
+COQLIBS           += $(PACKAGE_FLAGS)
+COQLIBS_NOML      += $(PACKAGE_FLAGS)
+CMDLINE_COQLIBS   += $(PACKAGE_FLAGS)
 
 Makefile.conf: _RocqProject
 	rocq makefile -f _RocqProject -o Makefile
@@ -129,7 +138,7 @@ COQDEBUG ?=
 
 # Extra packages to be linked in (as in findlib -package)
 CAMLPKGS ?=
-FINDLIBPKGS = -package rocq-runtime.plugins.ltac $(CAMLPKGS)
+FINDLIBPKGS = -package rocq-runtime.plugins.ltac $(PACKAGE_FLAGS) $(CAMLPKGS)
 
 # Option for making timing files
 TIMING?=
@@ -172,6 +181,8 @@ COQTOPINSTALL ?= $(call destination_path,$(COQLIB)/toploop) # FIXME: Unused vari
 # findlib files installation
 FINDLIBPREINST= mkdir -p "$(COQPLUGININSTALL)/"
 FINDLIBDESTDIR= -destdir "$(COQPLUGININSTALL)/"
+FINDLIBPACKAGEINSTALL = $(COQPLUGININSTALL)/$(FINDLIBPACKAGE)
+FINDLIBROCQINSTALL = $(FINDLIBPACKAGEINSTALL)/rocq.d
 
 # we need to move out of sight $(METAFILE) otherwise findlib thinks the
 # package is already installed
@@ -186,6 +197,7 @@ findlib_install = \
 	fi
 findlib_remove = \
 	$(HIDE)if [ ! -z "$(METAFILE)" ]; then\
+	  if [ "$(ROCQPACKAGE)" ]; then rm -rf "$(FINDLIBROCQINSTALL)"; fi; \
 	  "$(OCAMLFIND)" remove $(FINDLIBDESTDIR) $(FINDLIBPACKAGE); \
 	fi
 
@@ -273,7 +285,7 @@ COQDOCLIBS?=$(COQLIBS_NOML)
 # The version of Coq being run and the version of rocq makefile that
 # generated this makefile
 COQ_VERSION:=$(shell $(ROCQ) --print-version | cut -d " " -f 1)
-COQMAKEFILE_VERSION:=9.2
+COQMAKEFILE_VERSION:=9.3.0
 
 # COQ_SRC_SUBDIRS is for user-overriding, usually to add
 # `user-contrib/Foo` to the includes, we keep COQCORE_SRC_SUBDIRS for
@@ -382,7 +394,7 @@ ALLNATIVEFILES = \
 	$(OBJFILES:.o=.cmi) \
 	$(OBJFILES:.o=.cmx) \
 	$(OBJFILES:.o=.cmxs)
-FINDLIBPACKAGE=$(patsubst .%,%,$(suffix $(METAFILE)))
+FINDLIBPACKAGE=$(if $(ROCQPACKAGE),$(ROCQPACKAGE),$(patsubst .%,%,$(suffix $(METAFILE))))
 
 # trick: wildcard filters out non-existing files, so that `install` doesn't show
 # warnings and `clean` doesn't pass to rm a list of files that is too long for
@@ -581,18 +593,52 @@ install: META
 	$(HIDE)code=0; for f in $$(cat .filestoinstall); do\
 	 if ! [ -f "$$f" ]; then >&2 echo $$f does not exist; code=1; fi \
 	done; exit $$code
-	$(HIDE)for f in $$(cat .filestoinstall); do\
-	 df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`";\
-	 if [ "$$?" != "0" -o -z "$$df" ]; then\
-	   echo SKIP "$$f" since it has no logical path;\
-	 else\
-	   install -d "$(COQLIBINSTALL)/$$df" &&\
-	   install -m 0644 "$$f" "$(COQLIBINSTALL)/$$df" &&\
-	   echo INSTALL "$$f" "$(COQLIBINSTALL)/$$df";\
-	 fi;\
-	done
 	$(call findlib_remove)
 	$(call findlib_install, META $(FINDLIBFILESTOINSTALL))
+	$(HIDE)if [ "$(ROCQPACKAGE)" ]; then \
+	 if [ "$(HAS_PACKAGE_LOGICAL_PATH)" != "true" ]; then echo "Error: $(METAFILE) has no top-level rocqpath field"; exit 1; fi; \
+	 root="$(subst .,/,$(PACKAGE_LOGICAL_PATH))"; \
+	 for f in $$(cat .filestoinstall); do\
+	   df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`"; rc="$$?";\
+	   if [ "$$rc" != "0" -o -z "$$df" ]; then\
+	     echo SKIP "$$f" since it has no logical path;\
+	   else\
+	     if [ "$$df" = "''" ]; then df=""; fi; \
+	     if command -v cygpath >/dev/null 2>&1; then df=$$(cygpath -m "$$df"); fi; \
+	     rel="$$df"; \
+	     if [ -n "$$root" ]; then \
+	       case "$$df" in \
+	         "$$root") rel="" ;; \
+	         "$$root"/*) rel="$${df#$$root/}" ;; \
+	         *) echo SKIP "$$f" since it is outside rocqpath "$(PACKAGE_LOGICAL_PATH)"; continue ;; \
+	       esac; \
+	     else \
+	       case "$$rel" in /*) rel="$${rel#/}" ;; esac; \
+	     fi; \
+	     dest="$(FINDLIBROCQINSTALL)"; \
+	     if [ -n "$$rel" ]; then dest="$$dest/$$rel"; fi; \
+	     install -d "$$dest" &&\
+	     install -m 0644 "$$f" "$$dest" &&\
+	     echo INSTALL "$$f" "$$dest";\
+	     if [ "$(LEGACYSUPPORT)" = "true" ]; then \
+	       install -d "$(COQLIBINSTALL)/$$df" &&\
+	       install -m 0644 "$$f" "$(COQLIBINSTALL)/$$df" &&\
+	       echo INSTALL "$$f" "$(COQLIBINSTALL)/$$df";\
+	     fi; \
+	   fi;\
+	 done; \
+	else \
+	 for f in $$(cat .filestoinstall); do\
+	   df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`";\
+	   if [ "$$?" != "0" -o -z "$$df" ]; then\
+	     echo SKIP "$$f" since it has no logical path;\
+	   else\
+	     install -d "$(COQLIBINSTALL)/$$df" &&\
+	     install -m 0644 "$$f" "$(COQLIBINSTALL)/$$df" &&\
+	     echo INSTALL "$$f" "$(COQLIBINSTALL)/$$df";\
+	   fi;\
+	 done; \
+	fi
 	$(HIDE)$(MAKE) install-extra -f "$(SELF)"
 	@rm -f .filestoinstall
 install-extra::
@@ -601,7 +647,11 @@ install-extra::
 
 META: $(METAFILE)
 	$(HIDE)if [ "$(METAFILE)" ]; then \
-		cat "$(METAFILE)" | grep -v 'directory.*=.*' > META; \
+		if [ "$(ROCQPACKAGE)" ]; then \
+		  cp "$(METAFILE)" META; \
+		else \
+		  cat "$(METAFILE)" | grep -v 'directory.*=.*' > META; \
+		fi; \
 	fi
 
 install-byte:
@@ -628,17 +678,21 @@ uninstall::
 	@# Extension point
 	@$(MKFILESTOINSTALL)
 	$(call findlib_remove)
-	$(HIDE)for f in $$(cat .filestoinstall); do \
-	 df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`" &&\
-	 instf="$(COQLIBINSTALL)/$$df/`basename $$f`" &&\
-	 rm -f "$$instf" &&\
-	 echo RM "$$instf" ;\
-	done
-	$(HIDE)for f in $$(cat .filestoinstall); do \
-	 df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`" &&\
-	 echo RMDIR "$(COQLIBINSTALL)/$$df/" &&\
-	 (rmdir "$(COQLIBINSTALL)/$$df/" 2>/dev/null || true); \
-	done
+	$(HIDE)if [ -z "$(ROCQPACKAGE)" ] || [ "$(LEGACYSUPPORT)" = "true" ]; then \
+	 for f in $$(cat .filestoinstall); do \
+	   df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`" &&\
+	   if [ "$$df" = "''" ]; then df=""; fi; \
+	   instf="$(COQLIBINSTALL)/$$df/`basename $$f`" &&\
+	   rm -f "$$instf" &&\
+	   echo RM "$$instf" ;\
+	 done; \
+	 for f in $$(cat .filestoinstall); do \
+	   df="`$(COQMKFILE) -destination-of "$$f" $(COQLIBS)`" &&\
+	   if [ "$$df" = "''" ]; then df=""; fi; \
+	   echo RMDIR "$(COQLIBINSTALL)/$$df/" &&\
+	   (rmdir "$(COQLIBINSTALL)/$$df/" 2>/dev/null || true); \
+	 done; \
+	fi
 	@rm -f .filestoinstall
 
 .PHONY: uninstall
@@ -787,7 +841,7 @@ define globvorule=
 	$$(HIDE)rm -f $(1).vos $(1).vok && touch $(1).vos $(1).vok # make empty vos and vok files
 	$$(HIDE)$$(PROFILE_ZIP)
 ifeq ($(COQDONATIVE), "yes")
-	$$(SHOW)COQNATIVE $(1).vo
+	$$(SHOW)ROCQ native-precompile $(1).vo
 	$$(HIDE)$$(call TIMER,$(1).vo.native) $$(COQNATIVE) $$(COQLIBS) $(1).vo
 endif
 
@@ -800,7 +854,7 @@ $(VOFILES): %.vo: %.v | $(VDFILE)
 	$(HIDE)rm -f $@s $@k && touch $@s $@k # make empty vos and vok files
 	$(HIDE)$(PROFILE_ZIP)
 ifeq ($(COQDONATIVE), "yes")
-	$(SHOW)COQNATIVE $@
+	$(SHOW)ROCQ native-precompile $@
 	$(HIDE)$(call TIMER,$@.native) $(COQNATIVE) $(COQLIBS) $@
 endif
 
@@ -865,15 +919,15 @@ $(addsuffix .d,$(ALLSRCFILES)): $(GENMLFILES)
 
 $(addsuffix .d,$(MLIFILES)): %.mli.d: %.mli
 	$(SHOW)'CAMLDEP $<'
-	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) "$<" $(redir_if_ok)
+	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) $(PACKAGE_FLAGS) "$<" $(redir_if_ok)
 
 $(addsuffix .d,$(MLGFILES)): %.mlg.d: %.ml
 	$(SHOW)'CAMLDEP $<'
-	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) "$<" $(redir_if_ok)
+	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) $(PACKAGE_FLAGS) "$<" $(redir_if_ok)
 
 $(addsuffix .d,$(MLFILES)): %.ml.d: %.ml
 	$(SHOW)'CAMLDEP $<'
-	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) "$<" $(redir_if_ok)
+	$(HIDE)$(CAMLDEP) $(OCAMLLIBS) $(PACKAGE_FLAGS) "$<" $(redir_if_ok)
 
 $(addsuffix .d,$(MLLIBFILES)): %.mllib.d: %.mllib
 	$(SHOW)'OCAMLLIBDEP $<'

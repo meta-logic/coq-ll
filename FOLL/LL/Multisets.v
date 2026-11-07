@@ -1872,6 +1872,7 @@ Proof. solve_meq. Qed.
   Qed.
 
   Lemma nil_contradiction : forall (F: A) M, [] = M ++ [F] -> False.
+  Proof.
     intros.
     destruct M. rewrite app_nil_l in H. inversion H.
     inversion H.
