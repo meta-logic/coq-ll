@@ -100,6 +100,7 @@ Module SqSystems (DT : Eqset_dec_pol).
     end.
 
   Lemma Arrow_eq_dec : forall F1 F2: Arrow , {F1 =F2} + {F1 <> F2}.
+  Proof.
     intros.
     destruct F1;destruct F2.
     generalize(list_eq_dec FEqDec l l0);intro.

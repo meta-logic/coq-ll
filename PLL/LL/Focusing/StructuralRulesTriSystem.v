@@ -830,6 +830,7 @@ Qed.
 
 (* Weakening *)
 Theorem TriWeakening : forall B L F X n, n |-F- B ; L ; X -> n |-F- B ++ [F] ; L ; X.
+Proof.
   intros.
   generalize dependent L .
   generalize dependent B .
@@ -881,6 +882,7 @@ Qed.
 (* Up and Down relation *)
 Lemma UpExtension: forall B M L F n, lexpPos (M ++ [F]) -> n |-F- B; M ++ [F] ; UP L ->
                                                                                 exists m, m<= S n /\ m |-F- B; M ; UP (L ++ [F]).
+Proof.
   intros.
   remember (L_weight L) as w.
   generalize dependent L .
@@ -957,10 +959,12 @@ Qed.
 
 
 Lemma StoreInversion : forall n B M F,  n |-F- B; M; UP [F] -> PosOrPosAtom F -> n -1 |-F- B ; M ++ [F] ; UP [].
+Proof.
   intros.
   inversion H;subst;try(inversion H0);subst;simpl;try(rewrite Nat.sub_0_r);auto.
 Qed.
 Lemma StoreInversionL : forall n B M N L,  n |-F- B; M; UP (N ++ L) -> lexpPos N -> exists m, m |-F- B ; M ++ N ; UP L.
+Proof.
   intros.
   generalize dependent M.
   generalize dependent n.

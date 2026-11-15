@@ -23,9 +23,8 @@ Set Implicit Arguments.
 Theorem Soundness : forall B n  M A ,
     lexpPos M ->
     n |-F- B ; M ; A  -> exists m, m |-- B ; M ++ (Arrow2LL A).
-  intros B n M  A MPos.
-  Proof.  
-    
+  Proof.
+    intros B n M A MPos.
     generalize dependent B.
     generalize dependent M.
     generalize dependent A.
